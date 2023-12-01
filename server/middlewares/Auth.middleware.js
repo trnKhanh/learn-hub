@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const path = require("path");
 
 validateToken = (req, res, next) => {
   const accessToken = req.header("accessToken");
@@ -10,7 +11,7 @@ validateToken = (req, res, next) => {
     });
   }
   try {
-    const publicKey = fs.readFileSync("jwt.key.pub");
+    const publicKey = fs.readFileSync(path.join(__dirname, "./jwt.key.pub"));
     const validToken = jwt.verify(accessToken, publicKey);
     next();
   } catch (err) {

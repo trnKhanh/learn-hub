@@ -2,6 +2,8 @@ const User = require("../models/User.model.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const path = require("path");
+
 const saltRounds = 10;
 
 // Create new user
@@ -29,10 +31,10 @@ exports.signup = async (req, res) => {
       });
     } else {
       // Create new access token
-      const privateKey = fs.readFileSync("jwt.key");
+      const privateKey = fs.readFileSync(path.join(__dirname, "./jwt.key"));
       const accessToken = jwt.sign({
         username: user.username,
-      }, privateKey, { algorithm: 'RS256', expiresIn: "1d"});
+      }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
 
       res.json({
         message: "Sign up successfully",
@@ -72,10 +74,10 @@ exports.login = async (req, res) => {
     let matched = await bcrypt.compare(password, user.password);
     if (matched) {
       // Create new access token
-      const privateKey = fs.readFileSync("jwt.key");
+      const privateKey = fs.readFileSync(path.join(__dirname, "./jwt.key"));
       const accessToken = jwt.sign({
         username: user.username,
-      }, privateKey, { algorithm: 'RS256', expiresIn: "1d"});
+      }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
 
       res.json({
         message: "Log in successfully",
