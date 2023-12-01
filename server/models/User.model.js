@@ -1,18 +1,24 @@
 const sql = require("./db.js");
 
 // Create users table
-sql.query(`
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(72) NOT NULL
-)`, (err, res) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log("Created \"users\" table");
-});
+// sql.query(`
+// CREATE TABLE IF NOT EXISTS users (
+//   id INT AUTO_INCREMENT PRIMARY KEY,
+//   username VARCHAR(255) NOT NULL UNIQUE,
+//   password VARCHAR(72) NOT NULL,
+//   full_name VARCHAR(255),
+//   day_of_birth DATE,
+//   phone_bumber VARCHAR(15),
+//   institution VARCHAR(255),
+//   area_of_study VARCHAR(255),
+//   biography TEXT
+// )`, (err, res) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+//   console.log("Created \"users\" table");
+// });
 
 // User constructor
 const User = function(user) {
