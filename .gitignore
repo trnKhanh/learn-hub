@@ -3,6 +3,9 @@
 # Private and Public key
 *.key
 *.key.pub
+# LSP for nvim
+jsconfig.json
+tsconfig.json
 
 
 ### Node ###
