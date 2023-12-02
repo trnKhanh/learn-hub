@@ -6,6 +6,8 @@
 # LSP for nvim
 jsconfig.json
 tsconfig.json
+# eslint config files
+.eslintrc.*
 
 
 ### Node ###
