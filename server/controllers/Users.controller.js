@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
 
   let username = req.body.username;
   let password = req.body.password;
+  // Use bcrypt to hash the password
   let hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const user = new User({
@@ -25,6 +26,7 @@ exports.signup = async (req, res) => {
     password: hashedPassword,
   });
 
+  // Create new user with hashed password
   User.create(user, (err, user) => {
     if (err) {
       res.status(500).send({
@@ -81,6 +83,7 @@ exports.login = async (req, res) => {
         { algorithm: "RS256", expiresIn: "1d" },
       );
 
+      // Send access token to client
       res.json({
         message: "Log in successfully",
         accessToken: accessToken,
@@ -93,6 +96,7 @@ exports.login = async (req, res) => {
   });
 };
 
+// Update user information
 exports.updateById = (req, res) => {
   if (!req.body) {
     res.status(400).send({

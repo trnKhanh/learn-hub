@@ -1,6 +1,7 @@
 const Course = require("../models/Courses.model");
 const Admin = require("../models/Admins.model");
 
+// Create new course
 exports.create = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -8,9 +9,11 @@ exports.create = (req, res) => {
     });
     return;
   }
+  // Get userId from req passed by authMiddleWare
   let userId = req.user.id;
   let course = new Course({ ...req.body, admin_id: req.user.id });
 
+  // Check if current user is admin
   Admin.findOne({ id: userId }, (err, admin) => {
     if (err) {
       res.status(500).json({
@@ -26,6 +29,7 @@ exports.create = (req, res) => {
       return;
     }
 
+    // Create new course if current user has permission (is admin)
     Course.create(course, (err, course) => {
       if (err) {
         res.status(500).json({
@@ -41,6 +45,7 @@ exports.create = (req, res) => {
   });
 };
 
+// Update course
 exports.update = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -49,10 +54,12 @@ exports.update = (req, res) => {
     return;
   }
 
-  let courseId = req.body.id;
+  // Get user id from req passed by authMiddleWare
   let userId = req.user.id;
+  let courseId = req.body.id;
   let fields = req.body.fields;
 
+  // Find the course with corresponding course id
   Course.findOne({ id: courseId }, (err, course) => {
     if (err) {
       res.status(500).json({
@@ -61,6 +68,7 @@ exports.update = (req, res) => {
       return;
     }
 
+    // Find no course
     if (!course) {
       res.status(400).json({
         message: "Course id is invalid",
@@ -68,6 +76,7 @@ exports.update = (req, res) => {
       return;
     }
 
+    // Check if current user is creater of updated course
     if (course.admin_id != userId) {
       res.status(401).json({
         message: "No permission to update course",
@@ -75,6 +84,7 @@ exports.update = (req, res) => {
       return;
     }
 
+    // Update course
     Course.updateById(courseId, fields, (err, course) => {
       if (err) {
         res.status(500).json({

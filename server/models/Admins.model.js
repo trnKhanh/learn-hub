@@ -1,9 +1,11 @@
 const sql = require("./db");
 
+// Constructor
 const Admin = function (admin) {
   this.id = admin.id;
 };
 
+// Find 1 admin (mainly use to check if user is admin)
 Admin.findOne = function (filter, callback) {
   sql.query("SELECT * FROM admins WHERE ?", filter, (err, res) => {
     if (err) {

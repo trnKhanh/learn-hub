@@ -25,6 +25,7 @@ Course.create = function (newCourse, callback) {
   });
 };
 
+// Find one course
 Course.findOne = function (filter, callback) {
   sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
     if (err) {
@@ -38,11 +39,13 @@ Course.findOne = function (filter, callback) {
       callback(null, res[0]);
       return;
     }
+
     console.log("Found no course", { filter: filter });
     callback(null, null);
   });
 };
 
+// Find all courses that match filter
 Course.find = function (filter, callback) {
   sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
     if (err) {
@@ -56,6 +59,7 @@ Course.find = function (filter, callback) {
   });
 };
 
+// Update course by id
 Course.updateById = function (id, fields, callback) {
   sql.query("UPDATE courses SET ? WHERE id=?", [fields, id], (err, res) => {
     if (err) {

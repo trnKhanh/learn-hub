@@ -16,6 +16,7 @@ connection.connect((err) => {
   console.log('Connected "learnhub" database');
 });
 
+// Running queries to initialize databas
 const init_query = fs
   .readFileSync(path.join(__dirname, "./queries/init.sql"))
   .toString();
