@@ -1,24 +1,4 @@
-const sql = require("./db.js");
-
-// Create users table
-// sql.query(`
-// CREATE TABLE IF NOT EXISTS users (
-//   id INT AUTO_INCREMENT PRIMARY KEY,
-//   username VARCHAR(255) NOT NULL UNIQUE,
-//   password VARCHAR(72) NOT NULL,
-//   full_name VARCHAR(255),
-//   day_of_birth DATE,
-//   phone_bumber VARCHAR(15),
-//   institution VARCHAR(255),
-//   area_of_study VARCHAR(255),
-//   biography TEXT
-// )`, (err, res) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   console.log("Created \"users\" table");
-// });
+const sql = require("./db");
 
 // User constructor
 const User = function(user) {
@@ -35,7 +15,7 @@ User.create = function(newUser, callback) {
       return;
     }
 
-    console.log("Created users: ", { id: res.insertId, ...newUser });
+    console.log("Created users: ", { newUser: newUser, users: res });
     callback(null, { id: res.insertId, ...newUser });
   });
 }
@@ -44,18 +24,18 @@ User.create = function(newUser, callback) {
 User.findOne = function(filter, callback) {
   sql.query(`SELECT * from users WHERE ?`, filter, (err, res) => {
     if (err) {
-      console.log(err);
-      callback(err, null);
+      console.log(err); callback(err, null);
       return;
     }
     if (res.length) {
-      console.log("Found user: ", { filter: filter, user: res[0]});
+      console.log("Found user: ", { filter: filter, users: res[0] });
       callback(null, res[0]);
       return;
     }
     callback(null, null);
   });
 }
+
 // Find all users by filter
 User.find = function(filter, callback) {
   sql.query(`SELECT * from users WHERE ?`, filter, (err, res) => {
@@ -65,11 +45,23 @@ User.find = function(filter, callback) {
       return;
     }
 
-    console.log("Found users: ", { filter: filter, user: res });
+    console.log("Found users: ", { filter: filter, users: res });
     callback(null, res);
   });
 }
 
+// Update user by id
+User.updateById = function(id, fields, callback) {
+  sql.query(`UPDATE users SET ? WHERE id=?`, [ fields, id ], (err, res) => {
+    if (err) {
+      console.log(err);
+      callback(err, null);
+      return;
+    }
 
+    console.log("Updated users", {fields: fields, users: res});
+    callback(null, res);
+  });
+}
 
 module.exports = User;

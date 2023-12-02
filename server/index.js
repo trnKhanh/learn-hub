@@ -6,8 +6,7 @@ app.use(express.json())
 const userRouter = require("./routes/User.route.js");
 app.use("/users", userRouter);
 
-const authMiddleWare = require("./middlewares/Auth.middleware.js");
-app.get("/", authMiddleWare, (req, res) => {
+app.get("/", (req, res) => {
   res.send("SUCCESS");
 })
 

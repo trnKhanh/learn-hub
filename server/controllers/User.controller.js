@@ -10,9 +10,10 @@ const saltRounds = 10;
 exports.signup = async (req, res) => {
   // if request is invalid (empty body)
   if (!req.body) {
-    res.status("400").send({
+    res.status(400).send({
       message: "Content cannot be empty",
     });
+    return;
   }
 
   let username = req.body.username;
@@ -21,26 +22,27 @@ exports.signup = async (req, res) => {
 
   const user = new User({
     username: username,
-    password: password,
+    password: hashedPassword,
   });
 
   User.create(user, (err, user) => {
     if (err) {
-      res.status("500").send({
+      res.status(500).send({
         message: err.message || "Errors occur when creating new user",
       });
-    } else {
-      // Create new access token
-      const privateKey = fs.readFileSync(path.join(__dirname, "./jwt.key"));
-      const accessToken = jwt.sign({
-        username: user.username,
-      }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
-
-      res.json({
-        message: "Sign up successfully",
-        accessToken: accessToken,
-      });
+      return;
     }
+    // Create new access token
+    // const privateKey = fs.readFileSync(path.join(__dirname, "../jwt.key"));
+    // const accessToken = jwt.sign({
+    //   user_id: user.id,
+    // }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
+
+    res.json({
+      message: "Sign up successfully",
+      // accessToken: accessToken,
+    });
+
   });
 }
 
@@ -49,9 +51,10 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   // if request is invalid (empty body)
   if (!req.body) {
-    res.status("400").send({
+    res.status(400).send({
       message: "Content cannot be empty",
     });
+    return;
   }
 
   let username = req.body.username;
@@ -60,23 +63,26 @@ exports.login = async (req, res) => {
   // Find user with given username
   User.findOne({ username: username }, async (err, user) => {
     if (err) {
-      res.status("500").send({
+      res.status(500).send({
         message: err.message || "Errors occur when find user",
       });
+      return;
     }
 
     if (!user) {
-      res.status("401").json({
+      res.status(401).json({
         message: "User do not exists",
       })
+      return;
     }
     // Check password
     let matched = await bcrypt.compare(password, user.password);
     if (matched) {
       // Create new access token
-      const privateKey = fs.readFileSync(path.join(__dirname, "./jwt.key"));
+      const privateKey = fs.readFileSync(path.join(__dirname, "../jwt.key"));
       const accessToken = jwt.sign({
         username: user.username,
+        user_id: user.id,
       }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
 
       res.json({
@@ -84,9 +90,31 @@ exports.login = async (req, res) => {
         accessToken: accessToken,
       });
     } else {
-      res.status("401").json({
+      res.status(401).json({
         message: "Wrong password",
       });
     }
+  })
+}
+
+exports.updateById = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content cannot be empty",
+    });
+    return;
+  }
+
+  User.updateById(req.user.id, req.body, (err, user) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || "Errors occur when update user information",
+      });
+      return;
+    }
+
+    res.send({
+      message: "User's information has been updated"
+    })
   })
 }

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   institution VARCHAR(255),
   area_of_study VARCHAR(255),
   biography TEXT,
-  created_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS courses (
   difficulty INT NOT NULL,
   duration INT NOT NULL,
   admin_id INT NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   price DOUBLE NOT NULL,
   discounted DOUBLE,
   PRIMARY KEY (id),
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS financial_aids (
   admin_id INT NOT NULL,
   essay TEXT NOT NULL,
   amount DOUBLE NOT NULL,
-  sent_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   state ENUM("PENDING", "ADMIN_PASSED", "TUTOR_PASSED", "ADMIN_DENIED", "TUTOR_DENIED") NOT NULL,
   PRIMARY KEY (student_id, course_id),
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
   student_id INT NOT NULL,
-  paid_at TIMESTAMP NOT NULL,
+  paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE,
   PRIMARY KEY (id),
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS support_sessions (
   user_id INT NOT NULL,
   supporter_id INT NOT NULL,
   issue_description TEXT NOT NULL,
-  started_at TIMESTAMP NOT NULL,
+  started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   finished_at TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS notes (
 
 CREATE TABLE IF NOT EXISTS notifications (
   user_id INT NOT NULL,
-  notified_at TIMESTAMP NOT NULL,
+  notified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   content TEXT NOT NULL,
   PRIMARY KEY (user_id, notified_at),
   FOREIGN KEY (user_id) REFERENCES users(id)
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS courses_languages (
 CREATE TABLE IF NOT EXISTS learn_courses (
   course_id INT NOT NULL,
   student_id INT NOT NULL,
-  registered_at TIMESTAMP NOT NULL,
+  registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   finished_at TIMESTAMP,
   PRIMARY KEY (course_id, student_id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE,
