@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Admin = function (admin) {
-  this.id = id;
+  this.id = admin.id;
 };
 
 Admin.findOne = function (filter, callback) {

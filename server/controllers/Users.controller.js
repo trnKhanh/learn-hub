@@ -32,15 +32,9 @@ exports.signup = async (req, res) => {
       });
       return;
     }
-    // Create new access token
-    // const privateKey = fs.readFileSync(path.join(__dirname, "../jwt.key"));
-    // const accessToken = jwt.sign({
-    //   user_id: user.id,
-    // }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
 
     res.json({
       message: "Sign up successfully",
-      // accessToken: accessToken,
     });
   });
 };
