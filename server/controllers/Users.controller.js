@@ -42,10 +42,8 @@ exports.signup = async (req, res) => {
       message: "Sign up successfully",
       // accessToken: accessToken,
     });
-
   });
-}
-
+};
 
 // Login user
 exports.login = async (req, res) => {
@@ -72,7 +70,7 @@ exports.login = async (req, res) => {
     if (!user) {
       res.status(401).json({
         message: "User do not exists",
-      })
+      });
       return;
     }
     // Check password
@@ -80,10 +78,14 @@ exports.login = async (req, res) => {
     if (matched) {
       // Create new access token
       const privateKey = fs.readFileSync(path.join(__dirname, "../jwt.key"));
-      const accessToken = jwt.sign({
-        username: user.username,
-        id: user.id,
-      }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
+      const accessToken = jwt.sign(
+        {
+          username: user.username,
+          id: user.id,
+        },
+        privateKey,
+        { algorithm: "RS256", expiresIn: "1d" },
+      );
 
       res.json({
         message: "Log in successfully",
@@ -94,8 +96,8 @@ exports.login = async (req, res) => {
         message: "Wrong password",
       });
     }
-  })
-}
+  });
+};
 
 exports.updateById = (req, res) => {
   if (!req.body) {
@@ -114,7 +116,7 @@ exports.updateById = (req, res) => {
     }
 
     res.send({
-      message: "User's information has been updated"
-    })
-  })
-}
+      message: "User's information has been updated",
+    });
+  });
+};

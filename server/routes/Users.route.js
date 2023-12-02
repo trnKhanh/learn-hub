@@ -3,10 +3,10 @@ const express = require("express");
 const router = express.Router();
 const authMiddleWare = require("../middlewares/Auth.middleware");
 
-router.post("/signup", usersController.signup)
+router.post("/signup", usersController.signup);
 
-router.post("/login", usersController.login)
+router.post("/login", usersController.login);
 
-router.put("/", authMiddleWare, usersController.updateById)
+router.put("/", authMiddleWare, usersController.updateById);
 
-module.exports = router
+module.exports = router;

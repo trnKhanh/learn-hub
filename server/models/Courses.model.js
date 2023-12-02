@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 // Constructor
-const Course = function(course) {
+const Course = function (course) {
   this.name = course.name;
   this.description = course.description;
   this.difficulty = course.difficulty;
@@ -9,10 +9,10 @@ const Course = function(course) {
   this.admin_id = course.admin_id;
   this.price = course.price;
   this.discounted = course.discounted;
-}
+};
 
 // Create new Course
-Course.create = function(newCourse, callback) {
+Course.create = function (newCourse, callback) {
   sql.query("INSERT INTO courses SET ?", newCourse, (err, res) => {
     if (err) {
       console.log(err);
@@ -23,9 +23,9 @@ Course.create = function(newCourse, callback) {
     console.log("Created course", { newCourse: newCourse, courses: res });
     callback(null, res);
   });
-}
+};
 
-Course.findOne = function(filter, callback) {
+Course.findOne = function (filter, callback) {
   sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
     if (err) {
       console.log(err);
@@ -34,29 +34,29 @@ Course.findOne = function(filter, callback) {
     }
 
     if (res.length) {
-      console.log("Found course:", {filter: filter, courses: res[0]});
+      console.log("Found course:", { filter: filter, courses: res[0] });
       callback(null, res[0]);
       return;
     }
-    console.log("Found no course", {filter: filter});
+    console.log("Found no course", { filter: filter });
     callback(null, null);
-  })
-}
+  });
+};
 
-Course.find = function(filter, callback) {
+Course.find = function (filter, callback) {
   sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
     if (err) {
       console.log(err);
       callback(err, null);
       return;
     }
-    
-    console.log("Found courses:", {filter: filter, courses: res});
-    callback(null, res);
-  })
-}
 
-Course.updateById = function(id, fields, callback) {
+    console.log("Found courses:", { filter: filter, courses: res });
+    callback(null, res);
+  });
+};
+
+Course.updateById = function (id, fields, callback) {
   sql.query("UPDATE courses SET ? WHERE id=?", [fields, id], (err, res) => {
     if (err) {
       console.log(err);
@@ -64,9 +64,9 @@ Course.updateById = function(id, fields, callback) {
       return;
     }
 
-    console.log("Updated courses:", {id: id, fields:fields, courses: res});
+    console.log("Updated courses:", { id: id, fields: fields, courses: res });
     callback(null, res);
-  })
-}
+  });
+};
 
 module.exports = Course;

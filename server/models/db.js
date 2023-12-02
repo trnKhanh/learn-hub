@@ -13,10 +13,12 @@ let connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  console.log("Connected \"learnhub\" database")
-})
+  console.log('Connected "learnhub" database');
+});
 
-const init_query = fs.readFileSync(path.join(__dirname, "./queries/init.sql")).toString();
+const init_query = fs
+  .readFileSync(path.join(__dirname, "./queries/init.sql"))
+  .toString();
 connection.query(init_query, (err, res) => {
   if (err) {
     console.log(err);
