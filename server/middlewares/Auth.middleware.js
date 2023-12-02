@@ -14,6 +14,7 @@ validateToken = (req, res, next) => {
   try {
     const publicKey = fs.readFileSync(path.join(__dirname, "../jwt.key.pub"));
     const validToken = jwt.verify(accessToken, publicKey);
+
     req.user = validToken;
     next();
 

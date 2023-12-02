@@ -4,6 +4,12 @@ const sql = require("./db");
 const User = function(user) {
   this.username = user.username;
   this.password = user.password;
+  this.full_name = user.full_name;
+  this.day_of_birth = user.day_of_birth;
+  this.phone_number = user.phone_number;
+  this.institution = user.institution;
+  this.area_of_study = user.area_of_study;
+  this.biography = user.biography;
 };
 
 // Create new User
@@ -32,6 +38,7 @@ User.findOne = function(filter, callback) {
       callback(null, res[0]);
       return;
     }
+    console.log("Found no user", {filter: filter});
     callback(null, null);
   });
 }
@@ -59,7 +66,7 @@ User.updateById = function(id, fields, callback) {
       return;
     }
 
-    console.log("Updated users", {fields: fields, users: res});
+    console.log("Updated users", {id: id, fields: fields, users: res});
     callback(null, res);
   });
 }

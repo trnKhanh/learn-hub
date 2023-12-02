@@ -1,4 +1,4 @@
-const User = require("../models/User.model.js");
+const User = require("../models/Users.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -82,7 +82,7 @@ exports.login = async (req, res) => {
       const privateKey = fs.readFileSync(path.join(__dirname, "../jwt.key"));
       const accessToken = jwt.sign({
         username: user.username,
-        user_id: user.id,
+        id: user.id,
       }, privateKey, { algorithm: 'RS256', expiresIn: "1d" });
 
       res.json({
@@ -105,7 +105,7 @@ exports.updateById = (req, res) => {
     return;
   }
 
-  User.updateById(req.user.id, req.body, (err, user) => {
+  User.updateById(req.user.id, req.body.fields, (err, user) => {
     if (err) {
       res.status(500).send({
         message: err.message || "Errors occur when update user information",

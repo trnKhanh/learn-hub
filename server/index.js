@@ -3,8 +3,11 @@ const app = express();
 app.use(express.json())
 
 // Use user router
-const userRouter = require("./routes/User.route.js");
-app.use("/users", userRouter);
+const usersRouter = require("./routes/Users.route");
+app.use("/users", usersRouter);
+
+const coursesRouter = require("./routes/Courses.route");
+app.use("/courses", coursesRouter);
 
 app.get("/", (req, res) => {
   res.send("SUCCESS");

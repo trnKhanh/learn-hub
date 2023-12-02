@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(72) NOT NULL,
   full_name VARCHAR(255),
   day_of_birth DATE,
-  phone_bumber VARCHAR(15),
+  phone_number VARCHAR(15),
   institution VARCHAR(255),
   area_of_study VARCHAR(255),
   biography TEXT,
