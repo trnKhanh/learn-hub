@@ -67,41 +67,45 @@ CREATE TABLE IF NOT EXISTS subjects (
 );
 
 CREATE TABLE IF NOT EXISTS lessons (
-  id INT AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
   course_id INT NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (course_id) REFERENCES courses(id)
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (course_id, id),
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS documents (
-  id INT AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
+  course_id INT NOT NULL,
   lesson_id INT NOT NULL,
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
   file_path VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+  PRIMARY KEY (course_id, lesson_id, id),
+  FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS exams (
-  id INT AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
+  course_id INT NOT NULL,
   lesson_id INT NOT NULL,
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
   percentage DOUBLE NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN kEY (lesson_id) REFERENCES lessons(id)
+  PRIMARY KEY (course_id, lesson_id, id),
+  FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS problems (
-  id INT AUTO_INCREMENT,
-  question TEXT NOT NULL,
+  course_id INT NOT NULL,
+  lesson_id INT NOT NULL,
   exam_id INT NOT NULL,
+  id INT NOT NULL,
+  question TEXT NOT NULL,
   score INT NOT NULL,
   auto_score BOOL NOT NULL,
   problem_type ENUM("MULTIPLE CHOICES", "TEXT") NOT NULL,
   solution VARCHAR(255),
-  PRIMARY KEY (id),
-  FOREIGN KEY (exam_id) REFERENCES exams(id)
+  PRIMARY KEY (course_id, lesson_id, exam_id, id),
+  FOREIGN KEY (course_id, lesson_id, exam_id) REFERENCES exams(course_id, lesson_id, id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS financial_aids (
@@ -148,11 +152,11 @@ CREATE TABLE IF NOT EXISTS support_sessions (
 
 CREATE TABLE IF NOT EXISTS notes (
   student_id INT NOT NULL,
-  lesson_id INT NOT NULL,
+  course_id INT NOT NULL,
   content TEXT NOT NULL,
-  PRIMARY KEY (student_id, lesson_id),
+  PRIMARY KEY (student_id, course_id),
   FOREIGN KEY (student_id) REFERENCES students(id),
-  FOREIGN KEY (lesson_id) REFERENCES lessons(id)
+  FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
@@ -209,30 +213,36 @@ CREATE TABLE IF NOT EXISTS learn_courses (
 );
 
 CREATE TABLE IF NOT EXISTS learn_lessons (
+  course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   student_id INT NOT NULL,
-  PRIMARY KEY (lesson_id,  student_id),
-  FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (course_id, lesson_id,  student_id),
+  FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS do_exams (
+  course_id INT NOT NULL,
+  lesson_id INT NOT NULL,
   exam_id INT NOT NULL,
   student_id INT NOT NULL,
   score DOUBLE,
   deadline DATETIME NOT NULL,
   finished_at TIMESTAMP,
-  PRIMARY KEY (exam_id,  student_id),
-  FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (course_id, lesson_id, exam_id,  student_id),
+  FOREIGN KEY (course_id, lesson_id, exam_id) REFERENCES exams(course_id, lesson_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS solve_problems (
+  course_id INT NOT NULL,
+  lesson_id INT NOT NULL,
+  exam_id INT NOT NULL,
   problem_id INT NOT NULL,
   student_id INT NOT NULL,
   answer TEXT NOT NULL,
-  PRIMARY KEY (problem_id, student_id),
-  FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (course_id, lesson_id, exam_id, problem_id, student_id),
+  FOREIGN KEY (course_id, lesson_id, exam_id, problem_id) REFERENCES problems(course_id, lesson_id, exam_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

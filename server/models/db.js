@@ -3,7 +3,7 @@ const dbConfig = require("../config/db.config");
 const fs = require("fs");
 const path = require("path");
 
-let connection = mysql.createConnection({
+let pool = mysql.createPool({
   host: dbConfig.HOST,
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
@@ -11,16 +11,11 @@ let connection = mysql.createConnection({
   multipleStatements: true,
 });
 
-connection.connect((err) => {
-  if (err) throw err;
-  console.log('Connected "learnhub" database');
-});
-
 // Running queries to initialize databas
 const init_query = fs
   .readFileSync(path.join(__dirname, "./queries/init.sql"))
   .toString();
-connection.query(init_query, (err, res) => {
+pool.query(init_query, (err, res) => {
   if (err) {
     console.log(err);
     return;
@@ -28,4 +23,4 @@ connection.query(init_query, (err, res) => {
   console.log("Initialize database");
 });
 
-module.exports = connection;
+module.exports = pool;
