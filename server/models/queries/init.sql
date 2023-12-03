@@ -1,6 +1,7 @@
 -- Entities tables
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT,
+  email VARCHAR(255) UNIQUE,
   username VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(72) NOT NULL,
   full_name VARCHAR(255),
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS tutors (
   id INT NOT NULL,
   admin_id INT NOT NULL,
   verified BOOL NOT NULL DEFAULT 0,
+  profit DOUBLE NOT NULL DEFAULT 0 CHECK(profit >= 0),
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -54,7 +56,7 @@ CREATE TABLE IF NOT EXISTS courses (
   owner INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   price DOUBLE NOT NULL,
-  discounted DOUBLE,
+  discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
   PRIMARY KEY (id),
   FOREIGN KEY (owner) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -106,7 +108,7 @@ CREATE TABLE IF NOT EXISTS problems (
   id INT NOT NULL,
   question TEXT NOT NULL,
   score INT NOT NULL,
-  auto_score BOOL NOT NULL,
+  auto_score BOOL NOT NULL DEFAULT 0,
   problem_type ENUM("MULTIPLE CHOICES", "TEXT") NOT NULL,
   solution VARCHAR(255),
   PRIMARY KEY (course_id, lesson_id, exam_id, id),
@@ -138,7 +140,7 @@ CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  discounted DOUBLE,
+  discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
   PRIMARY KEY (id),
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -182,10 +184,18 @@ CREATE TABLE IF NOT EXISTS schedules (
   FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
+CREATE TABLE IF NOT EXISTS payment_information (
+  user_id INT NOT NULL,
+  card VARCHAR(255) NOT NULL,
+  PRIMARY KEY (user_id, card),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 -- Relationship tables
 CREATE TABLE IF NOT EXISTS teach_courses (
   tutor_id INT NOT NULL,
   course_id INT NOT NULL,
+  profit_rate DOUBLE NOT NULL CHECK (profit >= 0 AND profit <= 1)
   PRIMARY KEY (tutor_id, course_id),
   FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -221,6 +231,7 @@ CREATE TABLE IF NOT EXISTS learn_lessons (
   course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   student_id INT NOT NULL,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (course_id, lesson_id,  student_id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -255,7 +266,7 @@ CREATE TABLE IF NOT EXISTS payments_courses (
   payment_id INT NOT NULL,
   course_id INT NOT NULL,
   price DOUBLE NOT NULL,
-  discounted DOUBLE,
+  discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
   amount INT NOT NULL,
   PRIMARY KEY (payment_id, course_id),
   FOREIGN KEY (payment_id) REFERENCES payments(id),
