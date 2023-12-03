@@ -3,6 +3,9 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 const Admin = function (admin) {
   this.id = admin.id;
+  this.courses_access = admin.courses_access || 0;
+  this.tutors_access = admin.tutors_access || 0;
+  this.students_access = admin.students_access || 0;
 };
 
 // Find 1 admin (mainly use to check if user is admin)
