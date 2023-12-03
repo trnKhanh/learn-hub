@@ -1,10 +1,22 @@
 const coursesController = require("../controllers/Courses.controller");
 const express = require("express");
 const router = express.Router();
-const authMiddleWare = require("../middlewares/Auth.middleware");
+const { validateToken } = require("../middlewares/Auth.middleware");
+const {
+  validateCourseCreatePermission,
+  validateCourseOwnership,
+} = require("../middlewares/Courses.middleware");
 
-router.post("/", authMiddleWare, coursesController.create);
+router.post(
+  "/",
+  [validateToken, validateCourseCreatePermission],
+  coursesController.create,
+);
 
-router.put("/", authMiddleWare, coursesController.update);
+router.put(
+  "/",
+  [validateToken, validateCourseOwnership],
+  coursesController.update,
+);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const sql = require("./db");
+const { formatFilters } = require("../utils/query.utils");
 
 // Constructor
 const Course = function (course) {
@@ -6,7 +7,7 @@ const Course = function (course) {
   this.description = course.description;
   this.difficulty = course.difficulty;
   this.duration = course.duration;
-  this.admin_id = course.admin_id;
+  this.owner = course.owner;
   this.price = course.price;
   this.discounted = course.discounted;
 };
@@ -17,60 +18,74 @@ Course.create = function (newCourse, callback) {
     if (err) {
       console.log(err);
       callback(err, null);
-      return;
+    } else {
+      console.log("Created course: ", { newCourse: newCourse, results: res });
+      callback(null, res);
     }
-
-    console.log("Created course", { newCourse: newCourse, courses: res });
-    callback(null, res);
   });
 };
 
 // Find one course
-Course.findOne = function (filter, callback) {
-  sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-
-    if (res.length) {
-      console.log("Found course:", { filter: filter, courses: res[0] });
-      callback(null, res[0]);
-      return;
-    }
-
-    console.log("Found no course", { filter: filter });
-    callback(null, null);
-  });
+Course.findOne = function (filters, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `SELECT * FROM courses WHERE ${filterKeys}`,
+    filterValues,
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        if (res.length) {
+          console.log("Found course: ", { filters: filters, results: res[0] });
+          callback(null, res[0]);
+        } else {
+          console.log("Found no course: ", { filters: filters });
+          callback(null, null);
+        }
+      }
+    },
+  );
 };
 
 // Find all courses that match filter
-Course.find = function (filter, callback) {
-  sql.query("SELECT * FROM courses WHERE ?", filter, (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-
-    console.log("Found courses:", { filter: filter, courses: res });
-    callback(null, res);
-  });
+Course.findAll = function (filters, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `SELECT * FROM courses WHERE ${filterKeys}`,
+    filterValues,
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        console.log("Found courses: ", { filters: filters, results: res });
+        callback(null, res);
+      }
+    },
+  );
 };
 
 // Update course by id
-Course.updateById = function (id, fields, callback) {
-  sql.query("UPDATE courses SET ? WHERE id=?", [fields, id], (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-
-    console.log("Updated courses:", { id: id, fields: fields, courses: res });
-    callback(null, res);
-  });
+Course.update = function (filters, columns, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `UPDATE courses SET ? WHERE ${filterKeys}`,
+    [columns, filterValues],
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        console.log("Updated courses: ", {
+          filters: filters,
+          columns: columns,
+          results: res,
+        });
+        callback(null, res);
+      }
+    },
+  );
 };
 
 module.exports = Course;
