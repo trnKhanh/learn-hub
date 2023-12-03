@@ -1,4 +1,5 @@
 const sql = require("./db");
+const { formatFilters } = require("../utils/query.utils");
 
 // User constructor
 const User = function (user) {
@@ -18,58 +19,74 @@ User.create = function (newUser, callback) {
     if (err) {
       console.log(err);
       callback(err, null);
-      return;
+    } else {
+      console.log("Created user: ", { newUser: newUser, results: res });
+      callback(null, { id: res.insertId, ...newUser });
     }
-
-    console.log("Created users: ", { newUser: newUser, users: res });
-    callback(null, { id: res.insertId, ...newUser });
   });
 };
 
 // Find one user by filter
-User.findOne = function (filter, callback) {
-  sql.query(`SELECT * from users WHERE ?`, filter, (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-    if (res.length) {
-      console.log("Found user: ", { filter: filter, users: res[0] });
-      callback(null, res[0]);
-      return;
-    }
-    console.log("Found no user", { filter: filter });
-    callback(null, null);
-  });
+User.findOne = function (filters, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `SELECT * FROM users WHERE ${filterKeys}`,
+    filterValues,
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        if (res.length) {
+          console.log("Found user: ", { filters: filters, results: res[0] });
+          callback(null, res[0]);
+        } else {
+          console.log("Found no user: ", { filters: filters });
+          callback(null, null);
+        }
+      }
+    },
+  );
 };
 
 // Find all users by filter
-User.find = function (filter, callback) {
-  sql.query(`SELECT * from users WHERE ?`, filter, (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-
-    console.log("Found users: ", { filter: filter, users: res });
-    callback(null, res);
-  });
+User.findAll = function (filters, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `SELECT * FROM users WHERE ${filterKeys}`,
+    filterValues,
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        console.log("Found users: ", { filters: filters, results: res });
+        callback(null, res);
+      }
+    },
+  );
 };
 
 // Update user by id
-User.updateById = function (id, fields, callback) {
-  sql.query(`UPDATE users SET ? WHERE id=?`, [fields, id], (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-      return;
-    }
-
-    console.log("Updated users", { id: id, fields: fields, users: res });
-    callback(null, res);
-  });
+User.update = function (filters, columns, callback) {
+  const { filterKeys, filterValues } = formatFilters(filters);
+  sql.query(
+    `UPDATE courses SET ? WHERE ${filterKeys}`,
+    [columns, filterValues],
+    (err, res) => {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        console.log("Updated users", {
+          filters: filters,
+          columns: columns,
+          results: res,
+        });
+        callback(null, res);
+      }
+    },
+  );
 };
 
 module.exports = User;

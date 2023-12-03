@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 
-let validateToken = (req, res, next) => {
+let validateToken = async (req, res, next) => {
   const accessToken = req.header("accessToken");
   try {
     const publicKey = fs.readFileSync(path.join(__dirname, "../jwt.key.pub"));
@@ -15,4 +15,4 @@ let validateToken = (req, res, next) => {
   }
 };
 
-module.exports = validateToken;
+module.exports = { validateToken };
