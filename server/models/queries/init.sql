@@ -51,14 +51,14 @@ CREATE TABLE IF NOT EXISTS courses (
   id INT AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
-  difficulty INT NOT NULL,
-  duration INT NOT NULL,
-  owner INT NOT NULL,
+  difficulty ENUM("BEGINNER", "INTERMEDIATE", "ADVANCED") NOT NULL,
+  duration INT NOT NULL CHECK (duration >= 0),
+  owner_id INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  price DOUBLE NOT NULL,
+  price DOUBLE NOT NULL CHECK(price >= 0),
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
   PRIMARY KEY (id),
-  FOREIGN KEY (owner) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (owner_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS languages (
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS exams (
   lesson_id INT NOT NULL,
   id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  percentage DOUBLE NOT NULL,
+  percentage DOUBLE NOT NULL CHECK(percentage >= 0 AND percentage <= 1),
   PRIMARY KEY (course_id, lesson_id, id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS problems (
   exam_id INT NOT NULL,
   id INT NOT NULL,
   question TEXT NOT NULL,
-  score INT NOT NULL,
+  score DOUBLE NOT NULL CHECK (score >= 0),
   auto_score BOOL NOT NULL DEFAULT 0,
   problem_type ENUM("MULTIPLE CHOICES", "TEXT") NOT NULL,
   solution VARCHAR(255),
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS financial_aids (
   course_id INT NOT NULL,
   admin_id INT NOT NULL,
   essay TEXT NOT NULL,
-  amount DOUBLE NOT NULL,
+  amount DOUBLE NOT NULL CHECK (amount >= 0),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   state ENUM("PENDING", "ADMIN_PASSED", "TUTOR_PASSED", "ADMIN_DENIED", "TUTOR_DENIED") NOT NULL,
   PRIMARY KEY (student_id, course_id),
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS payment_information (
 CREATE TABLE IF NOT EXISTS teach_courses (
   tutor_id INT NOT NULL,
   course_id INT NOT NULL,
-  profit_rate DOUBLE NOT NULL CHECK (profit >= 0 AND profit <= 1)
+  profit_rate DOUBLE NOT NULL CHECK (profit_rate >= 0 AND profit_rate <= 1),
   PRIMARY KEY (tutor_id, course_id),
   FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS do_exams (
   lesson_id INT NOT NULL,
   exam_id INT NOT NULL,
   student_id INT NOT NULL,
-  score DOUBLE,
+  score DOUBLE CHECK (score >= 0),
   deadline DATETIME NOT NULL,
   finished_at TIMESTAMP,
   PRIMARY KEY (course_id, lesson_id, exam_id,  student_id),
@@ -266,9 +266,9 @@ CREATE TABLE IF NOT EXISTS solve_problems (
 CREATE TABLE IF NOT EXISTS payments_courses (
   payment_id INT NOT NULL,
   course_id INT NOT NULL,
-  price DOUBLE NOT NULL,
+  price DOUBLE NOT NULL CHECK (price >= 0),
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
-  amount INT NOT NULL,
+  no_items INT NOT NULL CHECK (no_items >= 0),
   PRIMARY KEY (payment_id, course_id),
   FOREIGN KEY (payment_id) REFERENCES payments(id),
   FOREIGN KEY (course_id) REFERENCES courses(id)
