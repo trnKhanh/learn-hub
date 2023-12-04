@@ -170,6 +170,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   user_id INT NOT NULL,
   notified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   content TEXT NOT NULL,
+  status ENUM("SEEN", "NOT SEEN") NOT NULL,
   PRIMARY KEY (user_id, notified_at),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
