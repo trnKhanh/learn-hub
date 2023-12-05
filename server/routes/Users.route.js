@@ -3,6 +3,8 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 
-router.put("/", [validateToken], usersController.updateById);
+router.patch("/", [validateToken], usersController.updateUser);
+
+router.delete("/", [validateToken], usersController.deleteUser);
 
 module.exports = router;

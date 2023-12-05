@@ -1,8 +1,10 @@
-const sql = require("./db");
+const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const { randomUUID } = require("crypto");
 
 // Constructor
 const Course = function (course) {
+  this.uuid = course.uuid || randomUUID();
   this.name = course.name;
   this.description = course.description;
   this.difficulty = course.difficulty;
@@ -13,16 +15,22 @@ const Course = function (course) {
 };
 
 // Create new Course
-Course.create = function (newCourse, callback) {
-  sql.query("INSERT INTO courses SET ?", newCourse, (err, res) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-    } else {
-      console.log("Created course: ", { newCourse: newCourse, results: res });
-      callback(null, res);
-    }
-  });
+Course.create = async (newCourse, callback) => {
+  try {
+    const res = await sql.query("INSERT INTO courses SET ?", newCourse);
+    console.log("Created course: ", { results: res });
+  } catch (err) {
+    console.log(err);
+  }
+  // sql.query("INSERT INTO courses SET ?", newCourse, (err, res) => {
+  //   if (err) {
+  //     console.log(err);
+  //     callback(err, null);
+  //   } else {
+  //     console.log("Created course: ", { newCourse: newCourse, results: res });
+  //     callback(null, res);
+  //   }
+  // });
 };
 
 // Find one course

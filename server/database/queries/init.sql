@@ -1,13 +1,14 @@
 -- Entities tables
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   email VARCHAR(255) UNIQUE,
   username VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(72) NOT NULL,
   full_name VARCHAR(255),
-  day_of_birth DATE,
+  date_of_birth DATE,
   phone_number VARCHAR(15),
-  institution VARCHAR(255),
+  institute VARCHAR(255),
   area_of_study VARCHAR(255),
   biography TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS supporters (
 
 CREATE TABLE IF NOT EXISTS courses ( 
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   difficulty ENUM("BEGINNER", "INTERMEDIATE", "ADVANCED") NOT NULL,
@@ -63,12 +65,14 @@ CREATE TABLE IF NOT EXISTS courses (
 
 CREATE TABLE IF NOT EXISTS languages (
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   language_name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS subjects (
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
@@ -138,6 +142,7 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
@@ -147,6 +152,7 @@ CREATE TABLE IF NOT EXISTS payments (
 
 CREATE TABLE IF NOT EXISTS support_sessions (
   id INT AUTO_INCREMENT,
+  uuid CHAR(36) NOT NULL UNIQUE,
   user_id INT NOT NULL,
   supporter_id INT NOT NULL,
   issue_description TEXT NOT NULL,
@@ -176,18 +182,19 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 
 CREATE TABLE IF NOT EXISTS schedules (
-  user_id INT NOT NULL,
+  student_id INT NOT NULL,
   course_id INT NOT NULL,
   day_of_week ENUM("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY") NOT NULL,
   time_in_day TIME NOT NULL,
-  PRIMARY KEY (user_id, course_id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
+  PRIMARY KEY (student_id, course_id),
+  FOREIGN KEY (student_id) REFERENCES users(id),
   FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
 CREATE TABLE IF NOT EXISTS payment_information (
   user_id INT NOT NULL,
   card VARCHAR(255) NOT NULL,
+  expire_date DATE NOT NULL,
   PRIMARY KEY (user_id, card),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );

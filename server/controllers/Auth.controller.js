@@ -18,31 +18,32 @@ const signup = async (req, res) => {
 
   let username = req.body.username;
   let password = req.body.password;
+
   // Use bcrypt to hash the password
   let hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  const user = new User({
+  const newUser = new User({
     username: username,
     password: hashedPassword,
   });
 
   // Create new user with hashed password
-  User.create(user, (err, user) => {
-    if (err) {
-      if (err.code == "ER_DUP_ENTRY") {
-        res.status(409).json({
-          message: "User has already existed",
-        });
-        return;
-      }
-      res.status(500).json({
-        message: "Errors occur when creating new user",
+  try {
+    const user = await User.create(newUser);
+    res.status(201);
+    await login(req, res);
+  } catch (err) {
+    console.log(err);
+    if (err.code == "ER_DUP_ENTRY") {
+      res.status(409).json({
+        message: "User has already existed",
       });
-    } else {
-      res.status(201);
-      login(req, res);
+      return;
     }
-  });
+    res.status(500).json({
+      message: "Errors occur when creating new user",
+    });
+  }
 };
 
 // Login user
@@ -58,17 +59,11 @@ const login = async (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
 
-  // Find user with given username
-  User.findOne({ username: username }, async (err, user) => {
-    if (err) {
-      res.status(500).send({
-        message: "Errors occur when finding user",
-      });
-      return;
-    }
-
+  try {
+    // Find user with given username
+    const user = await User.findOne({ username: username });
     if (!user) {
-      res.status(401).json({
+      res.status(404).json({
         message: "User do not exists",
       });
       return;
@@ -81,7 +76,7 @@ const login = async (req, res) => {
       const accessToken = jwt.sign(
         {
           username: user.username,
-          id: user.id,
+          id: user.uuid,
         },
         privateKey,
         { algorithm: "RS256", expiresIn: "1d" },
@@ -90,6 +85,8 @@ const login = async (req, res) => {
       // Send access token to client
       res.json({
         message: "Log in successfully",
+        username: user.username,
+        user_id: user.uuid,
         accessToken: accessToken,
       });
     } else {
@@ -97,7 +94,12 @@ const login = async (req, res) => {
         message: "Wrong password",
       });
     }
-  });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      message: "Errors occur when finding user",
+    });
+  }
 };
 
 module.exports = {
