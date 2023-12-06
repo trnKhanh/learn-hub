@@ -1,7 +1,6 @@
 -- Entities tables
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
   email VARCHAR(255) UNIQUE,
   username VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(72) NOT NULL,
@@ -27,6 +26,7 @@ CREATE TABLE IF NOT EXISTS admins (
   courses_access BOOL NOT NULL DEFAULT 0,
   tutors_access BOOL NOT NULL DEFAULT 0,
   students_access BOOL NOT NULL DEFAULT 0,
+  supporters_access BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS supporters (
 
 CREATE TABLE IF NOT EXISTS courses ( 
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
+  
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   difficulty ENUM("BEGINNER", "INTERMEDIATE", "ADVANCED") NOT NULL,
@@ -65,14 +65,14 @@ CREATE TABLE IF NOT EXISTS courses (
 
 CREATE TABLE IF NOT EXISTS languages (
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
+  
   language_name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS subjects (
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
+  
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
+  
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS payments (
 
 CREATE TABLE IF NOT EXISTS support_sessions (
   id INT AUTO_INCREMENT,
-  uuid CHAR(36) NOT NULL UNIQUE,
+  
   user_id INT NOT NULL,
   supporter_id INT NOT NULL,
   issue_description TEXT NOT NULL,
