@@ -3,8 +3,12 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 
-router.patch("/", [validateToken], usersController.updateUser);
+router.get("/", usersController.getAllUsers);
 
-router.delete("/", [validateToken], usersController.deleteUser);
+router.get("/:id", usersController.getUser);
+
+router.patch("/", [validateToken], usersController.updateUserById);
+
+router.delete("/", [validateToken], usersController.deleteUserById);
 
 module.exports = router;
