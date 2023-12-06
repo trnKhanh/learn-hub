@@ -11,13 +11,14 @@ app.use("/", authRouter);
 // Use users router
 const usersRouter = require("./routes/Users.route");
 app.use("/users", usersRouter);
-//
-// // User tutors router
-// const tutorsRouter = require("./routes/Tutors.route");
-// app.use("/tutors", tutorsRouter);
-//
-// // Use courses router
-// const coursesRouter = require("./routes/Courses.route");
-// app.use("/courses", coursesRouter);
-//
+
+const adminsRouter = require("./routes/Admins.route");
+app.use("/admins", adminsRouter);
+
+const tutorsRouter = require("./routes/Tutors.route");
+app.use("/tutors", tutorsRouter);
+
+const supportersRouter = require("./routes/Supporters.route");
+app.use("/supporters", supportersRouter);
+
 module.exports = app;
