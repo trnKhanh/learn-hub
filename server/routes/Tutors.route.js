@@ -3,13 +3,29 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 const {
-  validateTutorCreatePermission,
-} = require("../middlewares/Tutor.middleware");
+  validateTutorAccessPermission,
+} = require("../middlewares/Tutors.middleware");
+
+router.get("/", tutorsController.getAllTutors);
+
+router.get("/:id", tutorsController.getTutor);
 
 router.post(
   "/",
-  [validateToken, validateTutorCreatePermission],
-  tutorsController.create,
+  [validateToken, validateTutorAccessPermission],
+  tutorsController.createTutor,
 );
 
-module.exports = router
+router.patch(
+  "/:id",
+  [validateToken, validateTutorAccessPermission],
+  tutorsController.updateTutorById,
+);
+
+router.delete(
+  "/:id",
+  [validateToken, validateTutorAccessPermission],
+  tutorsController.deleteTutorById,
+);
+
+module.exports = router;

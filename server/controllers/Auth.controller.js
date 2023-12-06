@@ -61,7 +61,7 @@ const login = async (req, res) => {
 
   try {
     // Find user with given username
-    const user = await User.findOne({ username: username });
+    const user = await User.findOne({ username: username }, 1);
     if (!user) {
       res.status(404).json({
         message: "User do not exists",
@@ -76,7 +76,7 @@ const login = async (req, res) => {
       const accessToken = jwt.sign(
         {
           username: user.username,
-          id: user.uuid,
+          id: user.id,
         },
         privateKey,
         { algorithm: "RS256", expiresIn: "1d" },
@@ -86,7 +86,7 @@ const login = async (req, res) => {
       res.json({
         message: "Log in successfully",
         username: user.username,
-        user_id: user.uuid,
+        user_id: user.id,
         accessToken: accessToken,
       });
     } else {
