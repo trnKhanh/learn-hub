@@ -18,12 +18,18 @@ class Tutor {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO tutors SET ?`, newTutor);
+      const [rows, fields] = await con.query(
+        `SELECT ${Tutor.queryFields} 
+         FROM tutors NATURAL JOIN users 
+         WHERE id=?`,
+        [newTutor.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created tutors: ", { newTutor: newTutor, results: res });
-      return newTutor;
+      console.log("Created tutors: ", { newTutor: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);

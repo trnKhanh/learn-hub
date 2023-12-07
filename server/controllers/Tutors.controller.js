@@ -8,8 +8,7 @@ const createTutor = async (req, res) => {
     return;
   }
   try {
-    if (!req.body.admin_id) req.body.admin_id = req.user.id;
-    const newTutor = new Tutor(req.body);
+    const newTutor = new Tutor({ id: req.user.id });
     const tutor = await Tutor.create(newTutor);
 
     res.status(201).json({
@@ -31,7 +30,7 @@ const createTutor = async (req, res) => {
       });
       return;
     }
-    if (err.code == "ER_NO_REFERENCED_ROW_2") {
+    if (err.code.includes("ER_NO_REFERENCED")) {
       res.status(422).json({
         message: "Admin id is invalid",
       });
@@ -118,7 +117,7 @@ const updateTutorById = async (req, res) => {
       });
       return;
     }
-    if (err.code == "ER_NO_REFERENCED_ROW_2") {
+    if (err.code.includes("ER_NO_REFERENCED")) {
       res.status(422).json({
         message: "Admin id is invalid",
       });

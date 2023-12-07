@@ -10,11 +10,7 @@ router.get("/", tutorsController.getAllTutors);
 
 router.get("/:id", tutorsController.getTutor);
 
-router.post(
-  "/",
-  [validateToken, validateTutorAccessPermission],
-  tutorsController.createTutor,
-);
+router.post("/", [validateToken], tutorsController.createTutor);
 
 router.patch(
   "/:id",
