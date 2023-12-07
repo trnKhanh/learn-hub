@@ -3,8 +3,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Student {
   constructor(student) {
-    this.id = student.id;
-    this.membership = student.membership;
+    this.id = student.id || null;
+    this.membership = student.membership || null;
   }
 
   static queryFields = `id, membership`;

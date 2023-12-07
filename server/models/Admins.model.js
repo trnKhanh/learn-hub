@@ -3,7 +3,7 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Admin {
   constructor(admin) {
-    this.id = admin.id;
+    this.id = admin.id || null;
     this.courses_access = admin.courses_access || 0;
     this.tutors_access = admin.tutors_access || 0;
     this.students_access = admin.students_access || 0;

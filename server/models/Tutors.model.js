@@ -3,8 +3,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Tutor {
   constructor(tutor) {
-    this.id = tutor.id;
-    this.admin_id = tutor.admin_id;
+    this.id = tutor.id || null;
+    this.admin_id = tutor.admin_id || null;
     this.verified = tutor.verified || 0;
     this.profit = tutor.profit || 0;
   }
@@ -150,4 +150,3 @@ class Tutor {
   };
 }
 module.exports = Tutor;
-
