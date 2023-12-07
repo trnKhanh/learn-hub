@@ -24,4 +24,7 @@ app.use("/students", studentsRouter);
 const supportersRouter = require("./routes/Supporters.route");
 app.use("/supporters", supportersRouter);
 
+const coursesRouter = require("./routes/Courses.route");
+app.use("/courses", coursesRouter);
+
 module.exports = app;

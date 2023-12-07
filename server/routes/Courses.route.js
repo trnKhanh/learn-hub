@@ -4,19 +4,29 @@ const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 const {
   validateCourseCreatePermission,
-  validateCourseOwnership,
+  validateCourseModifyPermission,
 } = require("../middlewares/Courses.middleware");
+
+router.get("/", coursesController.getAllCourses);
+
+router.get("/:id", coursesController.getCourse);
 
 router.post(
   "/",
   [validateToken, validateCourseCreatePermission],
-  coursesController.create,
+  coursesController.createCourse,
 );
 
-router.put(
-  "/",
-  [validateToken, validateCourseOwnership],
-  coursesController.update,
+router.patch(
+  "/:id",
+  [validateToken, validateCourseModifyPermission],
+  coursesController.updateCourse,
+);
+
+router.delete(
+  "/:id",
+  [validateToken, validateCourseModifyPermission],
+  coursesController.deleteCourse,
 );
 
 module.exports = router;
