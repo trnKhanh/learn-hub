@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS admins (
 
 CREATE TABLE IF NOT EXISTS tutors (
   id INT NOT NULL,
-  admin_id INT NOT NULL,
+  admin_id INT,
   verified BOOL NOT NULL DEFAULT 0,
   profit DOUBLE NOT NULL DEFAULT 0 CHECK(profit >= 0),
   PRIMARY KEY (id),
