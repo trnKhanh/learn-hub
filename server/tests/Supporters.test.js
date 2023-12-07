@@ -1,11 +1,13 @@
 const app = require("../app");
 const request = require("supertest");
-const { getAccessToken } = require("../utils/test.utils");
+const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
 let user_id;
 let token;
+let supporter_admin_id;
+let supporter_admin_token;
 beforeAll(async () => {
   let res = await request(app)
     .post("/signup")
@@ -17,10 +19,31 @@ beforeAll(async () => {
     .set("Accept", "application/json");
   user_id = res.body.user_id;
   token = res.body.accessToken;
+  await createAdmin();
+  try {
+    let res = await request(app)
+      .post("/signup")
+      .send({
+        username: "supporter_admin",
+        password: "supporter_admin",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    supporter_admin_id = res.body.user_id;
+    supporter_admin_token = res.body.accessToken;
+
+    await sql.query(
+      "INSERT INTO admins SET id=?, courses_access=0, tutors_access=0, students_access=0, supporters_access=1",
+      [supporter_admin_id],
+    );
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 afterAll(async () => {
   let res = await request(app).delete("/users").set("accessToken", token);
+  await sql.query("DELETE FROM users WHERE id=?", [supporter_admin_id]);
   await sql.end();
 });
 

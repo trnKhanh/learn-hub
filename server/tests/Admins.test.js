@@ -1,11 +1,13 @@
 const app = require("../app");
 const request = require("supertest");
-const { getAccessToken } = require("../utils/test.utils");
+const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
 let user_id;
 let token;
+let root_id;
+let root_token;
 beforeAll(async () => {
   let res = await request(app)
     .post("/signup")
@@ -17,10 +19,30 @@ beforeAll(async () => {
     .set("Accept", "application/json");
   user_id = res.body.user_id;
   token = res.body.accessToken;
+  await createAdmin();
+  try {
+    let res = await request(app)
+      .post("/signup")
+      .send({
+        username: "root",
+        password: "root",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    root_id = res.body.user_id;
+    root_token = res.body.accessToken;
+    await sql.query(
+      "INSERT INTO admins SET id=?, courses_access=1, tutors_access=1, students_access=1, supporters_access=1",
+      [root_id],
+    );
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 afterAll(async () => {
   let res = await request(app).delete("/users").set("accessToken", token);
+  await sql.query("DELETE FROM users WHERE id=?", [root_id]);
   await sql.end();
 });
 
@@ -65,7 +87,7 @@ describe("POST /admins", () => {
 
 describe("POST /admins", () => {
   it("Create admin not by root", async () => {
-    const accessToken = await getAccessToken("admin", "admin");
+    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
 
     let res = await request(app)
       .post("/admins")
@@ -189,4 +211,3 @@ describe("DELETE /admins/:id", () => {
     expect(res.statusCode).toBe(404);
   });
 });
-
