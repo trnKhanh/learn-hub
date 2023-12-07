@@ -50,30 +50,27 @@ CREATE TABLE IF NOT EXISTS supporters (
 
 CREATE TABLE IF NOT EXISTS courses ( 
   id INT AUTO_INCREMENT,
-  
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   description TEXT NOT NULL,
   difficulty ENUM("BEGINNER", "INTERMEDIATE", "ADVANCED") NOT NULL,
   duration INT NOT NULL CHECK (duration >= 0),
   owner_id INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   price DOUBLE NOT NULL CHECK(price >= 0),
-  discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
+  discount DOUBLE CHECK (discount >= 0 AND discount <= 1),
   PRIMARY KEY (id),
   FOREIGN KEY (owner_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS languages (
   id INT AUTO_INCREMENT,
-  
-  language_name VARCHAR(255) NOT NULL,
+  language_name VARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS subjects (
   id INT AUTO_INCREMENT,
-  
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
