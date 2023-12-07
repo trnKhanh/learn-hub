@@ -24,13 +24,18 @@ class User {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO users SET ?`, newUser);
-
-      console.log("Created user: ", { newUser: newUser, results: res });
+      const [rows, fields] = await con.query(
+        `SELECT ${User.queryFields} 
+         FROM users 
+         WHERE id=?`,
+        [newUser.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      return newUser;
+      console.log("Created user: ", { newUser: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);

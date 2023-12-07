@@ -18,12 +18,18 @@ class Admin {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO admins SET ?`, newAdmin);
+      const [rows, fields] = await con.query(
+        `SELECT ${Admin.queryFields} 
+         FROM admins NATURAL JOIN users 
+         WHERE id=?`,
+        [newAdmin.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created admins: ", { newAdmin: newAdmin, results: res });
-      return newAdmin;
+      console.log("Created admins: ", { newAdmin: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
