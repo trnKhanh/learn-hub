@@ -1,0 +1,165 @@
+const Student = require("../models/Students.model");
+
+const createStudent = async (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+  try {
+    const newStudent = new Student({ id: req.user.id });
+    const student = await Student.create(newStudent);
+
+    res.status(201).json({
+      message: "Student has been created",
+      student: student,
+    });
+  } catch (err) {
+    console.log(err);
+
+    if (err.code == "ER_BAD_FIELD_ERROR") {
+      res.status(400).json({
+        message: "Wrong fields",
+      });
+      return;
+    }
+    if (err.code == "ER_DUP_ENTRY") {
+      res.status(409).json({
+        message: "This user is an student",
+      });
+      return;
+    }
+    if (err.code == "WARN_DATA_TRUNCATED") {
+      res.status(400).json({
+        message: "Wrong membership"
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Errors occur when creating new student",
+    });
+  }
+};
+
+const getStudent = async (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+
+  try {
+    const student = await Student.findOne({ id: req.params.id });
+    if (!student) {
+      res.status(404).json({
+        message: "Not found student",
+      });
+    } else {
+      res.status(200).json({
+        message: "Retrieve students' information successfully",
+        student: student,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when getting student's information",
+    });
+  }
+};
+
+const getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.getAll();
+    res.status(200).json({
+      message: "Retrieve students' information successfully",
+      students: students,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Errors occur when getting all students' information",
+    });
+  }
+};
+
+// Update student information
+const updateStudentById = async (req, res) => {
+  if (!req.body || !req.params.id) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+
+  try {
+    const students = await Student.updateById(req.params.id, req.body);
+    if (!students) {
+      res.status(404).json({
+        message: "Not found student id",
+      });
+    } else {
+      res.status(200).json({
+        message: "Students' information has been updated",
+        students: students,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+
+    if (err.code == "ER_BAD_FIELD_ERROR") {
+      res.status(400).json({
+        message: "Wrong fields",
+      });
+      return;
+    }
+    if (err.code == "WARN_DATA_TRUNCATED") {
+      res.status(400).json({
+        message: "Wrong membership"
+      });
+      return;
+    }
+    res.status(500).json({
+      message: "Errors occur when updating students' information",
+    });
+  }
+};
+
+const deleteStudentById = async (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+
+  try {
+    const students = await Student.deleteById(req.params.id);
+    if (!students) {
+      res.status(404).json({
+        message: "Not found student id",
+      });
+    } else {
+      res.status(200).json({
+        message: "Students have been deleted",
+        students: students,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when deleting students",
+    });
+  }
+};
+module.exports = {
+  getStudent,
+  getAllStudents,
+  createStudent,
+  updateStudentById,
+  deleteStudentById,
+};
