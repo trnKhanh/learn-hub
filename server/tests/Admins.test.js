@@ -42,7 +42,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
   let res = await request(app).delete("/users").set("accessToken", token);
-  await sql.query("DELETE FROM users WHERE id=?", [root_id]);
+  try {
+    await sql.query("DELETE FROM users WHERE username=?", ["root"]);
+  } catch (err) {
+    console.log(err);
+  }
   await sql.end();
 });
 
@@ -87,7 +91,7 @@ describe("POST /admins", () => {
 
 describe("POST /admins", () => {
   it("Create admin not by root", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("admin", "admin");
 
     let res = await request(app)
       .post("/admins")

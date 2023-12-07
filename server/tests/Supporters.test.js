@@ -43,7 +43,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
   let res = await request(app).delete("/users").set("accessToken", token);
-  await sql.query("DELETE FROM users WHERE id=?", [supporter_admin_id]);
+  try {
+    await sql.query("DELETE FROM users WHERE username=?", ["supporter_admin"]);
+  } catch (err) {
+    console.log(err);
+  }
   await sql.end();
 });
 

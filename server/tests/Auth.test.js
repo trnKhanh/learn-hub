@@ -21,6 +21,7 @@ describe("POST /signup", () => {
 
     expect(res.statusCode).toBe(201);
     expect(res.body.username).toBe("test");
+    expect(res.body.user_id).toBeDefined();
     expect(res.body.accessToken).toBeDefined();
   });
 });
@@ -86,7 +87,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/${user_id}`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.user).toBeDefined();
@@ -100,7 +101,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/112313131`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(404);
   });
@@ -111,7 +112,7 @@ describe("GET /users", () => {
     let res = await request(app)
       .get(`/users`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.users).toBeInstanceOf(Array);
