@@ -168,10 +168,69 @@ const deleteCourse = async (req, res) => {
     });
   }
 };
+
+const getCourseProgress = async (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+
+  try {
+    const isPaid = await Course.isPaid(req.user.id, req.params.id);
+    const progress = await Course.getProgess(req.user.id, req.params.id);
+    if (!progress) {
+      res.status(404).json({
+        message: "Course has not registered",
+      });
+    } else {
+      res.status(200).json({
+        message: "Retrieve course progress successfully",
+        progress: { isPaid: isPaid, ...progress },
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when retrieving course progress",
+    });
+  }
+};
+const registerStudent = async (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Invalid content",
+    });
+    return;
+  }
+
+  try {
+    await Course.register(req.user.id, req.params.id);
+    res.status(200).json({
+      message: "Course register successfully",
+    });
+  } catch (err) {
+    console.log(err);
+
+    if (err.code == "ER_DUP_ENTRY") {
+      res.status(409).json({
+        message: "User already registerd",
+      });
+      return;
+    }
+    res.status(500).json({
+      message: "Errors occur when retrieving course progress",
+    });
+  }
+};
+
 module.exports = {
   getCourse,
   getAllCourses,
   createCourse,
   updateCourse,
   deleteCourse,
+  registerStudent,
+  getCourseProgress,
 };

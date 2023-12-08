@@ -62,7 +62,10 @@ class PaymentInformation {
       `SELECT ${PaymentInformation.queryFields} FROM payment_informations WHERE ${filterKeys}`,
       filterValues,
     );
-    console.log("Found payment informations: ", { filters: filters, results: rows });
+    console.log("Found payment informations: ", {
+      filters: filters,
+      results: rows,
+    });
     return rows;
   };
 
@@ -78,6 +81,7 @@ class PaymentInformation {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${PaymentInformation.queryFields} 
         FROM payment_informations 

@@ -78,6 +78,7 @@ class Course {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(`UPDATE courses SET ? WHERE id=?`, [
         columns,
         id,
@@ -111,6 +112,7 @@ class Course {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Course.queryFields} FROM courses WHERE id=?`,
         [id],
@@ -147,6 +149,63 @@ class Course {
     });
     if (!res.length) return 0;
     else return 1;
+  };
+
+  static register = async (student_id, id) => {
+    const [res, _] = await sql.query(`INSERT INTO learn_courses SET ?`, {
+      student_id: student_id,
+      course_id: id,
+    });
+    
+  };
+
+  static getProgess = async (student_id, id) => {
+    const con = await sql.getConnection();
+    try {
+      await con.beginTransaction();
+      let [rows, _] = await con.query(
+        `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
+        [student_id, id],
+      );
+
+      if (rows.length && !rows[0].finished_at) {
+        const [notDoneExams, fields] = await con.query(
+          `(SELECT id, lesson_id 
+            FROM exams
+            WHERE course_id=?)
+           EXCEPT
+           (SELECT exam_id, lesson_id
+            FROM do_exams
+            WHERE course_id=? AND student_id=? AND score>=5)`,
+          [id, id, student_id],
+        );
+
+        if (!notDoneExams.length) {
+          const [res, _] = await con.query(
+            `UPDATE learn_courses 
+            SET finished_at=CURRENT_TIMESTAMP
+            WHERE course_id=? AND student_id=?`,
+            [id, student_id],
+          );
+        }
+        [rows, _] = await con.query(
+          `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
+          [student_id, id],
+        );
+      }
+
+      await con.commit();
+      sql.releaseConnection(con);
+      if (rows.length) {
+        return rows[0];
+      } else {
+        return null;
+      }
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+      throw err;
+    }
   };
 }
 module.exports = Course;

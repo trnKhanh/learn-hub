@@ -6,7 +6,7 @@ const {
   validateCourseCreatePermission,
   validateCourseModifyPermission,
 } = require("../middlewares/Courses.middleware");
-
+const { validateStudent } = require("../middlewares/Students.middleware");
 router.get("/", coursesController.getAllCourses);
 
 router.get("/:id", coursesController.getCourse);
@@ -27,6 +27,18 @@ router.delete(
   "/:id",
   [validateToken, validateCourseModifyPermission],
   coursesController.deleteCourse,
+);
+
+router.post(
+  "/:id/register",
+  [validateToken, validateStudent],
+  coursesController.registerStudent,
+);
+
+router.get(
+  "/:id/progress",
+  [validateToken, validateStudent],
+  coursesController.getCourseProgress,
 );
 
 module.exports = router;

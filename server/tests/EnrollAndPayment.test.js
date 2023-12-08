@@ -234,3 +234,40 @@ describe("POST /users/cart/:id", () => {
     expect(res.statusCode).toBe(400);
   });
 });
+describe("POST /courses/:id/register", () => {
+  it("Register to course 1", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/register`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(200);
+  });
+});
+describe("POST /courses/:id/register", () => {
+  it("Register to course 1 (duplicate)", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/register`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(409);
+  });
+});
+describe("POST /courses/:id/register", () => {
+  it("Register to course 1 not by student", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/register`)
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(401);
+  });
+});
+describe("GET /courses/:id/progress", () => {
+  it("Get course 1 progress", async () => {
+    const res = await request(app)
+      .get(`/courses/${course_1_id}/progress`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.progress).toBeDefined();
+  });
+});

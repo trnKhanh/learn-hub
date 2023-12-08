@@ -87,6 +87,7 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE supporters SET ?
         WHERE id=?`,
@@ -122,6 +123,7 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
          FROM supporters  

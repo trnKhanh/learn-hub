@@ -88,6 +88,7 @@ class User {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(`UPDATE users SET ? WHERE id=?`, [
         columns,
         id,
@@ -120,6 +121,7 @@ class User {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${User.queryFields} FROM users WHERE id=?`,
         [id],

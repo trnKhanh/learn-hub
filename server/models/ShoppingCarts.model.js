@@ -82,6 +82,7 @@ class ShoppingCart {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${ShoppingCart.queryFields} 
         FROM shopping_carts 
@@ -116,6 +117,7 @@ class ShoppingCart {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${ShoppingCart.queryFields} 
         FROM shopping_carts 

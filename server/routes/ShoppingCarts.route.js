@@ -2,7 +2,7 @@ const shoppingCartsController = require("../controllers/ShoppingCarts.controller
 const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
-const { validateStudent } = require("../middlewares/ShoppingCarts.middleware");
+const { validateStudent } = require("../middlewares/Students.middleware");
 
 router.get(
   "/",
