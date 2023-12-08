@@ -129,6 +129,12 @@ const updateCourse = async (req, res) => {
       });
       return;
     }
+    if (err.code == "ER_DUP_ENTRY") {
+      res.status(409).json({
+        message: "Course with the same name has existed",
+      });
+      return;
+    }
     res.status(500).json({
       message: "Errors occur when updating courses' information",
     });
@@ -157,12 +163,6 @@ const deleteCourse = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    if (err.code == "ER_DUP_ENTRY") {
-      res.status(409).json({
-        message: "Course with the same name has existed",
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when deleting courses",
     });
