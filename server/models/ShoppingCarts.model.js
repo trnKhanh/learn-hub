@@ -17,7 +17,6 @@ class ShoppingCart {
         student_id: student_id,
         course_id: course_id,
       });
-      console.log(newShoppingCart)
       await con.beginTransaction();
       const [res, _] = await con.query(
         `INSERT INTO shopping_carts SET ?`,
@@ -104,8 +103,7 @@ class ShoppingCart {
       con.commit();
       sql.releaseConnection(con);
 
-      if (res.affectedRows == 0) return null;
-      else return rows;
+      return rows;
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);

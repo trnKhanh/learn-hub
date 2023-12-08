@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS schedules (
   FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
-CREATE TABLE IF NOT EXISTS payment_information (
+CREATE TABLE IF NOT EXISTS payment_informations (
   user_id INT NOT NULL,
   card VARCHAR(255) NOT NULL,
   expire_date DATE NOT NULL,
@@ -272,9 +272,9 @@ CREATE TABLE IF NOT EXISTS payments_courses (
   course_id INT NOT NULL,
   price DOUBLE NOT NULL CHECK (price >= 0),
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
-  no_items INT NOT NULL CHECK (no_items >= 0),
   PRIMARY KEY (payment_id, course_id),
-  FOREIGN KEY (payment_id) REFERENCES payments(id),
-  FOREIGN KEY (course_id) REFERENCES courses(id)
+  FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
+
 );
 

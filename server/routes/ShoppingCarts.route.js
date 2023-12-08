@@ -2,23 +2,28 @@ const shoppingCartsController = require("../controllers/ShoppingCarts.controller
 const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
+const { validateStudent } = require("../middlewares/ShoppingCarts.middleware");
 
-router.get("/", validateToken, shoppingCartsController.getCart);
+router.get(
+  "/",
+  [validateToken, validateStudent],
+  shoppingCartsController.getCart,
+);
 
 router.post(
   "/:id",
-  [validateToken],
+  [validateToken, validateStudent],
   shoppingCartsController.addCourseToCart,
 );
 
 router.delete(
   "/:id",
-  [validateToken],
+  [validateToken, validateStudent],
   shoppingCartsController.removeCourseFromCart,
 );
 router.delete(
   "/",
-  [validateToken],
+  [validateToken, validateStudent],
   shoppingCartsController.removeAllCourseFromCart,
 );
 

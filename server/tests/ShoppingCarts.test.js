@@ -119,6 +119,16 @@ describe("POST /users/cart/:id", () => {
 });
 
 describe("POST /users/cart/:id", () => {
+  it("Add course 2 to cart (not student)", async () => {
+    const res = await request(app)
+      .post(`/users/cart/${course_2_id}`)
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(401);
+  });
+});
+
+describe("POST /users/cart/:id", () => {
   it("Add unknown course to cart", async () => {
     const res = await request(app)
       .post(`/users/cart/11111111`)
@@ -157,5 +167,70 @@ describe("DELETE /users/cart", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.course_ids[0].course_id).toBe(course_2_id);
+  });
+});
+
+describe("POST /users/payments", () => {
+  it("Pay 2 courses", async () => {
+    await request(app)
+      .post(`/users/cart/${course_1_id}`)
+      .set("accessToken", token);
+    await request(app)
+      .post(`/users/cart/${course_2_id}`)
+      .set("accessToken", token);
+
+    const res = await request(app)
+      .post("/users/payments")
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.payment.id).toBeDefined();
+    expect(res.body.payment.paid_at).toBeDefined();
+    expect(res.body.payment.student_id).toBe(user_id);
+    expect(res.body.payment.courses).toBeInstanceOf(Array);
+    expect(res.body.payment.courses.length).toBe(2);
+
+    const [cart, _] = await sql.query(
+      "SELECT * FROM shopping_carts WHERE student_id=?",
+      [user_id],
+    );
+    expect(cart.length).toBe(0);
+    const [paidCourses, __] = await sql.query(
+      "SELECT * FROM payments_courses WHERE payment_id=?",
+      [res.body.payment.id],
+    );
+    expect(paidCourses.length).toBe(2);
+  });
+});
+
+describe("GET /users/payments", () => {
+  it("Get all payments", async () => {
+    const res = await request(app)
+      .get("/users/payments")
+      .set("accessToken", token);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.payments).toBeInstanceOf(Array);
+
+    let info_res = await request(app)
+      .get(`/users/payments/${res.body.payments[0].id}`)
+      .set("accessToken", token);
+    expect(info_res.statusCode).toBe(200);
+    expect(info_res.body.payment.courses.length).toBe(2);
+    expect(info_res.body.payment.courses[0].price).toBeDefined();
+    expect(info_res.body.payment.courses[0].discounted).toBeDefined();
+
+    info_res = await request(app)
+      .get(`/users/payments/${res.body.payments[0].id}`)
+      .set("accessToken", tutor_token);
+    expect(info_res.statusCode).toBe(401);
+  });
+});
+describe("POST /users/cart/:id", () => {
+  it("Add course 2 to cart", async () => {
+    const res = await request(app)
+      .post(`/users/cart/${course_2_id}`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(400);
   });
 });

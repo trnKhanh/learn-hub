@@ -1,4 +1,5 @@
 const ShoppingCart = require("../models/ShoppingCarts.model");
+const Course = require("../models/Courses.model");
 
 const addCourseToCart = async (req, res) => {
   if (!req.body) {
@@ -8,7 +9,17 @@ const addCourseToCart = async (req, res) => {
     return;
   }
   try {
-    const shopping_cart = await ShoppingCart.addCourse(req.user.id, req.params.id);
+    const isPaid = await Course.isPaid(req.user.id, req.params.id);
+    if (isPaid) {
+      res.status(400).json({
+        message: "User has already paid this course"
+      })
+      return;
+    }
+    const shopping_cart = await ShoppingCart.addCourse(
+      req.user.id,
+      req.params.id,
+    );
     res.status(201).json({
       message: "ShoppingCart has been created",
       shopping_cart: shopping_cart,
@@ -82,19 +93,6 @@ const removeCourseFromCart = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
-    if (err.code == "ER_DUP_ENTRY") {
-      res.status(409).json({
-        message: "ShoppingCart with the same name has existed",
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when updating shopping cart",
     });
@@ -111,16 +109,10 @@ const removeAllCourseFromCart = async (req, res) => {
 
   try {
     const course_ids = await ShoppingCart.removeAllCourses(req.user.id);
-    if (!course_ids) {
-      res.status(404).json({
-        message: "Not found cart",
-      });
-    } else {
-      res.status(200).json({
-        message: "All courses have been removed from cart",
-        course_ids: course_ids,
-      });
-    }
+    res.status(200).json({
+      message: "All courses have been removed from cart",
+      course_ids: course_ids,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({

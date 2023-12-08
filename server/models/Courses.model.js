@@ -67,7 +67,7 @@ class Course {
 
   static getAll = async () => {
     const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses`
+      `SELECT ${Course.queryFields} FROM courses`,
     );
     console.log("Get all courses: ", { results: rows });
     return rows;
@@ -78,10 +78,10 @@ class Course {
     const con = await sql.getConnection();
 
     try {
-      const [res, _] = await con.query(
-        `UPDATE courses SET ? WHERE id=?`,
-        [columns, id],
-      );
+      const [res, _] = await con.query(`UPDATE courses SET ? WHERE id=?`, [
+        columns,
+        id,
+      ]);
       const [rows, fields] = await con.query(
         `SELECT ${Course.queryFields} FROM courses WHERE id=?`,
         [id],
@@ -116,10 +116,7 @@ class Course {
         [id],
       );
 
-      const [res, _] = await con.query(
-        `DELETE FROM courses WHERE id=?`,
-        [id],
-      );
+      const [res, _] = await con.query(`DELETE FROM courses WHERE id=?`, [id]);
 
       console.log("Deleted courses", {
         id: id,
@@ -137,6 +134,19 @@ class Course {
 
       throw err;
     }
+  };
+
+  static isPaid = async (student_id, id) => {
+    const [res, _] = await sql.query(
+      `SELECT * FROM payments JOIN payments_courses ON id=payment_id
+      WHERE student_id=? AND course_id=?`,
+      [student_id, id],
+    );
+    console.log("Check is paid status", {
+      results: res,
+    });
+    if (!res.length) return 0;
+    else return 1;
   };
 }
 module.exports = Course;
