@@ -1,21 +1,22 @@
 import { Container } from '@/components/container'
-import { Clients } from '@/components/homepage/client'
+import About from '@/components/homepage/about'
+import Categories from '@/components/homepage/category'
+import Clients from '@/components/homepage/client'
 import { HomepageHero } from '@/components/homepage/homepage-zero'
-import { Services } from '@/components/homepage/service'
-import Navbar from '@/components/navbar'
-import Image from 'next/image'
+import NewsLetter from '@/components/homepage/news-letter'
+import Services from '@/components/homepage/services'
 
 export default function Home() {
   return (
     <>
-      <div className="overflow-hidden pb-[16.4rem] md:pb-[25.6rem]">
-        <Container className="pt-[6.4rem]">
+      <Container className="pt-[6.4rem] pb-[10rem]">
           <HomepageHero />
-        </Container>
-        <Container>
-          <Clients />
-        </Container>
-      </div>
+      </Container>
+      <Clients/>
+      <Services />
+      <Categories />
+      <About />
+      <NewsLetter />
     </>
   )
 }

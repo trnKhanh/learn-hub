@@ -34,42 +34,42 @@ export const Features = ({ children, color, colorDark }: FeaturesProps) => {
         </div>
         </section>
     );
-    };
+};
 
-    type MainFeatureProps = {
-        title: React.ReactNode;
-        image: React.ReactNode;
-    };
+type MainFeatureProps = {
+    title: React.ReactNode;
+    image: React.ReactNode;
+};
 
-    const MainFeature = ({
-        title,
-        image,
-        }: MainFeatureProps) => {
-        return (
-            <>
-                <div className="relative before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_50%_50%_at_center,rgba(var(--feature-color),0.1),transparent)]">
-                    <Container
-                    className={classNames(
-                        "max-w-[90%] text-center"
-                    )}
-                    >
-                        {title}
-                    </Container>
-                    {image}
-                </div>
-            </>
-        );
-    };
+const MainFeature = ({
+    title,
+    image,
+    }: MainFeatureProps) => {
+    return (
+        <>
+            <div className="relative before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_50%_50%_at_center,rgba(var(--feature-color),0.1),transparent)]">
+                <Container
+                className={classNames(
+                    "max-w-[90%] text-center"
+                )}
+                >
+                    {title}
+                </Container>
+                {image}
+            </div>
+        </>
+    );
+};
 
-    type FeatureGridProps = {
-        features: {
-            icon: React.FC;
-            title: string;
-            text: string;
-        }[];
-    };
+type FeatureGridProps = {
+    features: {
+        icon: React.FC;
+        title: string;
+        text: string;
+    }[];
+};
 
-    const FeatureGrid = ({ features }: FeatureGridProps) => {
+const FeatureGrid = ({ features }: FeatureGridProps) => {
     return (
         <Container>
         <div className="mb-16 grid w-full grid-cols-2 place-items-center gap-y-9 text-sm text-primary-text md:mb-[14rem] md:grid-cols-3 md:text-md">
@@ -85,18 +85,18 @@ export const Features = ({ children, color, colorDark }: FeaturesProps) => {
         </div>
         </Container>
     );
-    };
+};
 
-    type FeatureCardsProps = {
+type FeatureCardsProps = {
     features: {
         image: string;
         imageClassName: string;
         title: string;
         text: string;
     }[];
-    };
+};
 
-    const FeatureCards = ({ features }: FeatureCardsProps) => {
+const FeatureCards = ({ features }: FeatureCardsProps) => {
     return (
         <Container>
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
@@ -116,8 +116,29 @@ export const Features = ({ children, color, colorDark }: FeaturesProps) => {
         </div>
         </Container>
     );
+}
+
+type FeatureTitleProps = {
+    title: React.ReactNode;
+};
+
+const FeatureTitle = ({ title }: FeatureTitleProps) => {
+    return (
+        <>
+            <div className="relative before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_50%_50%_at_center,rgba(var(--feature-color),0.1),transparent)]">
+                <Container
+                className={classNames(
+                    "max-w-[90%] text-center"
+                )}
+                >
+                    {title}
+                </Container>
+            </div>
+        </>
+    );
 };
 
 Features.Main = MainFeature;
 Features.Grid = FeatureGrid;
 Features.Cards = FeatureCards;
+Features.Title = FeatureTitle;
