@@ -1,14 +1,16 @@
 const Admin = require("../models/Admins.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createAdmin = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors.array());
     return;
   }
+  const data = matchedData(req);
+
   try {
-    const newAdmin = new Admin(req.body);
+    const newAdmin = new Admin(data);
     const admin = await Admin.create(newAdmin);
 
     res.status(201).json({
@@ -18,19 +20,12 @@ const createAdmin = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "This user is an admin",
       });
       return;
     }
-
     res.status(500).json({
       message: "Errors occur when creating new admin",
     });
@@ -38,13 +33,6 @@ const createAdmin = async (req, res) => {
 };
 
 const getAdmin = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const admin = await Admin.findOne({ id: req.params.id });
     if (!admin) {
@@ -82,15 +70,21 @@ const getAllAdmins = async (req, res) => {
 
 // Update admin information
 const updateAdminById = async (req, res) => {
-  if (!req.body || !req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors.array());
+    return;
+  }
+  const data = matchedData(req);
+  if (!Object.keys(data).length) {
+    res.status(400).json({
+      message: "Must provide valid fields",
     });
     return;
   }
 
   try {
-    const admins = await Admin.updateById(req.params.id, req.body);
+    const admins = await Admin.updateById(req.params.id, data);
     if (!admins) {
       res.status(404).json({
         message: "Not found admin id",
@@ -103,13 +97,6 @@ const updateAdminById = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when updating admins' information",
     });
@@ -117,13 +104,6 @@ const updateAdminById = async (req, res) => {
 };
 
 const deleteAdminById = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const admins = await Admin.deleteById(req.params.id);
     if (!admins) {

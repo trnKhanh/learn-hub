@@ -1,19 +1,14 @@
 const ShoppingCart = require("../models/ShoppingCarts.model");
 const Course = require("../models/Courses.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const addCourseToCart = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
   try {
     const isPaid = await Course.isPaid(req.user.id, req.params.id);
     if (isPaid) {
       res.status(400).json({
-        message: "User has already paid this course"
-      })
+        message: "User has already paid this course",
+      });
       return;
     }
     const shopping_cart = await ShoppingCart.addCourse(
@@ -27,12 +22,6 @@ const addCourseToCart = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "Course has already in user's cart",
@@ -70,12 +59,6 @@ const getCart = async (req, res) => {
 
 // Update shopping_cart information
 const removeCourseFromCart = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
   try {
     const course_ids = await ShoppingCart.removeCourse(
       req.user.id,
@@ -100,13 +83,6 @@ const removeCourseFromCart = async (req, res) => {
 };
 
 const removeAllCourseFromCart = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const course_ids = await ShoppingCart.removeAllCourses(req.user.id);
     res.status(200).json({

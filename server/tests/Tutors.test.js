@@ -13,7 +13,8 @@ beforeAll(async () => {
     .post("/signup")
     .send({
       username: "test",
-      password: "test",
+      password: "Learnhub123!",
+      email: "test@gmai.com",
     })
     .set("Content-Type", "application/json")
     .set("Accept", "application/json");
@@ -25,7 +26,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "tutor_admin",
-        password: "tutor_admin",
+        password: "Learnhub123!",
+        email: "tutoradmin@gmai.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -96,7 +98,7 @@ describe("GET /tutors/:id", () => {
 
 describe("GET /tutors/:id", () => {
   it("Get tutor by unknown id", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .get(`/tutors/111111111`)
@@ -108,7 +110,7 @@ describe("GET /tutors/:id", () => {
 
 describe("GET /tutors", () => {
   it("Get all tutors", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app).get(`/tutors`).set("accessToken", accessToken);
 
@@ -119,7 +121,7 @@ describe("GET /tutors", () => {
 
 describe("PATCH /tutors/:id", () => {
   it("Update tutor by themselves", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/tutors/${user_id}`)
@@ -134,7 +136,7 @@ describe("PATCH /tutors/:id", () => {
 
 describe("PATCH /tutors/:id", () => {
   it("Update tutor by id", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/tutors/${user_id}`)
@@ -150,7 +152,7 @@ describe("PATCH /tutors/:id", () => {
 
 describe("PATCH /tutors/:id", () => {
   it("Update tutor with invalid fields", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/tutors/${user_id}`)
@@ -164,7 +166,7 @@ describe("PATCH /tutors/:id", () => {
 });
 describe("PATCH /tutors/:id", () => {
   it("Update tutor by unknown id", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/tutors/11111123`)
@@ -178,7 +180,7 @@ describe("PATCH /tutors/:id", () => {
 });
 describe("PATCH /tutors/:id", () => {
   it("Update tutor to unknown admin", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/tutors/${user_id}`)
@@ -204,7 +206,7 @@ describe("GET /tutors/:id", () => {
 
 describe("DELETE /tutors/:id", () => {
   it("Delete tutor by id", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/tutors/${user_id}`)
@@ -216,7 +218,7 @@ describe("DELETE /tutors/:id", () => {
 
 describe("DELETE /tutors/:id", () => {
   it("Delete tutor by unknown id", async () => {
-    const accessToken = await getAccessToken("tutor_admin", "tutor_admin");
+    const accessToken = await getAccessToken("tutor_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/tutors/${user_id}`)

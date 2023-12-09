@@ -1,16 +1,18 @@
 const PaymentInformation = require("../models/PaymentInformations.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createPaymentInformation = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req);
+
   try {
     const payment_information = await PaymentInformation.create({
       user_id: req.user.id,
-      ...req.body,
+      ...data,
     });
     res.status(201).json({
       message: "PaymentInformation has been created",
@@ -19,12 +21,6 @@ const createPaymentInformation = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "Duplicate card",

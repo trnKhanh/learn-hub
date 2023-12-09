@@ -1,13 +1,7 @@
 const User = require("../models/Users.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const getUser = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const user = await User.findOne({ id: req.params.id });
     if (!user) {
@@ -15,7 +9,6 @@ const getUser = async (req, res) => {
         message: "Not found user",
       });
     } else {
-
       res.status(200).json({
         message: "Retrieve user's information successfully",
         user: user,
@@ -43,17 +36,18 @@ const getAllUsers = async (req, res) => {
     });
   }
 };
+
 // Update user information
 const updateUserById = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req);
 
   try {
-    const users = await User.updateById(req.user.id, req.body);
+    const users = await User.updateById(req.user.id, data);
     res.status(200).json({
       message: "Users' information has been updated",
       users: users,
@@ -61,12 +55,6 @@ const updateUserById = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when updating users' information",
     });

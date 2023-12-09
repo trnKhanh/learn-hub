@@ -13,7 +13,8 @@ beforeAll(async () => {
     .post("/signup")
     .send({
       username: "test",
-      password: "test",
+      password: "Learnhub123!",
+      email: "test@gmai.com",
     })
     .set("Content-Type", "application/json")
     .set("Accept", "application/json");
@@ -25,7 +26,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "student_admin",
-        password: "student_admin",
+        password: "Learnhub123!",
+        email: "studentadmin@gmai.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -89,7 +91,7 @@ describe("GET /students/:id", () => {
 
 describe("GET /students/:id", () => {
   it("Get student by unknown id", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .get(`/students/111111111`)
@@ -101,7 +103,7 @@ describe("GET /students/:id", () => {
 
 describe("GET /students", () => {
   it("Get all students", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .get(`/students`)
@@ -114,7 +116,7 @@ describe("GET /students", () => {
 
 describe("PATCH /students/:id", () => {
   it("Update student by themselves", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/students/${user_id}`)
@@ -129,7 +131,7 @@ describe("PATCH /students/:id", () => {
 
 describe("PATCH /students/:id", () => {
   it("Update student by id", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/students/${user_id}`)
@@ -145,7 +147,7 @@ describe("PATCH /students/:id", () => {
 
 describe("PATCH /students/:id", () => {
   it("Update student with invalid fields", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/students/${user_id}`)
@@ -159,7 +161,7 @@ describe("PATCH /students/:id", () => {
 });
 describe("PATCH /students/:id", () => {
   it("Update student by unknown id", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/students/11111123`)
@@ -173,7 +175,7 @@ describe("PATCH /students/:id", () => {
 });
 describe("PATCH /students/:id", () => {
   it("Update student to unknown membership", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/students/${user_id}`)
@@ -182,7 +184,7 @@ describe("PATCH /students/:id", () => {
       })
       .set("accessToken", accessToken);
 
-    expect(res.statusCode).toBe(400);
+    expect(res.statusCode).toBe(422);
   });
 });
 describe("GET /students/:id", () => {
@@ -197,7 +199,7 @@ describe("GET /students/:id", () => {
 
 describe("DELETE /students/:id", () => {
   it("Delete student by id", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/students/${user_id}`)
@@ -209,7 +211,7 @@ describe("DELETE /students/:id", () => {
 
 describe("DELETE /students/:id", () => {
   it("Delete student by unknown id", async () => {
-    const accessToken = await getAccessToken("student_admin", "student_admin");
+    const accessToken = await getAccessToken("student_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/students/${user_id}`)

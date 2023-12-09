@@ -17,7 +17,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "tutor",
-        password: "tutor",
+        password: "Learnhub123!",
+        email: "tutor@gmail.com"
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -30,7 +31,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "u_tutor",
-        password: "u_tutor",
+        password: "Learnhub123!",
+        email: "u_tutor@gmail.com"
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -47,7 +49,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "course_admin",
-        password: "course_admin",
+        password: "Learnhub123!",
+        email: "courseadmin@gmail.com"
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -83,7 +86,7 @@ afterAll(async () => {
 
 describe("POST /courses", () => {
   it("Create course by course admin", async () => {
-    const accessToken = await getAccessToken("course_admin", "course_admin");
+    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
 
     let res = await request(app)
       .post("/courses")
@@ -113,7 +116,7 @@ describe("POST /courses", () => {
 
 describe("POST /courses", () => {
   it("Create course by course_admin (duplicate)", async () => {
-    const accessToken = await getAccessToken("course_admin", "course_admin");
+    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
 
     let res = await request(app)
       .post("/courses")
@@ -135,7 +138,7 @@ describe("POST /courses", () => {
 
 describe("POST /courses", () => {
   it("Create course by course admin, assigned course to unverified tutor", async () => {
-    const accessToken = await getAccessToken("course_admin", "course_admin");
+    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
 
     let res = await request(app)
       .post("/courses")
@@ -157,7 +160,7 @@ describe("POST /courses", () => {
 
 describe("POST /courses", () => {
   it("Create course not by course_admin", async () => {
-    const accessToken = await getAccessToken("admin", "admin");
+    const accessToken = await getAccessToken("admin", "Learnhub123!");
 
     let res = await request(app)
       .post("/courses")
@@ -179,7 +182,7 @@ describe("POST /courses", () => {
 
 describe("DELETE /courses/:id", () => {
   it("Delete course by id (admin)", async () => {
-    const accessToken = await getAccessToken("course_admin", "course_admin");
+    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/courses/${course_id}`)
@@ -204,7 +207,6 @@ describe("POST /courses", () => {
       .set("Accept", "application/json")
       .set("accessToken", tutor_token);
 
-    course_id = res.body.course.id;
     expect(res.statusCode).toBe(201);
     expect(res.body.course.name).toBe("tutor_course");
     expect(res.body.course.description).toBe("This is testing");
@@ -213,6 +215,7 @@ describe("POST /courses", () => {
     expect(res.body.course.owner_id).toBe(tutor_id);
     expect(res.body.course.price).toBe(200);
     expect(res.body.course.discount).toBe(null);
+    course_id = res.body.course.id;
   });
 });
 
@@ -374,7 +377,7 @@ describe("DELETE /courses/:id", () => {
 
 describe("DELETE /courses/:id", () => {
   it("Delete course by unknown id", async () => {
-    const accessToken = await getAccessToken("course_admin", "course_admin");
+    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/courses/${tutor_id}`)

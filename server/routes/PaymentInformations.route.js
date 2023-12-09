@@ -3,11 +3,19 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 
-router.get("/", validateToken, paymentInformationsController.getPaymentInformations);
+const {
+  createPaymentInformationScheme,
+} = require("../middlewares/validators/PaymentInformations.validator");
+
+router.get(
+  "/",
+  validateToken,
+  paymentInformationsController.getPaymentInformations,
+);
 
 router.post(
   "/",
-  [validateToken],
+  [validateToken, createPaymentInformationScheme],
   paymentInformationsController.createPaymentInformation,
 );
 

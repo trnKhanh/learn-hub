@@ -14,7 +14,8 @@ describe("POST /signup", () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -32,7 +33,8 @@ describe("POST /signup", () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -47,7 +49,8 @@ describe("POST /login", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -79,7 +82,7 @@ describe("GET /users/:id", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -121,7 +124,7 @@ describe("GET /users", () => {
 
 describe("PATCH /users", () => {
   it("Update user informations", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
     let res = await request(app)
       .patch("/users")
       .send({
@@ -139,7 +142,7 @@ describe("PATCH /users", () => {
 
 describe("DELETE /users", () => {
   it("DELETE user", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
     let res = await request(app)
       .delete("/users")
       .set("Content-Type", "application/json")
@@ -156,7 +159,7 @@ describe("POST /login", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");

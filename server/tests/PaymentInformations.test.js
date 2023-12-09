@@ -10,7 +10,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -38,13 +39,13 @@ describe("POST /users/paymentInformations", () => {
       .post("/users/paymentInformations")
       .send({
         card: "123456789",
-        expire_date: "2024/02/12",
+        expire_date: "2024-02-12",
       })
       .set("accessToken", token);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.payment_information.card).toBe("123456789");
-    expect(res.body.payment_information.expire_date).toBe("2024/02/12");
+    expect(res.body.payment_information.expire_date).toBe("2024-02-12");
   });
 });
 
@@ -54,13 +55,13 @@ describe("POST /users/paymentInformations", () => {
       .post("/users/paymentInformations")
       .send({
         card: "987654321",
-        expire_date: "2024/02/12",
+        expire_date: "2024-02-12",
       })
       .set("accessToken", token);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.payment_information.card).toBe("987654321");
-    expect(res.body.payment_information.expire_date).toBe("2024/02/12");
+    expect(res.body.payment_information.expire_date).toBe("2024-02-12");
   });
 });
 describe("GET /users/paymentInformations", () => {

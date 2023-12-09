@@ -11,7 +11,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -28,7 +29,8 @@ beforeAll(async () => {
       .post("/signup")
       .send({
         username: "tutor",
-        password: "tutor",
+        password: "Learnhub123!",
+        email: "tutor@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -181,12 +183,16 @@ describe("POST /users/payments", () => {
 
     const res = await request(app)
       .post("/users/payments")
+      .send({
+        discounted: 0.2,
+      })
       .set("accessToken", token);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.payment.id).toBeDefined();
     expect(res.body.payment.paid_at).toBeDefined();
     expect(res.body.payment.student_id).toBe(user_id);
+    expect(res.body.payment.discounted).toBe(0.2);
     expect(res.body.payment.courses).toBeInstanceOf(Array);
     expect(res.body.payment.courses.length).toBe(2);
 
@@ -200,6 +206,18 @@ describe("POST /users/payments", () => {
       [res.body.payment.id],
     );
     expect(paidCourses.length).toBe(2);
+  });
+});
+describe("POST /users/payments", () => {
+  it("Pay with invalid discounted amount", async () => {
+    const res = await request(app)
+      .post("/users/payments")
+      .send({
+        discounted: 2,
+      })
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(422);
   });
 });
 

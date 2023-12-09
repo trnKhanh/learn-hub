@@ -1,7 +1,6 @@
 const app = require("../app");
 const request = require("supertest");
 const { getAccessToken, createAdmin } = require("../utils/test.utils");
-const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
 let user_id;
@@ -9,39 +8,50 @@ let token;
 let root_id;
 let root_token;
 beforeAll(async () => {
-  let res = await request(app)
-    .post("/signup")
-    .send({
-      username: "test",
-      password: "test",
-    })
-    .set("Content-Type", "application/json")
-    .set("Accept", "application/json");
-  user_id = res.body.user_id;
-  token = res.body.accessToken;
-  await createAdmin();
   try {
-    let res = await request(app)
-      .post("/signup")
-      .send({
-        username: "root",
-        password: "root",
-      })
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json");
+    let res = await request(app).post("/signup").send({
+      username: "test",
+      password: "Learnhub123!",
+      email: "test@gmail.com",
+    });
+
+    user_id = res.body.user_id;
+    token = res.body.accessToken;
+    expect(user_id).toBeDefined();
+    expect(token).toBeDefined();
+  } catch (err) {
+    console.log(err);
+  }
+
+  await createAdmin();
+
+  try {
+    let res = await request(app).post("/signup").send({
+      username: "root",
+      password: "Learnhub123!",
+      email: "root@gmail.com",
+    });
     root_id = res.body.user_id;
     root_token = res.body.accessToken;
+    expect(root_id).toBeDefined();
+    expect(root_token).toBeDefined();
     await sql.query(
       "INSERT INTO admins SET id=?, courses_access=1, tutors_access=1, students_access=1, supporters_access=1",
       [root_id],
     );
+    expect(root_id).toBeDefined();
+    expect(root_token).toBeDefined();
   } catch (err) {
     console.log(err);
   }
 });
 
 afterAll(async () => {
-  let res = await request(app).delete("/users").set("accessToken", token);
+  try {
+    await sql.query("DELETE FROM users WHERE username=?", ["test"]);
+  } catch (err) {
+    console.log(err);
+  }
   try {
     await sql.query("DELETE FROM users WHERE username=?", ["root"]);
   } catch (err) {
@@ -52,7 +62,7 @@ afterAll(async () => {
 
 describe("POST /admins", () => {
   it("Create admin by root", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .post("/admins")
@@ -73,7 +83,7 @@ describe("POST /admins", () => {
 
 describe("POST /admins", () => {
   it("Create admin by root (duplicate)", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .post("/admins")
@@ -91,7 +101,7 @@ describe("POST /admins", () => {
 
 describe("POST /admins", () => {
   it("Create admin not by root", async () => {
-    const accessToken = await getAccessToken("admin", "admin");
+    const accessToken = await getAccessToken("admin", "Learnhub123!");
 
     let res = await request(app)
       .post("/admins")
@@ -109,7 +119,7 @@ describe("POST /admins", () => {
 
 describe("GET /admins/:id", () => {
   it("Get admin by id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .get(`/admins/${user_id}`)
@@ -125,7 +135,7 @@ describe("GET /admins/:id", () => {
 
 describe("GET /admins/:id", () => {
   it("Get admin by unknown id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .get(`/admins/12312321`)
@@ -137,7 +147,7 @@ describe("GET /admins/:id", () => {
 
 describe("GET /admins", () => {
   it("Get all admins", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app).get(`/admins`).set("accessToken", accessToken);
 
@@ -148,7 +158,7 @@ describe("GET /admins", () => {
 
 describe("PATCH /admins/:id", () => {
   it("Update admin by id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/admins/${user_id}`)
@@ -164,7 +174,7 @@ describe("PATCH /admins/:id", () => {
 
 describe("PATCH /admins/:id", () => {
   it("Update admin with unknown fields", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/admins/${user_id}`)
@@ -179,7 +189,7 @@ describe("PATCH /admins/:id", () => {
 
 describe("PATCH /admins/:id", () => {
   it("Update admin by unknown id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .patch(`/admins/123111111`)
@@ -194,7 +204,7 @@ describe("PATCH /admins/:id", () => {
 
 describe("DELETE /admins/:id", () => {
   it("Delete admin by id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/admins/${user_id}`)
@@ -206,7 +216,7 @@ describe("DELETE /admins/:id", () => {
 
 describe("DELETE /admins/:id", () => {
   it("Delete admin by unknown id", async () => {
-    const accessToken = await getAccessToken("root", "root");
+    const accessToken = await getAccessToken("root", "Learnhub123!");
 
     let res = await request(app)
       .delete(`/admins/${user_id}`)

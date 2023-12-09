@@ -7,19 +7,24 @@ const {
   validateCourseModifyPermission,
 } = require("../middlewares/Courses.middleware");
 const { validateStudent } = require("../middlewares/Students.middleware");
+const {
+  createCourseScheme,
+  updateCourseScheme,
+} = require("../middlewares/validators/Courses.validator");
+
 router.get("/", coursesController.getAllCourses);
 
 router.get("/:id", coursesController.getCourse);
 
 router.post(
   "/",
-  [validateToken, validateCourseCreatePermission],
+  [validateToken, validateCourseCreatePermission, createCourseScheme],
   coursesController.createCourse,
 );
 
 router.patch(
   "/:id",
-  [validateToken, validateCourseModifyPermission],
+  [validateToken, validateCourseModifyPermission, updateCourseScheme],
   coursesController.updateCourse,
 );
 

@@ -5,6 +5,9 @@ const { validateToken } = require("../middlewares/Auth.middleware");
 const {
   validateTutorAccessPermission,
 } = require("../middlewares/Tutors.middleware");
+const {
+  updateTutorScheme,
+} = require("../middlewares/validators/Tutors.validator");
 
 router.get("/", tutorsController.getAllTutors);
 
@@ -14,7 +17,7 @@ router.post("/", [validateToken], tutorsController.createTutor);
 
 router.patch(
   "/:id",
-  [validateToken, validateTutorAccessPermission],
+  [validateToken, validateTutorAccessPermission, updateTutorScheme],
   tutorsController.updateTutorById,
 );
 

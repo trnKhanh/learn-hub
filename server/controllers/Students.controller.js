@@ -1,12 +1,7 @@
 const Student = require("../models/Students.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createStudent = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
   try {
     const newStudent = new Student({ id: req.user.id });
     const student = await Student.create(newStudent);
@@ -18,25 +13,12 @@ const createStudent = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "This user is an student",
       });
       return;
     }
-    if (err.code == "WARN_DATA_TRUNCATED") {
-      res.status(400).json({
-        message: "Wrong membership"
-      });
-      return;
-    }
-
     res.status(500).json({
       message: "Errors occur when creating new student",
     });
@@ -44,13 +26,6 @@ const createStudent = async (req, res) => {
 };
 
 const getStudent = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const student = await Student.findOne({ id: req.params.id });
     if (!student) {
@@ -65,6 +40,7 @@ const getStudent = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
+
     res.status(500).json({
       message: "Errors occur when getting student's information",
     });
@@ -89,15 +65,21 @@ const getAllStudents = async (req, res) => {
 
 // Update student information
 const updateStudentById = async (req, res) => {
-  if (!req.body || !req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+  if (!Object.keys(data).length) {
+    res.status(400).json({
+      message: "Must provide valid fields",
     });
     return;
   }
 
   try {
-    const students = await Student.updateById(req.params.id, req.body);
+    const students = await Student.updateById(req.params.id, data);
     if (!students) {
       res.status(404).json({
         message: "Not found student id",
@@ -111,18 +93,6 @@ const updateStudentById = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
-    if (err.code == "WARN_DATA_TRUNCATED") {
-      res.status(400).json({
-        message: "Wrong membership"
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when updating students' information",
     });
@@ -130,13 +100,6 @@ const updateStudentById = async (req, res) => {
 };
 
 const deleteStudentById = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const students = await Student.deleteById(req.params.id);
     if (!students) {

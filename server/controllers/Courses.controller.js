@@ -1,19 +1,21 @@
 const Course = require("../models/Courses.model");
 const Tutor = require("../models/Tutors.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createCourse = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req);
+
   try {
-    if (!req.body.owner_id) {
-      req.body.owner_id = req.user.id;
+    if (!data.owner_id) {
+      data.owner_id = req.user.id;
     }
-    if (req.body.owner_id) {
-      const tutor = await Tutor.findOne({ id: req.body.owner_id, verified: 1 });
+    if (data.owner_id) {
+      const tutor = await Tutor.findOne({ id: data.owner_id, verified: 1 });
       if (!tutor) {
         res.status(422).json({
           message: "Owner is not verified tutor",
@@ -21,7 +23,7 @@ const createCourse = async (req, res) => {
         return;
       }
     }
-    const newCourse = new Course(req.body);
+    const newCourse = new Course(data);
     const course = await Course.create(newCourse);
     res.status(201).json({
       message: "Course has been created",
@@ -30,12 +32,6 @@ const createCourse = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "Course with the same name has existed",
@@ -47,14 +43,8 @@ const createCourse = async (req, res) => {
     });
   }
 };
-const getCourse = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
 
+const getCourse = async (req, res) => {
   try {
     const course = await Course.findOne({ id: req.params.id });
     if (!course) {
@@ -92,24 +82,31 @@ const getAllCourses = async (req, res) => {
 
 // Update course information
 const updateCourse = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+
+  if (!Object.keys(data).length) {
+    res.status(400).json({
+      message: "Must provide valid fields",
     });
     return;
   }
-  if (req.body.owner_id) {
-    const tutor = await Tutor.findOne({ id: req.body.owner_id, verified: 1 });
-    if (!tutor) {
-      res.status(422).json({
-        message: "Owner is not verified tutor",
-      });
-      return;
-    }
-  }
 
   try {
-    const courses = await Course.updateById(req.params.id, req.body);
+    if (data.owner_id) {
+      const tutor = await Tutor.findOne({ id: data.owner_id, verified: 1 });
+      if (!tutor) {
+        res.status(422).json({
+          message: "Owner is not verified tutor",
+        });
+        return;
+      }
+    }
+    const courses = await Course.updateById(req.params.id, data);
     if (!courses) {
       res.status(404).json({
         message: "Not found courses id",
@@ -123,12 +120,6 @@ const updateCourse = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "Course with the same name has existed",
@@ -142,13 +133,6 @@ const updateCourse = async (req, res) => {
 };
 
 const deleteCourse = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const courses = await Course.deleteById(req.params.id);
     if (!courses) {
@@ -170,13 +154,6 @@ const deleteCourse = async (req, res) => {
 };
 
 const getCourseProgress = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const isPaid = await Course.isPaid(req.user.id, req.params.id);
     const progress = await Course.getProgess(req.user.id, req.params.id);
@@ -198,13 +175,6 @@ const getCourseProgress = async (req, res) => {
   }
 };
 const registerStudent = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     await Course.register(req.user.id, req.params.id);
     res.status(200).json({

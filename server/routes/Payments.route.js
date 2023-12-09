@@ -6,7 +6,15 @@ const {
   validatePaymentAccessPermission,
 } = require("../middlewares/Payments.middleware");
 
-router.post("/", validateToken, paymentController.createPayment);
+const {
+  createPaymentScheme,
+} = require("../middlewares/validators/Payments.validator");
+
+router.post(
+  "/",
+  [validateToken, createPaymentScheme],
+  paymentController.createPayment,
+);
 
 router.get("/", validateToken, paymentController.getAllPayments);
 

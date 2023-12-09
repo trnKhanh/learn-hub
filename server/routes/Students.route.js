@@ -5,6 +5,9 @@ const { validateToken } = require("../middlewares/Auth.middleware");
 const {
   validateStudentAccessPermission,
 } = require("../middlewares/Students.middleware");
+const {
+  updateStudentScheme,
+} = require("../middlewares/validators/Students.validator");
 
 router.get("/", studentsController.getAllStudents);
 
@@ -14,7 +17,7 @@ router.post("/", [validateToken], studentsController.createStudent);
 
 router.patch(
   "/:id",
-  [validateToken, validateStudentAccessPermission],
+  [validateToken, validateStudentAccessPermission, updateStudentScheme],
   studentsController.updateStudentById,
 );
 

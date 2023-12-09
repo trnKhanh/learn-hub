@@ -22,7 +22,8 @@ const createAdmin = async () => {
       .post("/signup")
       .send({
         username: "admin",
-        password: "admin",
+        password: "Learnhub123!",
+        email: "admin@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");

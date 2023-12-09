@@ -1,24 +1,26 @@
 const Payment = require("../models/Payments.model");
 const PaymentInformation = require("../models/PaymentInformations.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createPayment = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
-  if (!PaymentInformation.findOne({ user_id: req.user.id })) {
-    res.status(400).send({
-      message: "User have no payment information",
-    });
-    return;
-  }
+  const data = matchedData(req);
+
   try {
+    if (!PaymentInformation.findOne({ user_id: req.user.id })) {
+      res.status(400).send({
+        message: "User have no payment information",
+      });
+      return;
+    }
     // execute payment here
     //
     // end execute
-    const payment = await Payment.create(req.user.id, req.body);
+    const payment = await Payment.create(req.user.id, data);
     if (!payment) {
       res.status(400).json({
         message: "No course in cart",
@@ -33,12 +35,8 @@ const createPayment = async (req, res) => {
     console.log(err);
 
     // role back payment
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
+    // 
+    //
     if (err.code.includes("ER_NO_REFERENCED")) {
       res.status(404).json({
         message: "User is not a student",
@@ -46,7 +44,7 @@ const createPayment = async (req, res) => {
       return;
     }
     res.status(500).json({
-      message: "Errors occur when adding course to cart",
+      message: "Errors occur when creating payment",
     });
   }
 };
