@@ -1,6 +1,6 @@
 import * as React from "react";
 
-function Signin(props) {
+function Signup(props) {
   return (
     <div className="bg-white flex flex-col justify-center items-center px-16 py-12 max-md:px-5">
       <div className="items-start shadow-2xl bg-white flex w-[470px] max-w-full flex-col mt-44 mb-96 px-5 py-11 rounded-3xl max-md:my-10">
@@ -104,4 +104,4 @@ function Signin(props) {
     </div>
   );
 }
-export default Signin;
+export default Signup;
