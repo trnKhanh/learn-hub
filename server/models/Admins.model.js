@@ -3,7 +3,7 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Admin {
   constructor(admin) {
-    this.id = admin.id;
+    this.id = admin.id || null;
     this.courses_access = admin.courses_access || 0;
     this.tutors_access = admin.tutors_access || 0;
     this.students_access = admin.students_access || 0;
@@ -18,12 +18,18 @@ class Admin {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO admins SET ?`, newAdmin);
+      const [rows, fields] = await con.query(
+        `SELECT ${Admin.queryFields} 
+         FROM admins NATURAL JOIN users 
+         WHERE id=?`,
+        [newAdmin.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created admins: ", { newAdmin: newAdmin, results: res });
-      return newAdmin;
+      console.log("Created admins: ", { newAdmin: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -77,6 +83,7 @@ class Admin {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE admins SET ?
         WHERE id=?`,
@@ -112,6 +119,7 @@ class Admin {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
          FROM admins  

@@ -3,28 +3,28 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const { validationResult, matchedData } = require("express-validator");
 
 const saltRounds = 10;
 
 // Create new user
 const signup = async (req, res) => {
-  // if request is invalid (empty body)
-  if (!req.body || !req.body.username || !req.body.password) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req);
 
-  let username = req.body.username;
-  let password = req.body.password;
+  let password = data.password;
 
   // Use bcrypt to hash the password
   let hashedPassword = await bcrypt.hash(password, saltRounds);
+  data.password = hashedPassword;
 
   const newUser = new User({
-    username: username,
     password: hashedPassword,
+    ...data,
   });
 
   // Create new user with hashed password
@@ -49,15 +49,15 @@ const signup = async (req, res) => {
 // Login user
 const login = async (req, res) => {
   // if request is invalid (empty body)
-  if (!req.body || !req.body.username || !req.body.password) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req);
 
-  let username = req.body.username;
-  let password = req.body.password;
+  let username = data.username;
+  let password = data.password;
 
   try {
     // Find user with given username
@@ -79,7 +79,7 @@ const login = async (req, res) => {
           id: user.id,
         },
         privateKey,
-        { algorithm: "RS256", expiresIn: "1d" },
+        { algorithm: "RS256", expiresIn: "7d" },
       );
 
       // Send access token to client

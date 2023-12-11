@@ -1,16 +1,19 @@
 const Tutor = require("../models/Tutors.model");
+const TutorCV = require("../models/TutorsCV.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createTutor = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
   try {
-    if (!req.body.admin_id) req.body.admin_id = req.user.id;
-    const newTutor = new Tutor(req.body);
+    const newTutor = new Tutor({ id: req.user.id });
     const tutor = await Tutor.create(newTutor);
+
+    if (req.file) {
+      const newTutorCV = new TutorCV({
+        tutor_id: req.user.id,
+        cv_path: req.file.path,
+      });
+      const tutorCV = await TutorCV.create(newTutorCV);
+    }
 
     res.status(201).json({
       message: "Tutor has been created",
@@ -19,25 +22,12 @@ const createTutor = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "This user is an tutor",
       });
       return;
     }
-    if (err.code == "ER_NO_REFERENCED_ROW_2") {
-      res.status(422).json({
-        message: "Admin id is invalid",
-      });
-      return;
-    }
-
     res.status(500).json({
       message: "Errors occur when creating new tutor",
     });
@@ -45,13 +35,6 @@ const createTutor = async (req, res) => {
 };
 
 const getTutor = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const tutor = await Tutor.findOne({ id: req.params.id });
     if (!tutor) {
@@ -90,15 +73,21 @@ const getAllTutors = async (req, res) => {
 
 // Update tutor information
 const updateTutorById = async (req, res) => {
-  if (!req.body || !req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+  if (!Object.keys(data).length) {
+    res.status(400).json({
+      message: "Must provide valid fields",
     });
     return;
   }
 
   try {
-    const tutors = await Tutor.updateById(req.params.id, req.body);
+    const tutors = await Tutor.updateById(req.params.id, data);
     if (!tutors) {
       res.status(404).json({
         message: "Not found tutor id",
@@ -112,13 +101,7 @@ const updateTutorById = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
-    if (err.code == "ER_NO_REFERENCED_ROW_2") {
+    if (err.code.includes("ER_NO_REFERENCED")) {
       res.status(422).json({
         message: "Admin id is invalid",
       });
@@ -131,13 +114,6 @@ const updateTutorById = async (req, res) => {
 };
 
 const deleteTutorById = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const tutors = await Tutor.deleteById(req.params.id);
     if (!tutors) {

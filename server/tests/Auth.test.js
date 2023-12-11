@@ -14,13 +14,15 @@ describe("POST /signup", () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(201);
     expect(res.body.username).toBe("test");
+    expect(res.body.user_id).toBeDefined();
     expect(res.body.accessToken).toBeDefined();
   });
 });
@@ -31,7 +33,8 @@ describe("POST /signup", () => {
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -46,7 +49,8 @@ describe("POST /login", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -78,7 +82,7 @@ describe("GET /users/:id", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -86,7 +90,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/${user_id}`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.user).toBeDefined();
@@ -100,7 +104,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/112313131`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(404);
   });
@@ -111,7 +115,7 @@ describe("GET /users", () => {
     let res = await request(app)
       .get(`/users`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.users).toBeInstanceOf(Array);
@@ -120,7 +124,7 @@ describe("GET /users", () => {
 
 describe("PATCH /users", () => {
   it("Update user informations", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
     let res = await request(app)
       .patch("/users")
       .send({
@@ -138,7 +142,7 @@ describe("PATCH /users", () => {
 
 describe("DELETE /users", () => {
   it("DELETE user", async () => {
-    const accessToken = await getAccessToken("test", "test");
+    const accessToken = await getAccessToken("test", "Learnhub123!");
     let res = await request(app)
       .delete("/users")
       .set("Content-Type", "application/json")
@@ -155,7 +159,7 @@ describe("POST /login", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");

@@ -18,7 +18,13 @@ app.use("/admins", adminsRouter);
 const tutorsRouter = require("./routes/Tutors.route");
 app.use("/tutors", tutorsRouter);
 
+const studentsRouter = require("./routes/Students.route");
+app.use("/students", studentsRouter);
+
 const supportersRouter = require("./routes/Supporters.route");
 app.use("/supporters", supportersRouter);
+
+const coursesRouter = require("./routes/Courses.route");
+app.use("/courses", coursesRouter);
 
 module.exports = app;

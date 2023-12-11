@@ -3,8 +3,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Supporter {
   constructor(supporter) {
-    this.id = supporter.id;
-    this.role = supporter.role;
+    this.id = supporter.id || null;
+    this.role = supporter.role || null;
   }
 
   static queryFields = `id, role`;
@@ -19,15 +19,21 @@ class Supporter {
         `INSERT INTO supporters SET ?`,
         newSupporter,
       );
+      const [rows, fields] = await con.query(
+        `SELECT ${Supporter.queryFields} 
+         FROM supporters NATURAL JOIN users 
+         WHERE id=?`,
+        [newSupporter.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
       console.log("Created supporters: ", {
-        newSupporter: newSupporter,
+        newSupporter: rows[0],
         results: res,
       });
-      return newSupporter;
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -81,6 +87,7 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE supporters SET ?
         WHERE id=?`,
@@ -116,6 +123,7 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
          FROM supporters  
