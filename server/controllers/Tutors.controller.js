@@ -1,10 +1,19 @@
 const Tutor = require("../models/Tutors.model");
+const TutorCV = require("../models/TutorsCV.model");
 const { validationResult, matchedData } = require("express-validator");
 
 const createTutor = async (req, res) => {
   try {
     const newTutor = new Tutor({ id: req.user.id });
     const tutor = await Tutor.create(newTutor);
+
+    if (req.file) {
+      const newTutorCV = new TutorCV({
+        tutor_id: req.user.id,
+        cv_path: req.file.path,
+      });
+      const tutorCV = await TutorCV.create(newTutorCV);
+    }
 
     res.status(201).json({
       message: "Tutor has been created",

@@ -45,6 +45,7 @@ const updateUserById = async (req, res) => {
     return;
   }
   const data = matchedData(req);
+  if (req.file) data.profile_picture = req.file.path;
 
   try {
     const users = await User.updateById(req.user.id, data);

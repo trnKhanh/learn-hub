@@ -21,10 +21,10 @@ const validateCourseCreatePermission = async (req, res, next) => {
   }
 };
 
-const validateCourseModifyPermission = async (req, res, next) => {
+const validateCourseAccessPermission = async (req, res, next) => {
   try {
     const course = await Course.findOne({
-      id: req.params.id,
+      id: req.params.course_id,
     });
     if (!course) {
       next();
@@ -47,6 +47,6 @@ const validateCourseModifyPermission = async (req, res, next) => {
 };
 
 module.exports = {
-  validateCourseModifyPermission,
+  validateCourseAccessPermission,
   validateCourseCreatePermission,
 };

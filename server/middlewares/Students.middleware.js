@@ -24,7 +24,7 @@ const validateStudent = async (req, res, next) => {
     const student = await Student.findOne({ id: req.user.id });
     if (!student) {
       res.status(401).json({
-        message: "Only student can add courses to cart",
+        message: "This user is not student",
       });
     } else {
       next();

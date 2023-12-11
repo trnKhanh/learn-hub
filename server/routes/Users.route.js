@@ -6,6 +6,11 @@ const {
   updateUserScheme,
 } = require("../middlewares/validators/Users.validator");
 
+const multer = require("multer");
+const upload = multer({
+  dest: __dirname + "/../uploads/users/profile_pictures",
+});
+
 const shoppingCartsRouter = require("./ShoppingCarts.route");
 router.use("/cart", shoppingCartsRouter);
 
@@ -21,7 +26,7 @@ router.get("/:id", usersController.getUser);
 
 router.patch(
   "/",
-  [validateToken, updateUserScheme],
+  [validateToken, updateUserScheme, upload.single("profile_picture")],
   usersController.updateUserById,
 );
 

@@ -3,7 +3,7 @@ const request = require("supertest");
 const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const sql = require("../database/db");
 
-let user_id, token, tutor_id, tutor_token;
+let user_id, token, tutor_id, tutor_token, course_admin_id, course_admin_token;
 let course_1_id, course_2_id;
 beforeAll(async () => {
   try {
@@ -37,6 +37,26 @@ beforeAll(async () => {
     tutor_id = res.body.user_id;
     tutor_token = res.body.accessToken;
     await sql.query("INSERT INTO tutors SET id=?, verified=1", [tutor_id]);
+  } catch (err) {
+    console.log(err);
+  }
+  try {
+    await createAdmin();
+    let res = await request(app)
+      .post("/signup")
+      .send({
+        username: "course_admin",
+        password: "Learnhub123!",
+        email: "courseadmin@gmail.com",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    course_admin_id = res.body.user_id;
+    course_admin_token = res.body.accessToken;
+    await sql.query(
+      "INSERT INTO admins SET id=?, courses_access=1, tutors_access=0, students_access=0, supporters_access=0",
+      [course_admin_id],
+    );
   } catch (err) {
     console.log(err);
   }
@@ -85,6 +105,16 @@ afterAll(async () => {
   }
   try {
     await sql.query("DELETE FROM users where username='tutor'");
+  } catch (err) {
+    console.log(err);
+  }
+  try {
+    await sql.query("DELETE FROM users where username='course_admin'");
+  } catch (err) {
+    console.log(err);
+  }
+  try {
+    await sql.query("DELETE FROM users where username='admin'");
   } catch (err) {
     console.log(err);
   }
@@ -287,5 +317,182 @@ describe("GET /courses/:id/progress", () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.progress).toBeDefined();
+  });
+});
+
+describe("POST /courses/:course_id/financialAids/", () => {
+  it("Create financial aid for course 1 wrong field", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/financialAids`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(422);
+  });
+});
+describe("POST /courses/:course_id/financialAids/", () => {
+  it("Create financial aid for course 1", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/financialAids`)
+      .send({
+        essay: "Please I am poor.",
+        amount: 100,
+      })
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.financialAid.essay).toBe("Please I am poor.");
+    expect(res.body.financialAid.amount).toBe(100);
+  });
+});
+describe("POST /courses/:course_id/financialAids/", () => {
+  it("Create financial aid for course 1 (duplicate)", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_1_id}/financialAids`)
+      .send({
+        essay: "Please I am poor.",
+        amount: 100,
+      })
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(409);
+  });
+});
+describe("GET /courses/:course_id/financialAids/", () => {
+  it("Get all financial aids for course 1 by student", async () => {
+    const res = await request(app)
+      .get(`/courses/${course_1_id}/financialAids`)
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(401);
+  });
+});
+describe("GET /courses/:course_id/financialAids/", () => {
+  it("Get all financial aids for course 1 by owner", async () => {
+    const res = await request(app)
+      .get(`/courses/${course_1_id}/financialAids`)
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.financialAids).toBeInstanceOf(Array);
+    expect(res.body.financialAids.length).toBe(1);
+    expect(res.body.financialAids[0].essay).toBe("Please I am poor.");
+    expect(res.body.financialAids[0].amount).toBe(100);
+    expect(res.body.financialAids[0].status).toBe("PENDING");
+  });
+});
+describe("GET /courses/:course_id/financialAids/", () => {
+  it("Get all financial aids for course 1 by course admin", async () => {
+    const res = await request(app)
+      .get(`/courses/${course_1_id}/financialAids`)
+      .set("accessToken", course_admin_token);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.financialAids).toBeInstanceOf(Array);
+    expect(res.body.financialAids.length).toBe(1);
+    expect(res.body.financialAids[0].essay).toBe("Please I am poor.");
+    expect(res.body.financialAids[0].amount).toBe(100);
+    expect(res.body.financialAids[0].status).toBe("PENDING");
+  });
+});
+describe("GET /courses/:course_id/financialAids/:student_id", () => {
+  it("Get financial aids for course 1 sent by specific student by course admin", async () => {
+    const res = await request(app)
+      .get(`/courses/${course_1_id}/financialAids/${user_id}`)
+      .set("accessToken", course_admin_token);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.financialAid.essay).toBe("Please I am poor.");
+    expect(res.body.financialAid.amount).toBe(100);
+    expect(res.body.financialAid.status).toBe("PENDING");
+  });
+});
+describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
+  it("Update financial aid status for course 1 by owner (before admin)", async () => {
+    const res = await request(app)
+      .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
+      .send({
+        status: "PASSED",
+      })
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(401);
+  });
+});
+describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
+  it("Update financial aid status for course 1 by course admin", async () => {
+    const res = await request(app)
+      .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
+      .send({
+        status: "PASSED",
+      })
+      .set("accessToken", course_admin_token);
+
+    expect(res.statusCode).toBe(200);
+    const [rows, fields] = await sql.query(
+      `SELECT * FROM financial_aids WHERE course_id=? AND student_id=? AND status="ADMIN_PASSED"`,
+      [course_1_id, user_id],
+    );
+    expect(rows.length).toBe(1);
+  });
+});
+describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
+  it("Update financial aid status for course 1 by owner (after admin)", async () => {
+    const res = await request(app)
+      .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
+      .send({
+        status: "PASSED",
+      })
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(200);
+    const [rows, fields] = await sql.query(
+      `SELECT * FROM financial_aids WHERE course_id=? AND student_id=? AND status="TUTOR_PASSED"`,
+      [course_1_id, user_id],
+    );
+    expect(rows.length).toBe(1);
+  });
+});
+describe("POST /courses/:course_id/financialAids/", () => {
+  it("Create financial aid for course 2", async () => {
+    const res = await request(app)
+      .post(`/courses/${course_2_id}/financialAids`)
+      .send({
+        essay: "Please I am poor.",
+        amount: 100,
+      })
+      .set("accessToken", token);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.financialAid.essay).toBe("Please I am poor.");
+    expect(res.body.financialAid.amount).toBe(100);
+  });
+});
+describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
+  it("Update financial aid status for course 2 by course admin (deny)", async () => {
+    const res = await request(app)
+      .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
+      .send({
+        status: "DENIED",
+      })
+      .set("accessToken", course_admin_token);
+
+    expect(res.statusCode).toBe(200);
+    const [rows, fields] = await sql.query(
+      `SELECT * FROM financial_aids WHERE course_id=? AND student_id=? AND status="ADMIN_DENIED"`,
+      [course_2_id, user_id],
+    );
+    expect(rows.length).toBe(1);
+  });
+});
+describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
+  it("Update financial aid status for course 2 by owner after admin denied", async () => {
+    const res = await request(app)
+      .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
+      .send({
+        status: "DENIED",
+      })
+      .set("accessToken", tutor_token);
+
+    expect(res.statusCode).toBe(401);
   });
 });

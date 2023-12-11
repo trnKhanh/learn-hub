@@ -13,9 +13,10 @@ class User {
     this.phone_number = user.phone_number || null;
     this.institute = user.institution || null;
     this.area_of_study = user.area_of_study || null;
+    this.profile_picture = user.profile_picture || null;
     this.biography = user.biography || null;
   }
-  static queryFields = `id, email, username, full_name, date_of_birth, phone_number, institute, area_of_study, biography`;
+  static queryFields = `id, email, username, full_name, date_of_birth, phone_number, institute, area_of_study, profile_picture, biography`;
 
   // Create new User
   static create = async (newUser) => {

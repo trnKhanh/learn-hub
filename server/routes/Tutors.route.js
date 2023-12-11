@@ -27,4 +27,7 @@ router.delete(
   tutorsController.deleteTutorById,
 );
 
+const tutorCVsRouter = require("./TutorCVs.route");
+router.use("/cvs", tutorCVsRouter);
+
 module.exports = router;

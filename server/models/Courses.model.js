@@ -10,9 +10,10 @@ class Course {
     this.duration = course.duration || null;
     this.owner_id = course.owner_id || null;
     this.price = course.price || null;
+    this.profile_picture = course.profile_picture || null;
     this.discount = course.discount || null;
   }
-  static queryFields = `id, name, description, difficulty, duration, owner_id, price, discount`;
+  static queryFields = `id, name, description, difficulty, duration, owner_id, price, profile_picture, discount`;
 
   // Create new Course
   static create = async (newCourse) => {
@@ -156,7 +157,6 @@ class Course {
       student_id: student_id,
       course_id: id,
     });
-    
   };
 
   static getProgess = async (student_id, id) => {

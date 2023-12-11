@@ -9,6 +9,7 @@ const createCourse = async (req, res) => {
     return;
   }
   const data = matchedData(req);
+  if (req.file) data.profile_picture = req.file.path;
 
   try {
     if (!data.owner_id) {
@@ -46,7 +47,7 @@ const createCourse = async (req, res) => {
 
 const getCourse = async (req, res) => {
   try {
-    const course = await Course.findOne({ id: req.params.id });
+    const course = await Course.findOne({ id: req.params.course_id });
     if (!course) {
       res.status(404).json({
         message: "Not found course",
@@ -88,6 +89,7 @@ const updateCourse = async (req, res) => {
     return;
   }
   const data = matchedData(req);
+  if (req.file) data.profile_picture = req.file.path;
 
   if (!Object.keys(data).length) {
     res.status(400).json({
@@ -106,7 +108,7 @@ const updateCourse = async (req, res) => {
         return;
       }
     }
-    const courses = await Course.updateById(req.params.id, data);
+    const courses = await Course.updateById(req.params.course_id, data);
     if (!courses) {
       res.status(404).json({
         message: "Not found courses id",
@@ -134,7 +136,7 @@ const updateCourse = async (req, res) => {
 
 const deleteCourse = async (req, res) => {
   try {
-    const courses = await Course.deleteById(req.params.id);
+    const courses = await Course.deleteById(req.params.course_id);
     if (!courses) {
       res.status(404).json({
         message: "Not found courses id",
@@ -155,8 +157,8 @@ const deleteCourse = async (req, res) => {
 
 const getCourseProgress = async (req, res) => {
   try {
-    const isPaid = await Course.isPaid(req.user.id, req.params.id);
-    const progress = await Course.getProgess(req.user.id, req.params.id);
+    const isPaid = await Course.isPaid(req.user.id, req.params.course_id);
+    const progress = await Course.getProgess(req.user.id, req.params.course_id);
     if (!progress) {
       res.status(404).json({
         message: "Course has not registered",
@@ -176,7 +178,7 @@ const getCourseProgress = async (req, res) => {
 };
 const registerStudent = async (req, res) => {
   try {
-    await Course.register(req.user.id, req.params.id);
+    await Course.register(req.user.id, req.params.course_id);
     res.status(200).json({
       message: "Course register successfully",
     });
