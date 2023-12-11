@@ -4,6 +4,7 @@ import { MenuNavbar } from "./menu-navbar";
 import NavbarItem from "./navbar-item";
 import SearchInput from "./search-input";
 import { Button } from "./ui/button";
+import UserNavbar from "./user-navbar";
 
 const Navbar = () => {
     return ( 
@@ -18,10 +19,11 @@ const Navbar = () => {
                     <NavbarItem label="Instructor" />
                     <NavbarItem label="Universities" />
                 </div>
-                <div className="flex-row gap-7 ml-auto hidden lg:flex overflow-hidden items-center right-0">
+                {/*<div className="flex-row gap-7 ml-auto hidden lg:flex overflow-hidden items-center right-0">
                     <NavbarItem label="Login" />
                     <Button>Create Free Account</Button>
-                </div>
+    </div>*/}
+                <UserNavbar/>
                 <div className=" lg:hidden">
                     <MenuNavbar />
                 </div>

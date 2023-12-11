@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/navbar'
 import { Footer } from '@/components/footer'
+import { LayoutProvider } from './layout-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,11 +27,9 @@ export default function RootLayout({
       </head>
       <body>
         <div>
-          <Navbar />
-          <main className="bg-page-gradient pt-navigation-height">
+          <LayoutProvider>
             {children}
-          </main>
-          <Footer />
+          </LayoutProvider>
         </div>
       </body>
     </html>

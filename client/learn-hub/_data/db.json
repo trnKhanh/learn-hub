@@ -2,7 +2,7 @@
     "courses": [
         {
             "id": "1",
-            "name": "Introduction to Programming",
+            "name": "Introduction to Computer Science",
             "description": "A beginner's guide to programming concepts.",
             "difficulty": "Beginner",
             "duration": 60,
@@ -20,7 +20,7 @@
                 { "id": "ch2" },
                 { "id": "ch3" }
             ],
-            "progress": 40
+            "progress": 100
         },
         {
             "id": "2",

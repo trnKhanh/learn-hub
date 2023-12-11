@@ -1,11 +1,11 @@
 import { CheckCircle, Clock } from "lucide-react";
-import { InfoCard } from "./_components/info-card";
+import { InfoCard } from "./_component/info-card";
 
 import {getCourses} from "@/actions/get-course";
 
 import { CoursesList } from "@/components/courses-list";
 
-export default async function Dashboard() {
+export default async function MyCourses() {
 
     const courses = await getCourses();
 
