@@ -3,8 +3,6 @@
 # Private and Public key
 *.key
 *.key.pub
-# eslint config files
-.eslintrc.*
 
 
 ### Node ###
