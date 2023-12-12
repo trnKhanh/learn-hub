@@ -1,9 +1,9 @@
 import * as React from "react";
 
-function Signup(props) {
+function Signup(_props: any) {
   return (
-    <div className="bg-white flex flex-col justify-center items-center px-16 py-12 max-md:px-5">
-      <div className="items-start shadow-2xl bg-white flex w-[470px] max-w-full flex-col mt-44 mb-96 px-5 py-11 rounded-3xl max-md:my-10">
+    <div className="bg-white flex flex-col justify-center items-center px-16 py-0 max-md:px-5">
+      <div className="items-start shadow-2xl bg-white flex w-[470px] max-w-full flex-col mt-20 mb-20 px-5 py-5 rounded-3xl max-md:my-10">
         <div className="text-black text-3xl font-medium self-stretch whitespace-nowrap max-md:max-w-full">
           Sign up
         </div>
@@ -14,7 +14,7 @@ function Signup(props) {
           <span className=" text-black">You can </span>
           <button className="font-semibold text-sky-500">Login here !</button>
         </div>
-        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-14 max-md:max-w-full max-md:mt-10">
+        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-5 max-md:max-w-full max-md:mt-5">
           Email
         </div>
         <div className="self-stretch flex w-full justify-between gap-5 mt-5 items-start max-md:max-w-full max-md:flex-wrap">
@@ -24,7 +24,7 @@ function Signup(props) {
                 src="./icon/mail.svg"
                 className="aspect-square object-contain object-center w-[17px] overflow-hidden shrink-0 max-w-full"
             />
-           <input
+            <input
                 type="text"
                 placeholder="Enter your email address"
                 className="text-slate-900 text-base grow border-none outline-none bg-transparent"
@@ -32,7 +32,7 @@ function Signup(props) {
           </div>
         </div>
         <div className="bg-neutral-400 self-stretch flex w-full shrink-0 h-0.5 flex-col mt-2.5 max-md:max-w-full" />
-        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-14 max-md:max-w-full max-md:mt-10">
+        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-5 max-md:max-w-full max-md:mt-5">
           Username
         </div>
         <div className="self-stretch flex w-full justify-between gap-5 mt-5 items-start max-md:max-w-full max-md:flex-wrap">
@@ -50,7 +50,7 @@ function Signup(props) {
           </div>
         </div>
         <div className="bg-neutral-400 self-stretch flex w-full shrink-0 h-0.5 flex-col mt-2.5 max-md:max-w-full" />
-        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-14 max-md:max-w-full max-md:mt-10">
+        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-5 max-md:max-w-full max-md:mt-5">
           Password
         </div>
         <div className="self-stretch flex w-full justify-between gap-5 mt-5 items-start max-md:max-w-full max-md:flex-wrap">
@@ -73,7 +73,7 @@ function Signup(props) {
           />
         </div>
         <div className="bg-neutral-400 self-stretch flex w-full shrink-0 h-0.5 flex-col mt-2.5 max-md:max-w-full" />
-        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-14 max-md:max-w-full max-md:mt-10">
+        <div className="text-neutral-400 text-sm font-medium self-stretch whitespace-nowrap mt-5 max-md:max-w-full max-md:mt-5">
           Confrim Password
         </div>
         <div className="self-stretch flex w-full justify-between gap-5 mt-5 items-start max-md:max-w-full max-md:flex-wrap">
@@ -99,7 +99,6 @@ function Signup(props) {
         <button className="text-white text-lg font-medium whitespace-nowrap shadow-lg bg-sky-500 self-stretch flex items-center justify-center mt-12 px-16 py-5 rounded-[32px] max-md:max-w-full max-md:mt-10 max-md:px-5">
             Register
         </button>
-
       </div>
     </div>
   );
