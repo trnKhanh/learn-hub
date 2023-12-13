@@ -1,5 +1,6 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Admin {
   constructor(admin) {
@@ -9,7 +10,7 @@ class Admin {
     this.students_access = admin.students_access || 0;
   }
 
-  static queryFields = `id, courses_access, tutors_access, students_access`;
+  static queryFields = `${User.queryFields}, courses_access, tutors_access, students_access`;
 
   // Create new Admin
   static create = async (newAdmin) => {
@@ -91,7 +92,7 @@ class Admin {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
-         FROM admins 
+         FROM admins NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -122,13 +123,13 @@ class Admin {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
-         FROM admins  
+         FROM admins NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
 
       const [res, _] = await con.query(
-        `DELETE FROM admins 
+        `DELETE FROM admins
         WHERE id=?`,
         [id],
       );

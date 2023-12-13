@@ -1,5 +1,6 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Supporter {
   constructor(supporter) {
@@ -7,7 +8,7 @@ class Supporter {
     this.role = supporter.role || null;
   }
 
-  static queryFields = `id, role`;
+  static queryFields = `${User.queryFields}, role`;
 
   // Create new Supporter
   static create = async (newSupporter) => {

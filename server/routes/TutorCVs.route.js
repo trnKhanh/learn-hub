@@ -37,4 +37,9 @@ router.patch(
   tutorCVsController.updateTutorCVStatus,
 );
 
+router.get(
+  "/download/:id",
+  tutorCVsController.downloadTutorCV,
+);
+
 module.exports = router;

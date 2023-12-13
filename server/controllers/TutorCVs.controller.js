@@ -70,7 +70,15 @@ const downloadTutorCV = async (req, res) => {
         message: "Not found tutor CV",
       });
     } else {
-      res.download(tutorCV.cv_path);
+      res.download(tutorCV.cv_path, (err) => {
+        if (err) {
+          if (err.code == "ENOENT") {
+            res.status(404).send();
+            return;
+          }
+          res.status(500).send();
+        }
+      });
     }
   } catch (err) {
     console.log(err);
@@ -120,7 +128,7 @@ const updateTutorCVStatus = async (req, res) => {
     } else {
       res.status(200).json({
         message: "Tutor CV's information has been updated",
-        tutorCVs: tutorCVs 
+        tutorCVs: tutorCVs,
       });
     }
   } catch (err) {

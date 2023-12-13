@@ -14,7 +14,7 @@ const validateTutorAccessPermission = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: "Errors occur when validating create tutor permission",
+      message: "Errors occur when validating access tutor permission",
     });
   }
 };

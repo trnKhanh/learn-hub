@@ -4,6 +4,7 @@
 *.key
 *.key.pub
 
+uploads
 
 ### Node ###
 # Logs

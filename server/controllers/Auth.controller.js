@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { validationResult, matchedData } = require("express-validator");
+const Admin = require("../models/Admins.model");
+const Tutor = require("../models/Tutors.model");
+const Supporter = require("../models/Supporters.model");
+const Student = require("../models/Students.model");
 
 const saltRounds = 10;
 
@@ -81,12 +85,25 @@ const login = async (req, res) => {
         privateKey,
         { algorithm: "RS256", expiresIn: "7d" },
       );
+      const admin = await Admin.findOne({ id: user.id });
+      const student = await Student.findOne({ id: user.id });
+      const tutor = await Tutor.findOne({ id: user.id });
+      const supporter = await Supporter.findOne({ id: user.id });
 
       // Send access token to client
+      const isAdmin = admin ? 1 : 0;
+      const isStudent = student ? 1 : 0;
+      const isTutor = tutor ? 1 : 0;
+      const isSupporter = supporter ? 1 : 0;
+
       res.json({
         message: "Log in successfully",
         username: user.username,
         user_id: user.id,
+        is_admin: isAdmin,
+        is_student: isStudent,
+        is_tutor: isTutor,
+        is_supporter: isSupporter,
         accessToken: accessToken,
       });
     } else {
