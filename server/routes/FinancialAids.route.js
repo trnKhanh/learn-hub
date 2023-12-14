@@ -36,7 +36,11 @@ router.get(
 
 router.patch(
   "/:student_id",
-  [validateToken, validateUpdateFinancialAidPermission, updateStatusFinancialAidScheme],
+  [
+    validateToken,
+    validateUpdateFinancialAidPermission,
+    updateStatusFinancialAidScheme,
+  ],
   financialAidsController.updateFinancialAidStatus,
 );
 router.delete(

@@ -96,16 +96,20 @@ const login = async (req, res) => {
       const isTutor = tutor ? 1 : 0;
       const isSupporter = supporter ? 1 : 0;
 
-      res.json({
-        message: "Log in successfully",
-        username: user.username,
-        user_id: user.id,
-        is_admin: isAdmin,
-        is_student: isStudent,
-        is_tutor: isTutor,
-        is_supporter: isSupporter,
-        accessToken: accessToken,
-      });
+      res
+        .cookie("accessToken", accessToken, {
+          httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json({
+          message: "Log in successfully",
+          username: user.username,
+          user_id: user.id,
+          is_admin: isAdmin,
+          is_student: isStudent,
+          is_tutor: isTutor,
+          is_supporter: isSupporter,
+        });
     } else {
       res.status(401).json({
         message: "Wrong password",
