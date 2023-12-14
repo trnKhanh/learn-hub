@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { LayoutProvider } from "./layout-provider";
-import { Toaster } from "react-hot-toast";
+import { ToastContainer } from "react-toastify";
+import ToastProvider from "./toast-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +28,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Toaster />
-        <div>
-          <LayoutProvider>{children}</LayoutProvider>
-        </div>
+        <ToastProvider>
+          <div>
+            <LayoutProvider>{children}</LayoutProvider>
+          </div>
+        </ToastProvider>
       </body>
     </html>
   );

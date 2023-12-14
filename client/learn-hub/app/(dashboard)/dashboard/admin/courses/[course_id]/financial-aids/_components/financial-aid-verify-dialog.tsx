@@ -14,11 +14,13 @@ import Link from "next/link";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FinancialAidInfoTable } from "./financial-aid-info-table";
 import { updateFinancialAid } from "@/actions/courses";
+import { DashboardSectionButton } from "@/app/(dashboard)/dashboard/_components/dashboard-section";
+import { toast } from "react-toastify";
 
 interface FinancialAidVerifyButtonProps {
   financialAid: FinancialAid;
 }
-export const FinancialAidVerifyButton = ({
+export const FinancialAidVerifyDialog = ({
   financialAid,
 }: FinancialAidVerifyButtonProps) => {
   const [status, setStatus] = useState(financialAid.status);
@@ -26,61 +28,70 @@ export const FinancialAidVerifyButton = ({
 
   if (status == "ADMIN_PASSED") {
     return (
-      <div className="flex items-center bg-lime-300 text-slate-500 p-2 rounded-xl">
-        <ShieldCheck />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">
-          Admin Passed
-        </span>
-      </div>
+      <DashboardSectionButton
+        className="bg-lime-300"
+        icon={ShieldCheck}
+        label="Admin Passed"
+        hover={false}
+      />
     );
   }
   if (status == "TUTOR_PASSED") {
     return (
-      <div className="flex items-center bg-lime-300 text-slate-500 p-2 rounded-xl">
-        <ShieldCheck />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">
-          TUTOR_PASSED
-        </span>
-      </div>
+      <DashboardSectionButton
+        className="bg-lime-300"
+        icon={ShieldCheck}
+        label="Tutor Passed"
+        hover={false}
+      />
     );
   }
   if (status == "ADMIN_DENIED") {
     return (
-      <div className="flex items-center bg-red-300 text-slate-500 p-2 rounded-xl">
-        <ShieldX />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">
-          Admin Denied
-        </span>
-      </div>
+      <DashboardSectionButton
+        className="bg-red-300"
+        icon={ShieldX}
+        label="Admin Denied"
+        hover={false}
+      />
     );
   }
   if (status == "TUTOR_DENIED") {
     return (
-      <div className="flex items-center bg-red-300 text-slate-500 p-2 rounded-xl">
-        <ShieldX />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">
-          Tutor Denied
-        </span>
-      </div>
+      <DashboardSectionButton
+        className="bg-red-300"
+        icon={ShieldX}
+        label="Tutor Denied"
+        hover={false}
+      />
+    );
+  }
+  if (isUpdating) {
+    return (
+      <DashboardSectionButton
+        icon={ShieldHalf}
+        label={"Updating"}
+        hover={false}
+      />
     );
   }
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <button className="group flex items-center bg-slate-300 text-slate-500 p-2 rounded-xl hover:bg-slate-500 hover:text-white">
-          <ShieldHalf />
-          <span className="border-l-2 border-slate-500 pl-2 ml-2 group-hover:border-white">
-            {isUpdating ? "Updating" : "Verify"}
-          </span>
-        </button>
+        <DashboardSectionButton
+          icon={ShieldHalf}
+          label={"Verify"}
+          hover={true}
+        />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
             Are you sure to pass this financial aid?
           </AlertDialogTitle>
-          <FinancialAidInfoTable financialAid={financialAid} />
         </AlertDialogHeader>
+
+        <FinancialAidInfoTable financialAid={financialAid} />
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -88,13 +99,17 @@ export const FinancialAidVerifyButton = ({
             className="bg-red-500 hover:bg-red-600"
             onClick={async () => {
               setIsUpdating(true);
-              const data = await updateFinancialAid(
+              const res = await updateFinancialAid(
                 financialAid.course_id,
                 financialAid.student_id,
                 "DENIED",
               );
-              if (data) {
-                setStatus(data.financialAids[0].status);
+              if (res) {
+                if (res.status == 200) {
+                  setStatus(res.data.financialAids[0].status);
+                } else {
+                  toast.error(res.data.message);
+                }
               }
               setIsUpdating(false);
             }}
@@ -105,13 +120,17 @@ export const FinancialAidVerifyButton = ({
             className="bg-lime-500 hover:bg-lime-600"
             onClick={async () => {
               setIsUpdating(true);
-              const data = await updateFinancialAid(
+              const res = await updateFinancialAid(
                 financialAid.course_id,
                 financialAid.student_id,
                 "PASSED",
               );
-              if (data) {
-                setStatus(data.financialAids[0].status);
+              if (res) {
+                if (res.status == 200) {
+                  setStatus(res.data.financialAids[0].status);
+                } else {
+                  toast.error(res.data.message);
+                }
               }
               setIsUpdating(false);
             }}

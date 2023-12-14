@@ -2,6 +2,11 @@
 
 import { getCourse } from "@/actions/courses";
 import { useEffect, useState } from "react";
+import {
+  DashboardSection,
+  DashboardSectionHeader,
+} from "../../../_components/dashboard-section";
+import { useRouter } from "next/navigation";
 
 export default function Layout({
   params,
@@ -14,21 +19,26 @@ export default function Layout({
 }) {
   const [course, setCourse] = useState<Course>();
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
   useEffect(() => {
-    getCourse(params.course_id).then((data) => {
-      if (data && data.course) {
-        setCourse(data.course);
+    getCourse(params.course_id).then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setCourse(res.data.course);
+        } else {
+          router.push("/dashboard");
+        }
       }
     });
-  });
+  }, []);
 
   return (
-    <div className="flex flex-col pt-6">
-      <p className="text-2xl text ml-6">
+    <DashboardSection>
+      <DashboardSectionHeader>
         <span className="font-bold text-slate-400">Course:</span>{" "}
         {course ? course.name : "Loading..."}
-      </p>
+      </DashboardSectionHeader>
       {children}
-    </div>
+    </DashboardSection>
   );
 }

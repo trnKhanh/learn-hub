@@ -1,27 +1,42 @@
 "use client";
 
 import { deleteTutor, getAllTutors } from "@/actions/tutors";
-import { AdminItem } from "../_components/admin-item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TutorVerifyButton } from "./_components/tutor-verify-button";
-import { TutorInfoTable } from "./_components/tutor-info-table";
 import { InfoButton } from "../_components/info-button";
+import {
+  DashboardSectionHeader,
+  DashboardSection,
+  DashboardSectionContent,
+  DashboardSectionItem,
+  DashboardSectionItemLeft,
+  DashboardSectionItemRight,
+} from "../../_components/dashboard-section";
+import { UserThumbnail } from "../../_components/user-thumbnail";
+import { Trash2 } from "lucide-react";
+import { notFound } from "next/navigation";
+import { UserInfoTable } from "../_components/user-info-table";
+import { TutorInfoDialog } from "./_components/tutor-info-dialog";
+import { TutorDeleteDialog } from "./_components/tutor-delete-dialog";
+import { TutorVerifyDialog } from "./_components/tutor-verify-dialog";
+import { toast } from "react-toastify";
 
 export default function Tutors() {
   const [tutors, setTutors] = useState<Tutor[]>();
-  const [isDeleting, setIsDeleting] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    getAllTutors().then((data) => {
-      if (data) {
-        if (!data.tutors) {
+    getAllTutors().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setTutors((state) => res.data.tutors);
+          setIsLoading(false);
+        } else {
+          toast.error(res.data.message);
           router.push("/dashboard");
         }
-        setTutors((state) => data.tutors);
-        setIsLoading(false);
       }
     });
   }, [isDeleting]);
@@ -33,49 +48,37 @@ export default function Tutors() {
       </div>
     );
 
-  if (tutors && !tutors.length)
-    return (
-      <div className="flex p-6">
-        <p className="text-2xl text mx-auto">Found no tutors</p>
-      </div>
-    );
+  if (tutors && !tutors.length) notFound();
 
   return (
-    <div className="flex flex-col space-x-6">
-      <p className="text-2xl pl-6 pt-6 font-bold">Tutors</p>
-      <div className="p-6 flex flex-col w-full space-y-6">
+    <DashboardSection>
+      <DashboardSectionHeader>Tutors</DashboardSectionHeader>
+
+      <DashboardSectionContent>
         {tutors &&
           tutors.map((tutor) => (
-            <>
-              {isDeleting === tutor.id ? (
-                <div className="p-2 allign-center w-full text-slate-300">
-                  Deleting...
-                </div>
-              ) : (
-                <div key={tutor.id}>
-                  <AdminItem
-                    picture={tutor.profile_picture}
-                    label={tutor.username}
-                    onDelete={async () => {
-                      setIsDeleting(tutor.id);
-                      await deleteTutor(tutor.id);
-                      setIsDeleting("");
-                    }}
-                    buttons={
-                      <div className="flex space-x-2">
-                        <TutorVerifyButton tutor={tutor} />
-                        <InfoButton
-                          label="Tutor"
-                          infoTable={<TutorInfoTable tutor={tutor} />}
-                        />
-                      </div>
-                    }
-                  />
-                </div>
-              )}
-            </>
+            <DashboardSectionItem key={tutor.id}>
+              <DashboardSectionItemLeft>
+                <UserThumbnail user_id={tutor.id} />
+              </DashboardSectionItemLeft>
+
+              <DashboardSectionItemRight>
+                <TutorVerifyDialog tutor={tutor}/>
+                <TutorInfoDialog tutor={tutor} />
+                <TutorDeleteDialog
+                  isDeleting={isDeleting}
+                  setIsDeleting={setIsDeleting}
+                  onDelete={async () => {
+                    const res = await deleteTutor(tutor.id);
+                    if (res && res.status != 200)
+                      toast.error(res.data.message)
+                  }}
+                />
+              </DashboardSectionItemRight>
+            </DashboardSectionItem>
           ))}
-      </div>
-    </div>
+      </DashboardSectionContent>
+    </DashboardSection>
   );
 }
+

@@ -1,26 +1,41 @@
 "use client";
 
 import { deleteCourse, getAllCourses } from "@/actions/courses";
-import { AdminItem } from "../_components/admin-item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CourseInfoTable } from "./_components/course-info-table";
-import { InfoButton } from "../_components/info-button";
-import { FinancialAidLink } from "./_components/financial-aid-link";
+import {
+  DashboardSectionHeader,
+  DashboardSection,
+  DashboardSectionButton,
+  DashboardSectionContent,
+  DashboardSectionItem,
+  DashboardSectionItemLeft,
+  DashboardSectionItemRight,
+} from "../../_components/dashboard-section";
+import { UserThumbnail } from "../../_components/user-thumbnail";
+import { ArrowUpRightSquare, Trash2 } from "lucide-react";
+import { CourseDeleteDialog } from "./_components/course-delete-dialog";
+import { notFound } from "next/navigation";
+import { CourseInfoDialog } from "./_components/course-info-dialog";
+import { toast } from "react-toastify";
+import { CourseThumbnail } from "../../_components/course-thumbnail";
+
 export default function Courses() {
   const [courses, setCourses] = useState<Course[]>();
-  const [isDeleting, setIsDeleting] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    getAllCourses().then((data) => {
-      if (data) {
-        if (!data.courses) {
+    getAllCourses().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setCourses((state) => res.data.courses);
+          setIsLoading(false);
+        } else {
+          toast.error(res.data.message);
           router.push("/dashboard");
         }
-        setCourses((state) => data.courses);
-        setIsLoading(false);
       }
     });
   }, [isDeleting]);
@@ -32,49 +47,42 @@ export default function Courses() {
       </div>
     );
 
-  if (courses && !courses.length)
-    return (
-      <div className="flex p-6">
-        <p className="text-2xl text mx-auto">Found no courses</p>
-      </div>
-    );
+  if (courses && !courses.length) notFound();
 
   return (
-    <div className="flex flex-col space-x-6">
-      <p className="text-2xl pl-6 pt-6 font-bold">Courses</p>
-      <div className="p-6 flex flex-col w-full space-y-6">
+    <DashboardSection>
+      <DashboardSectionHeader>Courses</DashboardSectionHeader>
+
+      <DashboardSectionContent>
         {courses &&
           courses.map((course) => (
-            <>
-              {isDeleting === course.id ? (
-                <div className="p-2 allign-center w-full text-slate-300">
-                  Deleting...
-                </div>
-              ) : (
-                <div key={course.id}>
-                  <AdminItem
-                    picture={course.profile_picture}
-                    label={course.name}
-                    onDelete={async () => {
-                      setIsDeleting(course.id);
-                      await deleteCourse(course.id);
-                      setIsDeleting("");
-                    }}
-                    buttons={
-                      <div className="flex space-x-2">
-                        <FinancialAidLink course_id={course.id} />
-                        <InfoButton
-                          label="Course"
-                          infoTable={<CourseInfoTable course={course} />}
-                        />
-                      </div>
-                    }
+            <DashboardSectionItem key={course.id}>
+              <DashboardSectionItemLeft>
+                <CourseThumbnail course_id={course.id} />
+              </DashboardSectionItemLeft>
+
+              <DashboardSectionItemRight>
+                <DashboardSectionButton
+                  icon={ArrowUpRightSquare}
+                  label="Financial Aids"
+                  href={`/dashboard/admin/courses/${course.id}/financial-aids`}
+                  hover={true}
                   />
-                </div>
-              )}
-            </>
+                <CourseInfoDialog course={course} />
+                <CourseDeleteDialog
+                  isDeleting={isDeleting}
+                  setIsDeleting={setIsDeleting}
+                  onDelete={async () => {
+                    const res = await deleteCourse(course.id);
+                    if (res && res.status != 200)
+                      toast.error(res.data.message)
+                  }}
+                />
+              </DashboardSectionItemRight>
+            </DashboardSectionItem>
           ))}
-      </div>
-    </div>
+      </DashboardSectionContent>
+    </DashboardSection>
   );
 }
+

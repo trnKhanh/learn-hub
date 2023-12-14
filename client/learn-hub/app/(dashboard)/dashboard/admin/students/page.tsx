@@ -1,26 +1,41 @@
 "use client";
 
 import { deleteStudent, getAllStudents } from "@/actions/students";
-import { AdminItem } from "../_components/admin-item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { StudentInfoTable } from "./_components/student-info-table";
 import { InfoButton } from "../_components/info-button";
+import {
+  DashboardSectionHeader,
+  DashboardSection,
+  DashboardSectionContent,
+  DashboardSectionItem,
+  DashboardSectionItemLeft,
+  DashboardSectionItemRight,
+} from "../../_components/dashboard-section";
+import { UserThumbnail } from "../../_components/user-thumbnail";
+import { Trash2 } from "lucide-react";
+import { StudentDeleteDialog } from "./_components/student-delete-dialog";
+import { notFound } from "next/navigation";
+import { UserInfoTable } from "../_components/user-info-table";
+import { StudentInfoDialog } from "./_components/student-info-dialog";
+import { toast } from "react-toastify";
 
 export default function Students() {
   const [students, setStudents] = useState<Student[]>();
-  const [isDeleting, setIsDeleting] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    getAllStudents().then((data) => {
-      if (data) {
-        if (!data.students) {
+    getAllStudents().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setStudents((state) => res.data.students);
+          setIsLoading(false);
+        } else {
+          toast.error(res.data.message);
           router.push("/dashboard");
         }
-        setStudents((state) => data.students);
-        setIsLoading(false);
       }
     });
   }, [isDeleting]);
@@ -32,46 +47,35 @@ export default function Students() {
       </div>
     );
 
-  if (students && !students.length)
-    return (
-      <div className="flex p-6">
-        <p className="text-2xl text mx-auto">Found no students</p>
-      </div>
-    );
+  if (students && !students.length) notFound();
 
   return (
-    <div className="flex flex-col space-x-6">
-      <p className="text-2xl pl-6 pt-6 font-bold">Students</p>
-      <div className="p-6 flex flex-col w-full space-y-6">
+    <DashboardSection>
+      <DashboardSectionHeader>Students</DashboardSectionHeader>
+
+      <DashboardSectionContent>
         {students &&
           students.map((student) => (
-            <>
-              {isDeleting === student.id ? (
-                <div className="p-2 allign-center w-full text-slate-300">
-                  Deleting...
-                </div>
-              ) : (
-                <div key={student.id}>
-                  <AdminItem
-                    picture={student.profile_picture}
-                    label={student.username}
-                    onDelete={async () => {
-                      setIsDeleting(student.id);
-                      await deleteStudent(student.id);
-                      setIsDeleting("");
-                    }}
-                    buttons={
-                      <InfoButton
-                        label="Student"
-                        infoTable={<StudentInfoTable student={student} />}
-                      />
-                    }
-                  />
-                </div>
-              )}
-            </>
+            <DashboardSectionItem key={student.id}>
+              <DashboardSectionItemLeft>
+                <UserThumbnail user_id={student.id} />
+              </DashboardSectionItemLeft>
+
+              <DashboardSectionItemRight>
+                <StudentInfoDialog student={student} />
+                <StudentDeleteDialog
+                  isDeleting={isDeleting}
+                  setIsDeleting={setIsDeleting}
+                  onDelete={async () => {
+                    const res = await deleteStudent(student.id);
+                    if (res && res.status != 200)
+                      toast.error(res.data.message)
+                  }}
+                />
+              </DashboardSectionItemRight>
+            </DashboardSectionItem>
           ))}
-      </div>
-    </div>
+      </DashboardSectionContent>
+    </DashboardSection>
   );
 }

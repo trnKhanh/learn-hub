@@ -10,21 +10,30 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
+import { DashboardSectionButton } from "../../../_components/dashboard-section";
+import { Dispatch, SetStateAction } from "react";
 
-interface DeleteButtonProps {
+interface AdminDeleteDialogProps {
+  isDeleting: boolean;
+  setIsDeleting: Dispatch<SetStateAction<boolean>>;
   onDelete: { (e: React.MouseEvent<HTMLElement>): void };
 }
-export const DeleteButton = ({ onDelete }: DeleteButtonProps) => {
+export const AdminDeleteDialog = ({
+  isDeleting,
+  setIsDeleting,
+  onDelete,
+}: AdminDeleteDialogProps) => {
+  if (isDeleting)
+    return (
+      <DashboardSectionButton icon={Trash2} label="Deleting..." hover={false} />
+    );
+
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <button className="group flex items-center bg-slate-300 text-slate-500 p-2 rounded-xl hover:bg-slate-500 hover:text-white">
-          <Trash2 />
-          <span className="border-l-2 border-slate-500 pl-2 ml-2 group-hover:border-white">
-            Delete
-          </span>
-        </button>
+        <DashboardSectionButton icon={Trash2} label="Delete" hover={true} />
       </AlertDialogTrigger>
+
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -32,11 +41,19 @@ export const DeleteButton = ({ onDelete }: DeleteButtonProps) => {
             This action will delete all related information.
           </AlertDialogDescription>
         </AlertDialogHeader>
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction 
+          <AlertDialogAction
             className="bg-slate-500 hover:bg-slate-600"
-            onClick={onDelete}>Delete</AlertDialogAction>
+            onClick={async (e) => {
+              setIsDeleting(true);
+              await onDelete(e);
+              setIsDeleting(false);
+            }}
+          >
+            Delete
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

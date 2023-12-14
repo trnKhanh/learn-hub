@@ -1,6 +1,13 @@
 import { getCourse } from "@/actions/courses";
 import { getStudent } from "@/actions/students";
+import {
+  InfoTable,
+  InfoTableKey,
+  InfoTableRow,
+  InfoTableValue,
+} from "@/app/(dashboard)/dashboard/_components/info-table";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export const FinancialAidInfoTable = ({
   financialAid,
@@ -10,52 +17,46 @@ export const FinancialAidInfoTable = ({
   const [student, setStudent] = useState<Student>();
   const [course, setCourse] = useState<Course>();
   useEffect(() => {
-    getStudent(financialAid.student_id).then((data) => {
-      if (data && data.student) setStudent(data.student);
+    getStudent(financialAid.student_id).then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setStudent(res.data.student);
+        } else {
+          toast.error(res.data.message);
+        }
+      }
     });
-    getCourse(financialAid.course_id).then((data) => {
-      if (data && data.course) setCourse(data.course);
+    getCourse(financialAid.course_id).then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setCourse(res.data.course);
+        } else {
+          toast.error(res.data.message);
+        }
+      }
     });
   });
 
   return (
-    <div className="flex flex-col">
-      <table className="border border-collapse ">
+    <InfoTable label="Financial Aid">
+      <InfoTableRow>
+        <InfoTableKey>Student</InfoTableKey>
         {student && (
-          <tr className="hover:bg-slate-100">
-            <th className="w-1/2 text-left border border-slate-700 p-1">
-              Student
-            </th>
-            <th className="w-1/2 text-left border border-slate-700 p-1 font-normal">
-              {student.username || "None"}
-            </th>
-          </tr>
+          <InfoTableValue> {student.username || "None"}</InfoTableValue>
         )}
-        {course && (
-          <tr className="hover:bg-slate-100">
-            <th className="w-1/2 text-left border border-slate-700 p-1">
-              Course
-            </th>
-            <th className="w-1/2 text-left border border-slate-700 p-1 font-normal">
-              {course.name || "None"}
-            </th>
-          </tr>
-        )}
-        <tr className="hover:bg-slate-100">
-          <th className="w-1/2 text-left border border-slate-700 p-1">Essay</th>
-          <th className="w-1/2 text-left border border-slate-700 p-1 font-normal">
-            {financialAid.essay || "None"}
-          </th>
-        </tr>
-        <tr className="hover:bg-slate-100">
-          <th className="w-1/2 text-left border border-slate-700 p-1">
-            Amount of money
-          </th>
-          <th className="w-1/2 text-left border border-slate-700 p-1 font-normal">
-            {financialAid.amount || "None"}
-          </th>
-        </tr>
-      </table>
-    </div>
+      </InfoTableRow>
+      <InfoTableRow>
+        <InfoTableKey>Course</InfoTableKey>
+        {course && <InfoTableValue> {course.name || "None"}</InfoTableValue>}
+      </InfoTableRow>
+      <InfoTableRow>
+        <InfoTableKey>Essay</InfoTableKey>
+        <InfoTableValue> {financialAid.essay || "None"}</InfoTableValue>
+      </InfoTableRow>
+      <InfoTableRow>
+        <InfoTableKey>Amount of money</InfoTableKey>
+        <InfoTableValue> {financialAid.amount || "0"}</InfoTableValue>
+      </InfoTableRow>
+    </InfoTable>
   );
 };
