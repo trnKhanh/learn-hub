@@ -1,4 +1,8 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "./env") });
+
+console.log(path.resolve(__dirname, "./.env"));
+console.log(process.env.DB_HOST);
 
 const express = require("express");
 const app = express();
