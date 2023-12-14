@@ -2,7 +2,10 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+
+// Config Request Body
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use users router
 const authRouter = require("./routes/Auth.route");
