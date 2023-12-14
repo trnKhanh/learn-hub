@@ -7,7 +7,7 @@ interface AdminItemProps {
   picture: string;
   label: string;
   buttons: React.ReactNode;
-  onDelete: { (e: React.MouseEvent<HTMLElement>): void };
+  onDelete?: { (e: React.MouseEvent<HTMLElement>): void };
 }
 
 export const AdminItem = ({
@@ -25,7 +25,7 @@ export const AdminItem = ({
       <div className="ml-6">{label}</div>
       <div className="flex space-x-2 ml-auto">
         {buttons}
-        <DeleteButton onDelete={onDelete} />
+        {onDelete && <DeleteButton onDelete={onDelete} />}
       </div>
     </div>
   );

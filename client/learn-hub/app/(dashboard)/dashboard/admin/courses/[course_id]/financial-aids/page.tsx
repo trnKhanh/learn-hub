@@ -62,14 +62,6 @@ export default function FinancialAids({
                     <AdminItem
                       picture={financialAid.student_id}
                       label={financialAid.username}
-                      onDelete={async () => {
-                        setIsDeleting(financialAid.student_id);
-                        await deleteFinancialAid(
-                          financialAid.course_id,
-                          financialAid.student_id,
-                        );
-                        setIsDeleting("");
-                      }}
                       buttons={
                         <FinancialAidVerifyButton financialAid={financialAid} />
                       }

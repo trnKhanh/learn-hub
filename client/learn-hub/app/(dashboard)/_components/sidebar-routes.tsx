@@ -111,7 +111,6 @@ export const SidebarRoutes = () => {
     }
   }, []);
 
-  console.log(routes);
   return (
     <div className="flex flex-col w-full">
       {routes.map((route) => (
