@@ -10,7 +10,7 @@ class FinancialAid {
     this.status = financialAid.state || "PENDING";
   }
 
-  static queryFields = `student_id, course_id, essay, amount, status`;
+  static queryFields = `student_id, username, course_id, essay, amount, status`;
 
   // Create new financialAid
   static create = async (newFinancialAid) => {
@@ -44,7 +44,7 @@ class FinancialAid {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
       `SELECT ${FinancialAid.queryFields}
-       FROM financial_aids 
+       FROM financial_aids JOIN (students NATURAL JOIN users) ON student_id=students.id
        WHERE ${filterKeys}`,
       filterValues,
     );
@@ -65,7 +65,7 @@ class FinancialAid {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
       `SELECT ${FinancialAid.queryFields}
-       FROM financial_aids  
+       FROM financial_aids JOIN (students NATURAL JOIN users) ON student_id=students.id
        WHERE ${filterKeys}`,
       filterValues,
     );
@@ -76,7 +76,7 @@ class FinancialAid {
   static getAll = async () => {
     const [rows, fields] = await sql.query(
       `SELECT ${FinancialAid.queryFields} 
-       FROM financial_aids`,
+       FROM financial_aids JOIN (students NATURAL JOIN users) ON student_id=students.id`,
     );
     console.log("Get all financialAids: ", { results: rows });
     return rows;
@@ -95,7 +95,7 @@ class FinancialAid {
       );
       const [rows, fields] = await con.query(
         `SELECT ${FinancialAid.queryFields} 
-         FROM financial_aids 
+         FROM financial_aids JOIN (students NATURAL JOIN users) ON student_id=students.id
          WHERE course_id=? AND student_id=?`,
         [course_id, student_id],
       );
@@ -127,7 +127,7 @@ class FinancialAid {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${FinancialAid.queryFields} 
-         FROM financial_aids  
+         FROM financial_aids JOIN (students NATURAL JOIN users) ON student_id=students.id
          WHERE course_id=? AND student_id=?`,
         [course_id, student_id],
       );

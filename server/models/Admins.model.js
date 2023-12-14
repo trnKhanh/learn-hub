@@ -10,7 +10,7 @@ class Admin {
     this.students_access = admin.students_access || 0;
   }
 
-  static queryFields = `${User.queryFields}, courses_access, tutors_access, students_access`;
+  static queryFields = `${User.queryFields}, courses_access, tutors_access, students_access, supporters_access`;
 
   // Create new Admin
   static create = async (newAdmin) => {

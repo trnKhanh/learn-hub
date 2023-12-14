@@ -96,7 +96,7 @@ class Supporter {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters 
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -127,7 +127,7 @@ class Supporter {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters  
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );

@@ -131,21 +131,21 @@ const updateFinancialAidStatus = async (req, res) => {
     } else {
       status = "TUTOR_" + data.status;
     }
-    const financialAid = await FinancialAid.updateById(
+    const financialAids = await FinancialAid.updateById(
       req.params.course_id,
       req.params.student_id,
       {
         status: status,
       },
     );
-    if (!financialAid) {
+    if (!financialAids) {
       res.status(404).json({
         message: "Not found Financial aid",
       });
     } else {
       res.status(200).json({
         message: "Financial aid has been updated",
-        financialAid: financialAid,
+        financialAids: financialAids,
       });
     }
   } catch (err) {

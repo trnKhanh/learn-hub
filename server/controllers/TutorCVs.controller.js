@@ -1,4 +1,5 @@
 const TutorCV = require("../models/TutorsCV.model");
+const Tutor = require("../models/Tutors.model");
 const { validationResult, matchedData } = require("express-validator");
 
 const putTutorCV = async (req, res) => {
@@ -118,6 +119,11 @@ const updateTutorCVStatus = async (req, res) => {
     return;
   }
   try {
+    if (data.status == "PASSED") {
+      await Tutor.updateById(req.params.id, { verified: 1 });
+    } else {
+      await Tutor.updateById(req.params.id, { verified: 0 });
+    }
     const tutorCVs = await TutorCV.updateById(req.params.id, {
       status: data.status,
     });

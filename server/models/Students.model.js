@@ -96,7 +96,7 @@ class Student {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Student.queryFields} 
-         FROM students 
+         FROM students NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -127,7 +127,7 @@ class Student {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Student.queryFields} 
-         FROM students  
+         FROM students NATURAL JOIN users
          WHERE id=?`,
         [id],
       );

@@ -92,7 +92,7 @@ class Tutor {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors 
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -123,7 +123,7 @@ class Tutor {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors  
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
