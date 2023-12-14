@@ -69,7 +69,7 @@ export const updateTutorCV = async (id: string, status: string) => {
       }),
       cache: "no-store",
     });
-    const data: { message: string; tutorCV: TutorCV } = await res.json();
+    const data: { message: string; tutorCVs: TutorCV[] } = await res.json();
     return data;
   } catch (err) {
     console.log(err);

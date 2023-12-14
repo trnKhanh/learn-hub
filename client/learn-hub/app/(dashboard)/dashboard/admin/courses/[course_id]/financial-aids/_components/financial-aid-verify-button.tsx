@@ -1,4 +1,3 @@
-import { getTutorCV, updateTutorCV } from "@/actions/tutors";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,45 +12,55 @@ import {
 import { ShieldCheck, ShieldHalf, ShieldX } from "lucide-react";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { FinancialAidInfoTable } from "./financial-aid-info-table";
+import { updateFinancialAid } from "@/actions/courses";
 
-interface TutorVerifyButtonProps {
-  tutor: Tutor;
+interface FinancialAidVerifyButtonProps {
+  financialAid: FinancialAid;
 }
-export const TutorVerifyButton = ({ tutor }: TutorVerifyButtonProps) => {
-  const [status, setStatus] = useState("NO_CV");
+export const FinancialAidVerifyButton = ({
+  financialAid,
+}: FinancialAidVerifyButtonProps) => {
+  const [status, setStatus] = useState(financialAid.status);
   const [isUpdating, setIsUpdating] = useState(false);
-  useEffect(() => {
-    getTutorCV(tutor.id).then((data) => {
-      console.log(data);
-      if (data) {
-        if (data.tutorCV) {
-          setStatus(data.tutorCV.status);
-        }
-      }
-    });
-  });
 
-  if (status == "NO_CV") {
-    return (
-      <div className="flex items-center bg-slate-300 text-slate-400 p-2 rounded-xl">
-        <ShieldX />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">No CV</span>
-      </div>
-    );
-  }
-  if (status == "PASSED") {
+  if (status == "ADMIN_PASSED") {
     return (
       <div className="flex items-center bg-lime-300 text-slate-500 p-2 rounded-xl">
         <ShieldCheck />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">Verified</span>
+        <span className="border-l-2 border-slate-500 pl-2 ml-2">
+          Admin Passed
+        </span>
       </div>
     );
   }
-  if (status == "REFUSED") {
+  if (status == "TUTOR_PASSED") {
+    return (
+      <div className="flex items-center bg-lime-300 text-slate-500 p-2 rounded-xl">
+        <ShieldCheck />
+        <span className="border-l-2 border-slate-500 pl-2 ml-2">
+          TUTOR_PASSED
+        </span>
+      </div>
+    );
+  }
+  if (status == "ADMIN_DENIED") {
     return (
       <div className="flex items-center bg-red-300 text-slate-500 p-2 rounded-xl">
         <ShieldX />
-        <span className="border-l-2 border-slate-500 pl-2 ml-2">Refused</span>
+        <span className="border-l-2 border-slate-500 pl-2 ml-2">
+          Admin Denied
+        </span>
+      </div>
+    );
+  }
+  if (status == "TUTOR_DENIED") {
+    return (
+      <div className="flex items-center bg-red-300 text-slate-500 p-2 rounded-xl">
+        <ShieldX />
+        <span className="border-l-2 border-slate-500 pl-2 ml-2">
+          Tutor Denied
+        </span>
       </div>
     );
   }
@@ -68,48 +77,46 @@ export const TutorVerifyButton = ({ tutor }: TutorVerifyButtonProps) => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Are you sure to verify this tutor?
+            Are you sure to pass this financial aid?
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            Please inspect the submitted CV before verification.
-          </AlertDialogDescription>
+          <FinancialAidInfoTable financialAid={financialAid} />
         </AlertDialogHeader>
-        <Link
-          target="_blank"
-          href={`http://localhost:3001/tutors/cvs/download/${tutor.id}`}
-          download
-        >
-          <button className="p-2 bg-slate-200 rounded-xl hover:bg-slate-300">
-            Download CV
-          </button>
-        </Link>
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-500 hover:bg-red-600"
             onClick={async () => {
               setIsUpdating(true);
-              const data = await updateTutorCV(tutor.id, "REFUSED");
+              const data = await updateFinancialAid(
+                financialAid.course_id,
+                financialAid.student_id,
+                "DENIED",
+              );
               if (data) {
-                setStatus(data.tutorCVs[0].status);
+                setStatus(data.financialAids[0].status);
               }
               setIsUpdating(false);
             }}
           >
-            Refuse
+            Deny
           </AlertDialogAction>
           <AlertDialogAction
             className="bg-lime-500 hover:bg-lime-600"
             onClick={async () => {
               setIsUpdating(true);
-              const data = await updateTutorCV(tutor.id, "PASSED");
+              const data = await updateFinancialAid(
+                financialAid.course_id,
+                financialAid.student_id,
+                "PASSED",
+              );
               if (data) {
-                setStatus(data.tutorCVs[0].status);
+                setStatus(data.financialAids[0].status);
               }
               setIsUpdating(false);
             }}
           >
-            Verify
+            Pass
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -51,3 +51,12 @@ type TutorCV = {
   tutor_id: string;
   status: string;
 };
+
+type FinancialAid = {
+  student_id: string;
+  username: string;
+  course_id: string;
+  essay: string;
+  amount: number;
+  status: string;
+};

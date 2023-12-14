@@ -2,20 +2,18 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DeleteButton } from "./delete-button";
 import { ShieldHalf } from "lucide-react";
-import { VerifyButton } from "./verify-button";
 
 interface AdminItemProps {
   picture: string;
   label: string;
-  // onVerify?: { (e: React.MouseEvent<HTMLElement>): void };
-  verifyButton?: React.ReactNode;
+  buttons: React.ReactNode;
   onDelete: { (e: React.MouseEvent<HTMLElement>): void };
 }
 
 export const AdminItem = ({
   picture,
   label,
-  verifyButton,
+  buttons,
   onDelete,
 }: AdminItemProps) => {
   return (
@@ -26,7 +24,7 @@ export const AdminItem = ({
       </Avatar>
       <div className="ml-6">{label}</div>
       <div className="flex space-x-2 ml-auto">
-        {verifyButton}
+        {buttons}
         <DeleteButton onDelete={onDelete} />
       </div>
     </div>
