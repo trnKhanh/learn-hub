@@ -39,6 +39,7 @@ const signup = async (req, res) => {
         message: "Errors occur when creating new user",
       });
     } else {
+      res.cookie('accessToken', token, { httpOnly: true });
       res.status(201);
       login(req, res);
     }

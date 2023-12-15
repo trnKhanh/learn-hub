@@ -4,6 +4,9 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
+var cors = require('cors')
+app.use(cors())
+
 // Use users router
 const authRouter = require("./routes/Auth.route");
 app.use("/", authRouter);
