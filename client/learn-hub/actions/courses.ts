@@ -47,6 +47,33 @@ export const getAllFinancialAids = async (id: string) => {
   }
 };
 
+export const createFinancialAid = async (
+  course_id: string,
+  info: {
+    essay: string;
+    amount: number;
+  },
+) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3001/courses/${course_id}/financialAids`,
+      {
+        method: "POST",
+        body: JSON.stringify(info),
+        headers: new Headers({
+          "content-type": "application/json",
+        }),
+      },
+    );
+    const data: { message: string; financialAids: FinancialAid[] } =
+      await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const deleteFinancialAid = async (
   course_id: string,
   student_id: string,
