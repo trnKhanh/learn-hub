@@ -1,6 +1,8 @@
 export const getAllSupporters = async () => {
   try {
-    const res = await fetch(`http://localhost:3001/supporters`);
+    const res = await fetch(`http://localhost:3001/supporters`, {
+      credentials: "include",
+    });
     const data: { message: string; supporters: Supporter[] } = await res.json();
 
     return { status: res.status, data: data };
@@ -11,6 +13,7 @@ export const getAllSupporters = async () => {
 export const deleteSupporter = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/supporters/${id}`, {
+      credentials: "include",
       method: "DELETE",
     });
     const data: { message: string; supporters: Supporter[] } = await res.json();

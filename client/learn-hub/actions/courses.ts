@@ -1,6 +1,8 @@
 export const getAllCourses = async () => {
   try {
-    const res = await fetch("http://localhost:3001/courses");
+    const res = await fetch("http://localhost:3001/courses", {
+      credentials: "include",
+    });
     const data: { message: string; courses: Course[] } = await res.json();
 
     return { status: res.status, data: data };
@@ -11,7 +13,9 @@ export const getAllCourses = async () => {
 
 export const getCourse = async (id: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/courses/${id}`);
+    const res = await fetch(`http://localhost:3001/courses/${id}`, {
+      credentials: "include",
+    });
     const data: { message: string; course: Course } = await res.json();
 
     return { status: res.status, data: data };
@@ -23,6 +27,7 @@ export const getCourse = async (id: string) => {
 export const deleteCourse = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}`, {
+      credentials: "include",
       method: "DELETE",
     });
     const data: { message: string; courses: Course[] } = await res.json();
@@ -37,6 +42,7 @@ export const getAllFinancialAids = async (id: string) => {
   try {
     const res = await fetch(
       `http://localhost:3001/courses/${id}/financialAids`,
+      { credentials: "include" },
     );
     const data: { message: string; financialAids: FinancialAid[] } =
       await res.json();
@@ -58,6 +64,7 @@ export const createFinancialAid = async (
     const res = await fetch(
       `http://localhost:3001/courses/${course_id}/financialAids`,
       {
+        credentials: "include",
         method: "POST",
         body: JSON.stringify(info),
         headers: new Headers({
@@ -82,6 +89,7 @@ export const deleteFinancialAid = async (
     const res = await fetch(
       `http://localhost:3001/courses/${course_id}/financialAids/${student_id}`,
       {
+        credentials: "include",
         method: "DELETE",
       },
     );
@@ -103,6 +111,7 @@ export const updateFinancialAid = async (
     const res = await fetch(
       `http://localhost:3001/courses/${course_id}/financialAids/${student_id}`,
       {
+        credentials: "include",
         method: "PATCH",
         body: JSON.stringify({
           status: status,

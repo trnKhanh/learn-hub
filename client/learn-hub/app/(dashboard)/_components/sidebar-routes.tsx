@@ -1,6 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
 import {
   BarChart,
   CalendarCheck,
@@ -14,11 +13,9 @@ import {
   User,
   UserCog,
   Shield,
+  FolderPlus,
 } from "lucide-react";
 
-=======
-import { BarChart, CalendarCheck, Layout, List, Heart, FolderOpenDot, ShoppingCart, UserRoundCog, FolderPlus } from "lucide-react";
->>>>>>> origin/frontend
 import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
@@ -38,20 +35,12 @@ const guestRoutes = [
   {
     icon: Heart,
     label: "Favorites",
-<<<<<<< HEAD
-    href: "/favorites",
-=======
     href: "/dashboard/favorites",
->>>>>>> origin/frontend
   },
   {
     icon: ShoppingCart,
     label: "Cart",
-<<<<<<< HEAD
-    href: "/shopping-carts",
-=======
     href: "/dashboard/shopping-cart",
->>>>>>> origin/frontend
   },
   {
     icon: CalendarCheck,
@@ -60,15 +49,9 @@ const guestRoutes = [
   },
   {
     icon: UserRoundCog,
-<<<<<<< HEAD
-    label: "Edit Profile",
-    href: "/dashboard/edit-profile",
-  },
-=======
     label: "Profile",
     href: "/dashboard/profile",
   }
->>>>>>> origin/frontend
 ];
 
 const teacherRoutes = [
@@ -120,6 +103,7 @@ const adminRoutes = [
 export const SidebarRoutes = () => {
   const [routes, setRoutes] = useState(guestRoutes);
   const pathname = usePathname();
+  console.log('123')
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("is_admin");

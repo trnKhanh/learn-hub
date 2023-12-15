@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 
 let validateToken = async (req, res, next) => {
-  console.log(req.cookies);
   const accessToken = req.cookies.accessToken;
   try {
     const publicKey = fs.readFileSync(path.join(__dirname, "../jwt.key.pub"));

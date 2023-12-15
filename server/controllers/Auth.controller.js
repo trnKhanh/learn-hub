@@ -123,7 +123,22 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req, res) => {
+  try {
+    res.clearCookie("accessToken");
+    res.status(200).send({
+      message: "Log out successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      message: "Errors occur when finding user",
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
+  logout,
 };
