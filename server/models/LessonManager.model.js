@@ -2,7 +2,7 @@ const express = require("express");
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
 
-class Lessons {
+class LessonManager {
   /**
    * Lessons sẽ có 2 chức năng
       1. basic: Cho Course_id => Tìm tất cả các lesson của course đó
@@ -124,4 +124,4 @@ class Lessons {
     }
   }
 }
-module.exports = Lessons;
+module.exports = LessonManager;

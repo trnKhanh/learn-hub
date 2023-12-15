@@ -1,6 +1,6 @@
 const express = require("express");
 const Course = require("../models/Courses.model");
-const Lessons = require("../models/Lessons.model");
+const LessonManager = require("../models/LessonManager.model");
 
 class LessonsController {
   static async getCourse(req, res, next) {
@@ -24,7 +24,7 @@ class LessonsController {
   }
 
   static async getAllLessons(req, res) {
-    let lessonManager = new Lessons(req.body.course.id);
+    let lessonManager = new LessonManager(req.body.course.id);
 
     try {
       const lessons = await lessonManager.findAll();
@@ -43,7 +43,7 @@ class LessonsController {
 
   static async getLesson(req, res) {
     let lesson_id = req.params.lesson_id;
-    let lessonManager = new Lessons(req.body.course.id, lesson_id);
+    let lessonManager = new LessonManager(req.body.course.id, lesson_id);
 
     try {
       const promises = [
@@ -81,6 +81,13 @@ class LessonsController {
         message: "Errors occur when getting lesson's information",
       });
     }
+  }
+
+  static async createLesson(req, res) {
+    res.status(200).json({
+      message: "Create lesson successfully",
+      course: req.body.course,
+    });
   }
 }
 
