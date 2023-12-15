@@ -92,6 +92,70 @@ class Lesson {
       throw err;
     }
   }
+
+  async update() {
+    const con = await sql.getConnection();
+    try {
+      await con.beginTransaction();
+
+      const [res, _] = await sql.query(`UPDATE lessons SET ? WHERE id=?`, [
+        this,
+        this.id,
+      ]);
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM lessons WHERE id=?`,
+        [this.id]
+      );
+
+      await con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
+      // console.log("Updated lesson: ", { newLesson: rows[0], results: res });
+      return rows[0];
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      console.log(err);
+      throw err;
+    }
+  }
+
+  static async deleteById(filter) {
+    const { filterKeys, filterValues } = formatFilters(filter);
+
+    const con = await sql.getConnection();
+    try {
+      await con.beginTransaction();
+
+      const [rows, fields] = await con.query(
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues
+      );
+
+      const [res, _] = await con.query(
+        `DELETE FROM lessons WHERE ${filterKeys}`,
+        filterValues
+      );
+      // console.log("Deleted lessons", {
+      //   filter: filter,
+      //   results: res,
+      // });
+
+      await con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
+      else return rows[0];
+    } catch (error) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      console.log(error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Lesson;
