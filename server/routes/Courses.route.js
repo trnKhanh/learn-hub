@@ -12,6 +12,7 @@ const { validateStudent } = require("../middlewares/Students.middleware");
 const {
   createCourseScheme,
   updateCourseScheme,
+  searchCourseScheme,
 } = require("../middlewares/validators/Courses.validator");
 
 const multer = require("multer");
@@ -20,7 +21,7 @@ const upload = multer({
 });
 
 router.get("/", coursesController.getAllCourses);
-
+router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 router.get("/:course_id", coursesController.getCourse);
 
 router.post(
