@@ -2,7 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 app.use(express.json());
+app.use(cors());
+app.use(cookieParser());
 
 var cors = require('cors')
 app.use(cors())
@@ -15,14 +19,19 @@ app.use("/", authRouter);
 const usersRouter = require("./routes/Users.route");
 app.use("/users", usersRouter);
 
-// User tutors router
+const adminsRouter = require("./routes/Admins.route");
+app.use("/admins", adminsRouter);
+
 const tutorsRouter = require("./routes/Tutors.route");
 app.use("/tutors", tutorsRouter);
 
-// Use courses router
+const studentsRouter = require("./routes/Students.route");
+app.use("/students", studentsRouter);
+
+const supportersRouter = require("./routes/Supporters.route");
+app.use("/supporters", supportersRouter);
+
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
-app.listen(process.env.PORT, () =>
-  console.log(`Example app is listening on port ${process.env.PORT}.`),
-);
+module.exports = app;

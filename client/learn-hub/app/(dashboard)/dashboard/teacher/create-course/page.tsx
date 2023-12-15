@@ -76,17 +76,6 @@ const CreatePage = () => {
             title: form.getValues("name"),
             description: "Your course has been created successfully",
         })
-        {/*try {
-            const response = await axios.post("/api/courses", values);
-            router.push(`/teacher/courses/${response.data.id}`);
-            toast({
-                title: "You created course successfully",
-            })
-        } catch {
-            toast({
-                title: "Something went wrong",
-            })
-        }*/}
     }
 
     return ( 

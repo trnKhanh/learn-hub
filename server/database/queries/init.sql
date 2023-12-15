@@ -5,11 +5,12 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(72) NOT NULL,
   full_name VARCHAR(255),
-  day_of_birth DATE,
+  date_of_birth DATE,
   phone_number VARCHAR(15),
-  institution VARCHAR(255),
+  institute VARCHAR(255),
   area_of_study VARCHAR(255),
   biography TEXT,
+  profile_picture VARCHAR(255),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
@@ -26,13 +27,14 @@ CREATE TABLE IF NOT EXISTS admins (
   courses_access BOOL NOT NULL DEFAULT 0,
   tutors_access BOOL NOT NULL DEFAULT 0,
   students_access BOOL NOT NULL DEFAULT 0,
+  supporters_access BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tutors (
   id INT NOT NULL,
-  admin_id INT NOT NULL,
+  admin_id INT,
   verified BOOL NOT NULL DEFAULT 0,
   profit DOUBLE NOT NULL DEFAULT 0 CHECK(profit >= 0),
   PRIMARY KEY (id),
@@ -49,27 +51,28 @@ CREATE TABLE IF NOT EXISTS supporters (
 
 CREATE TABLE IF NOT EXISTS courses ( 
   id INT AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   description TEXT NOT NULL,
   difficulty ENUM("BEGINNER", "INTERMEDIATE", "ADVANCED") NOT NULL,
   duration INT NOT NULL CHECK (duration >= 0),
   owner_id INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   price DOUBLE NOT NULL CHECK(price >= 0),
-  discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
+  discount DOUBLE CHECK (discount >= 0 AND discount <= 1),
+  profile_picture VARCHAR(255),
   PRIMARY KEY (id),
   FOREIGN KEY (owner_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS languages (
   id INT AUTO_INCREMENT,
-  language_name VARCHAR(255) NOT NULL,
+  language_name VARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS subjects (
   id INT AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
@@ -118,14 +121,12 @@ CREATE TABLE IF NOT EXISTS problems (
 CREATE TABLE IF NOT EXISTS financial_aids (
   student_id INT NOT NULL,
   course_id INT NOT NULL,
-  admin_id INT NOT NULL,
   essay TEXT NOT NULL,
   amount DOUBLE NOT NULL CHECK (amount >= 0),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  state ENUM("PENDING", "ADMIN_PASSED", "TUTOR_PASSED", "ADMIN_DENIED", "TUTOR_DENIED") NOT NULL,
+  status ENUM("PENDING", "ADMIN_PASSED", "TUTOR_PASSED", "ADMIN_DENIED", "TUTOR_DENIED") NOT NULL,
   PRIMARY KEY (student_id, course_id),
-  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS shopping_carts (
@@ -138,6 +139,7 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
+  
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
@@ -153,8 +155,16 @@ CREATE TABLE IF NOT EXISTS support_sessions (
   started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   finished_at TIMESTAMP,
   PRIMARY KEY (id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (supporter_id) REFERENCES supporters(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (supporter_id) REFERENCES supporters(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tutor_cvs (
+  tutor_id INT NOT NULL UNIQUE,
+  cv_path VARCHAR(255) NOT NULL,
+  status ENUM("PASSED", "PENDING", "REFUSED") NOT NULL,
+  PRIMARY KEY (tutor_id),
+  FOREIGN KEY (tutor_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS notes (
@@ -162,8 +172,8 @@ CREATE TABLE IF NOT EXISTS notes (
   course_id INT NOT NULL,
   content TEXT NOT NULL,
   PRIMARY KEY (student_id, course_id),
-  FOREIGN KEY (student_id) REFERENCES students(id),
-  FOREIGN KEY (course_id) REFERENCES courses(id)
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
@@ -172,24 +182,25 @@ CREATE TABLE IF NOT EXISTS notifications (
   content TEXT NOT NULL,
   status ENUM("SEEN", "NOT SEEN") NOT NULL,
   PRIMARY KEY (user_id, notified_at),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS schedules (
-  user_id INT NOT NULL,
+  student_id INT NOT NULL,
   course_id INT NOT NULL,
   day_of_week ENUM("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY") NOT NULL,
   time_in_day TIME NOT NULL,
-  PRIMARY KEY (user_id, course_id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (course_id) REFERENCES courses(id)
+  PRIMARY KEY (student_id, course_id),
+  FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS payment_information (
+CREATE TABLE IF NOT EXISTS payment_informations (
   user_id INT NOT NULL,
   card VARCHAR(255) NOT NULL,
+  expire_date DATE NOT NULL,
   PRIMARY KEY (user_id, card),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Relationship tables
@@ -268,9 +279,10 @@ CREATE TABLE IF NOT EXISTS payments_courses (
   course_id INT NOT NULL,
   price DOUBLE NOT NULL CHECK (price >= 0),
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
-  no_items INT NOT NULL CHECK (no_items >= 0),
   PRIMARY KEY (payment_id, course_id),
-  FOREIGN KEY (payment_id) REFERENCES payments(id),
-  FOREIGN KEY (course_id) REFERENCES courses(id)
+  FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
+
 );
+
 

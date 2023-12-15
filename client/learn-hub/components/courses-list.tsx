@@ -5,6 +5,7 @@ type CourseWithProgressWithCategory = Course & {
     category: Category | null;
     chapters: { id: string }[];
     progress: number | null;
+    image_url: string | null;
 };
 
 interface CoursesListProps {

@@ -4,15 +4,15 @@ import * as z from "zod";
 import axios from "axios";
 import { Pencil, PlusCircle, ImageIcon } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import { FileUpload } from "@/components/file-upload";
+//import { FileUpload } from "@/components/file-upload";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ImageFormProps {
-    initialData: Course
+    initialData: Course;
     courseId: string;
 };
 
@@ -31,15 +31,20 @@ export const ImageForm = ({
     const toggleEdit = () => setIsEditing((current) => !current);
 
     const router = useRouter();
+    const { toast } = useToast();
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-        await axios.patch(`/api/courses/${courseId}`, values);
-        toast.success("Course updated");
-        toggleEdit();
-        router.refresh();
+            await axios.patch(`/api/courses/${courseId}`, values);
+                toast({
+                    description: "Your course has been created successfully",
+                })
+            toggleEdit();
+            router.refresh();
         } catch {
-        toast.error("Something went wrong");
+            toast({
+                description: "Your course has been created successfully",
+            })
         }
     }
 
@@ -83,14 +88,14 @@ export const ImageForm = ({
         )}
         {isEditing && (
             <div>
-            <FileUpload
+            {/*<FileUpload
                 endpoint="courseImage"
                 onChange={(url) => {
                 if (url) {
                     onSubmit({ imageUrl: url });
                 }
                 }}
-            />
+            />*/}
             <div className="text-xs text-muted-foreground mt-4">
                 16:9 aspect ratio recommended
             </div>

@@ -12,54 +12,93 @@ import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
+import { getAllCategories } from "@/actions/category";
+import { getAllLessonsByCourseId, getAllDocumentsByCourseId, getCategoriesOfCourseId, getCourse } from "@/actions/courses";
 
 const CourseIdPage = async ({
   params
 }: {
   params: { courseId: string }
 }) => {
-  const { userId } = auth();
+  const categories = await getAllCategories();
 
-  if (!userId) {
-    return redirect("/");
+  const course = await getCourse(params.courseId);
+  if (course === undefined) {
+    return Promise.reject(new Error("Course not found"));
+  }
+  const categoriesOfCourse = await getCategoriesOfCourseId(params.courseId);
+  const lessons = await getAllLessonsByCourseId(params.courseId);
+  const documents = await getAllDocumentsByCourseId(params.courseId);
+  
+  /*const courseSample = {
+    "id": "1",
+    "isPublished": true,
+    "title": "Introduction to Operating System",
+    "description": "Learn the basics of operating system",
+    "imageUrl": "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
+    "price": 49.99,
+    "categoryId": "1",
+    "chapters": [
+      {
+        "id": "1",
+        "title": "Introduction",
+        "isPublished": true,
+        "isFree": true,
+      },
+      {
+        "id": "2",
+        "title": "Multi-tasking",
+        "isPublished": true,
+        "isFree": false,
+      }
+    ],
+    "attachments": [
+      {
+        "id": "1",
+        "name": "Introduction to Operating System",
+        "url": "",
+        "type": "pdf"
+      }
+    ],
+    "name": "Introduction to Operating System",
+    "difficulty": "Beginner",
+    "duration": 100,
+    "owner_id": "1",
+    "created_at": "2017-01-01T00:00:00.000Z",
+    "discount": 0,
+    "profile_picture": "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg"
   }
 
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-      userId
-    },
-    include: {
-      chapters: {
-        orderBy: {
-          position: "asc",
-        },
-      },
-      attachments: {
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-    },
-  });
-
-  const categories = await db.category.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
-
-  if (!course) {
-    return redirect("/");
-  }
+  const course = {
+    "id": "1",
+    "isPublished": true,
+    "title": "Introduction to Operating System",
+    "name": "Introduction to Operating System",
+    "difficulty": "Beginner",
+    "description": "Learn the basics of operating system",
+    "imageUrl": "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
+    "price": 49.99,
+    "categoryId": "1",
+    "duration": 100,
+    "owner_id": "1",
+    "created_at": "2017-01-01T00:00:00.000Z",
+    "discount": 0,
+    "profile_picture": "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg"
+  }*/
 
   const requiredFields = [
-    course.title,
+    /*courseSample.title,
+    courseSample.description,
+    courseSample.imageUrl,
+    courseSample.price,
+    courseSample.categoryId,
+    courseSample.chapters.some(chapter => chapter.isPublished),*/
+    course.name,
     course.description,
-    course.imageUrl,
+    course.profile_picture,
     course.price,
-    course.categoryId,
-    course.chapters.some(chapter => chapter.isPublished),
+    categoriesOfCourse[0].id.toString(),
+    lessons.some(chapter => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -87,6 +126,7 @@ const CourseIdPage = async ({
             </span>
           </div>
           <Actions
+            course = { course }
             disabled={!isComplete}
             courseId={params.courseId}
             isPublished={course.isPublished}
@@ -101,23 +141,24 @@ const CourseIdPage = async ({
               </h2>
             </div>
             <TitleForm
-              initialData={course}
-              courseId={course.id}
+              title={course.name}
+              courseId={course.id.toString()}
             />
             <DescriptionForm
-              initialData={course}
-              courseId={course.id}
+              description={course.description}
+              courseId={course.id.toString()}
             />
             <ImageForm
               initialData={course}
-              courseId={course.id}
+              courseId={course.id.toString()}
             />
             <CategoryForm
-              initialData={course}
-              courseId={course.id}
+              //initialData={course}
+              categoryId={categoriesOfCourse[0].id.toString()}
+              courseId={course.id.toString()}
               options={categories.map((category) => ({
                 label: category.name,
-                value: category.id,
+                value: category.id.toString(),
               }))}
             />
           </div>
@@ -130,8 +171,8 @@ const CourseIdPage = async ({
                 </h2>
               </div>
               <ChaptersForm
-                initialData={course}
-                courseId={course.id}
+                chapters={lessons}
+                courseId={course.id.toString()}
               />
             </div>
             <div>
@@ -142,8 +183,8 @@ const CourseIdPage = async ({
                 </h2>
               </div>
               <PriceForm
-                initialData={course}
-                courseId={course.id}
+                price={course.price}
+                courseId={course.id.toString()}
               />
             </div>
             <div>
@@ -154,15 +195,15 @@ const CourseIdPage = async ({
                 </h2>
               </div>
               <AttachmentForm
-                initialData={course}
-                courseId={course.id}
+                documents={documents}
+                courseId={course.id.toString()}
               />
             </div>
           </div>
         </div>
       </div>
     </>
-   );
+  );
 }
- 
+
 export default CourseIdPage;

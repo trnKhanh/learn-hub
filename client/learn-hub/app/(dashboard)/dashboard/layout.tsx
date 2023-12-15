@@ -2,12 +2,8 @@ import { Sidebar } from "../_components/sidebar";
 import { NavbarDashboard } from "../_components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 
-const DashboardLayout = ({
-  children
-}: {
-  children: React.ReactNode;
-}) => {
-  return ( 
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
     <div className="h-full">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
         <NavbarDashboard />
@@ -19,10 +15,8 @@ const DashboardLayout = ({
       <main className="md:pl-56 pt-[80px] h-full ">
         {children}
       </main>
-
-      <Toaster/>
     </div>
   );
-}
+};
 
 export default DashboardLayout;

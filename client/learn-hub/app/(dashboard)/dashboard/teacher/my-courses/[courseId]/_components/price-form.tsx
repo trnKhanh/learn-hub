@@ -21,7 +21,8 @@ import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
 
 interface PriceFormProps {
-    initialData: Course;
+    //initialData: Course;
+    price: number;
     courseId: string;
 };
 
@@ -30,7 +31,8 @@ const formSchema = z.object({
 });
 
 export const PriceForm = ({
-    initialData,
+    //initialData,
+    price,
     courseId
 }: PriceFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -42,7 +44,7 @@ export const PriceForm = ({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-        price: initialData?.price || undefined,
+            price: price || undefined,
         },
     });
 
@@ -50,9 +52,9 @@ export const PriceForm = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-        await axios.patch(`/api/courses/${courseId}`, values);
-        toggleEdit();
-        router.refresh();
+            //await axios.patch(`/api/courses/${courseId}`, values);
+            toggleEdit();
+            router.refresh();
         } catch {
         }
     }
@@ -75,10 +77,10 @@ export const PriceForm = ({
         {!isEditing && (
             <p className={cn(
             "text-sm mt-2",
-            !initialData.price && "text-slate-500 italic"
+            !price && "text-slate-500 italic"
             )}>
-            {initialData.price
-                ? formatPrice(initialData.price)
+            {price
+                ? formatPrice(price)
                 : "No price"
             }
             </p>

@@ -3,13 +3,31 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 const {
-  validateTutorCreatePermission,
-} = require("../middlewares/Tutor.middleware");
+  validateTutorAccessPermission,
+} = require("../middlewares/Tutors.middleware");
+const {
+  updateTutorScheme,
+} = require("../middlewares/validators/Tutors.validator");
 
-router.post(
-  "/",
-  [validateToken, validateTutorCreatePermission],
-  tutorsController.create,
+router.get("/", tutorsController.getAllTutors);
+
+router.get("/:id", tutorsController.getTutor);
+
+router.post("/", [validateToken], tutorsController.createTutor);
+
+router.patch(
+  "/:id",
+  [validateToken, validateTutorAccessPermission, updateTutorScheme],
+  tutorsController.updateTutorById,
 );
 
-module.exports = router
+router.delete(
+  "/:id",
+  [validateToken, validateTutorAccessPermission],
+  tutorsController.deleteTutorById,
+);
+
+const tutorCVsRouter = require("./TutorCVs.route");
+router.use("/cvs", tutorCVsRouter);
+
+module.exports = router;
