@@ -1,5 +1,6 @@
 import { Sidebar } from "../_components/sidebar";
 import { NavbarDashboard } from "../_components/navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const DashboardLayout = ({
   children
@@ -18,6 +19,8 @@ const DashboardLayout = ({
       <main className="md:pl-56 pt-[80px] h-full ">
         {children}
       </main>
+
+      <Toaster/>
     </div>
   );
 }

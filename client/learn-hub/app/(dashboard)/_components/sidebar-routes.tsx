@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, CalendarCheck, Layout, List, Heart, FolderOpenDot, ShoppingCart, UserRoundCog } from "lucide-react";
+import { BarChart, CalendarCheck, Layout, List, Heart, FolderOpenDot, ShoppingCart, UserRoundCog, FolderPlus } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
@@ -19,44 +19,50 @@ const guestRoutes = [
   {
     icon: Heart,
     label: "Favorites",
-    href: "/search",
+    href: "/dashboard/favorites",
   },
   {
     icon: ShoppingCart,
     label: "Cart",
-    href: "/search",
+    href: "/dashboard/shopping-cart",
   },
   {
     icon: CalendarCheck,
     label: "Schedule",
-    href: "/search",
+    href: "/dashboard/schedule",
   },
   {
     icon: UserRoundCog,
-    label: "Edit Profile",
-    href: "/dashboard/edit-profile",
+    label: "Profile",
+    href: "/dashboard/profile",
   }
 ];
 
 const teacherRoutes = [
   {
-    icon: List,
-    label: "Courses",
-    href: "/teacher/courses",
+    icon: Layout,
+    label: "Dashboard",
+    href: "/dashboard",
   },
   {
-    icon: BarChart,
-    label: "Analytics",
-    href: "/teacher/analytics",
+    icon: FolderPlus,
+    label: "Create new course",
+    href: "/dashboard/teacher/create-course",
+  },
+  {
+    icon: FolderOpenDot,
+    label: "My Courses",
+    href: "/dashboard/teacher/my-courses",
   },
 ]
 
 export const SidebarRoutes = () => {
   const pathname = usePathname();
 
-  const isTeacherPage = pathname?.includes("/teacher");
+  //const isTeacherPage = pathname?.includes("/teacher");
 
-  const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+  //const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+  const routes = teacherRoutes
 
   return (
     <div className="flex flex-col w-full">

@@ -1,7 +1,7 @@
 import { CheckCircle, Clock } from "lucide-react";
 import { InfoCard } from "./_component/info-card";
 
-import {getCourses} from "@/actions/get-course";
+import {getCourses} from "@/actions/course";
 
 import { CoursesList } from "@/components/courses-list";
 
@@ -24,7 +24,8 @@ export default async function MyCourses() {
                     variant="success"
                 />
             </div>
-            <CoursesList 
+            <CoursesList
+                isHorizontal={true}
                 items={...courses}
             />
         </div>
