@@ -8,6 +8,9 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+var cors = require('cors')
+app.use(cors())
+
 // Use users router
 const authRouter = require("./routes/Auth.route");
 app.use("/", authRouter);

@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import { LayoutProvider } from "./layout-provider";
-import { ToastContainer } from "react-toastify";
-import ToastProvider from "./toast-provider";
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import Navbar from '@/components/navbar'
+import { Footer } from '@/components/footer'
+import { LayoutProvider } from './layout-provider'
+import { Toaster } from '@/components/ui/toaster'
+import { AuthProvider } from './auth-provider'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,9 +29,14 @@ export default function RootLayout({
       </head>
       <body>
         <ToastProvider>
-          <div>
-            <LayoutProvider>{children}</LayoutProvider>
-          </div>
+        <div>
+          <AuthProvider>
+            <LayoutProvider>
+              {children}
+            </LayoutProvider>
+            <Toaster />
+          </AuthProvider>
+        </div>
         </ToastProvider>
       </body>
     </html>

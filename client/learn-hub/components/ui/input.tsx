@@ -20,6 +20,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
   }
 )
-Input.displayName = "Input"
 
-export { Input }
+const CustomizedInput = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={cn(
+          "text-slate-900 text-base grow border-none outline-none bg-background w-[300px] flex",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+
+Input.displayName = "Input"
+CustomizedInput.displayName = "CustomizedInput"
+
+export { Input, CustomizedInput }

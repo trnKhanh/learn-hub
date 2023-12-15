@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import {
   BarChart,
   CalendarCheck,
@@ -15,6 +16,9 @@ import {
   Shield,
 } from "lucide-react";
 
+=======
+import { BarChart, CalendarCheck, Layout, List, Heart, FolderOpenDot, ShoppingCart, UserRoundCog, FolderPlus } from "lucide-react";
+>>>>>>> origin/frontend
 import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
@@ -34,35 +38,54 @@ const guestRoutes = [
   {
     icon: Heart,
     label: "Favorites",
+<<<<<<< HEAD
     href: "/favorites",
+=======
+    href: "/dashboard/favorites",
+>>>>>>> origin/frontend
   },
   {
     icon: ShoppingCart,
     label: "Cart",
+<<<<<<< HEAD
     href: "/shopping-carts",
+=======
+    href: "/dashboard/shopping-cart",
+>>>>>>> origin/frontend
   },
   {
     icon: CalendarCheck,
     label: "Schedule",
-    href: "/search",
+    href: "/dashboard/schedule",
   },
   {
     icon: UserRoundCog,
+<<<<<<< HEAD
     label: "Edit Profile",
     href: "/dashboard/edit-profile",
   },
+=======
+    label: "Profile",
+    href: "/dashboard/profile",
+  }
+>>>>>>> origin/frontend
 ];
 
 const teacherRoutes = [
   {
-    icon: List,
-    label: "Courses",
-    href: "/teacher/courses",
+    icon: Layout,
+    label: "Dashboard",
+    href: "/dashboard",
   },
   {
-    icon: BarChart,
-    label: "Analytics",
-    href: "/teacher/analytics",
+    icon: FolderPlus,
+    label: "Create new course",
+    href: "/dashboard/teacher/create-course",
+  },
+  {
+    icon: FolderOpenDot,
+    label: "My Courses",
+    href: "/dashboard/teacher/my-courses",
   },
 ];
 

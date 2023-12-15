@@ -1,5 +1,6 @@
 import { Sidebar } from "../_components/sidebar";
 import { NavbarDashboard } from "../_components/navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -11,7 +12,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <Sidebar />
       </div>
 
-      <main className="md:pl-56 pt-[80px] h-full ">{children}</main>
+      <main className="md:pl-56 pt-[80px] h-full ">
+        {children}
+      </main>
+
+      <Toaster/>
     </div>
   );
 };
