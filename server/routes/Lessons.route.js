@@ -28,7 +28,7 @@ router.get(
   validateToken,
   [getCourse],
   validateLessonGetPermission,
-  LessonsController.getLessonWithDocumentAndExam
+  LessonsController.getLessonWithDocumentAndExamById
 );
 
 // create lesson

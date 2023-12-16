@@ -85,7 +85,7 @@ class LessonsController {
     }
   }
 
-  static async getLessonWithDocumentAndExam(req, res) {
+  static async getLessonWithDocumentAndExamById(req, res) {
     let lesson_id = req.params.lesson_id;
     let lessonManager = new LessonManager(req.course.id, lesson_id);
 

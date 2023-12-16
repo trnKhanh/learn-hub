@@ -31,15 +31,6 @@ class Lesson {
   }
 
   async create() {
-    // try {
-    //   const lessonManager = new LessonManager(this.course_id);
-    //   const lesson = lessonManager.create(this);
-    //   return lesson;
-    // } catch (err) {
-    //   console.log(err);
-    //   throw err;
-    // }
-
     const con = await sql.getConnection();
     try {
       await con.beginTransaction();

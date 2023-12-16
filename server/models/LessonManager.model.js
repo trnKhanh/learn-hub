@@ -133,14 +133,8 @@ class LessonManager {
         `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
         filterValues
       );
-
-      if (rows.length) {
-        // console.log("Found lesson: ", { filters: filters, results: rows });
-        return rows;
-      } else {
-        // console.log("Found no lesson: ", { filters: filters });
-        return [];
-      }
+      
+      return rows;
     } catch (errors) {
       console.log(errors);
       throw errors;
