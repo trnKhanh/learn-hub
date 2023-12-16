@@ -7,8 +7,12 @@ class Lesson {
     this.id = lesson.id || null;
     this.name = lesson.name || null;
     this.course_id = lesson.course_id || null;
-    // this.is_free = lesson.is_free || null;
-    // this.is_published = lesson.is_published || null;
+    this.is_free =
+      lesson.is_free == true || lesson.is_free == "true" ? true : false;
+    this.is_published =
+      lesson.is_published == true || lesson.is_published == "true"
+        ? true
+        : false;
   }
 
   async getId() {
@@ -87,6 +91,15 @@ class Lesson {
         // console.log("Found no lesson: ", { lesson: this });
         return false;
       }
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
+  async findOne(filters) {
+    try {
+      return await new LessonManager(this.course_id, this.id).findOne(filters);
     } catch (err) {
       console.log(err);
       throw err;

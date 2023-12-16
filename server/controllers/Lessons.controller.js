@@ -13,6 +13,7 @@ class LessonsController {
     }
 
     const data = matchedData(req);
+    data.course_id = req.course.id;
     // console.log(">>> LessonsController >> creatLess >> data: ", data);
 
     try {
@@ -51,6 +52,26 @@ class LessonsController {
       //   ">>> LessonsController >> getAllLessons >> lessons: ",
       //   lessons
       // );
+      res.status(200).json({
+        message: "Retrieve lessons' information successfully",
+        lessons: lessons,
+        course: req.course,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "Errors occur when getting all lessons' information",
+      });
+    }
+  }
+
+  static async getAllPublishedLessons(req, res) {
+    let lessonManager = new LessonManager(req.course.id);
+
+    try {
+      const lessons = await lessonManager.findAll({
+        is_published: true,
+      });
       res.status(200).json({
         message: "Retrieve lessons' information successfully",
         lessons: lessons,
