@@ -50,7 +50,7 @@ const Navbar = () => {
                     </>
                 ) : (
                     <div className="flex-row gap-7 ml-auto hidden lg:flex overflow-hidden items-center right-0">
-                        <Link href="/signin">
+                        <Link href="/sign-in">
                             <NavbarItem label="Login" />
                         </Link>
                         <Link href="/sign-up">
