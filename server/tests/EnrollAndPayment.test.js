@@ -3,11 +3,20 @@ const request = require("supertest");
 const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const sql = require("../database/db");
 
-let user_id, token, tutor_id, tutor_token, course_admin_id, course_admin_token;
-let course_1_id, course_2_id;
+let course_1_id;
+let course_2_id;
+let user_id;
+let tutor_id;
+let course_admin_id;
+let admin_id;
+
+const user_agent = request.agent(app);
+const tutor_agent = request.agent(app);
+const course_admin_agent = request.agent(app);
+const admin_agent = request.agent(app);
 beforeAll(async () => {
   try {
-    let res = await request(app)
+    const res = await user_agent
       .post("/signup")
       .send({
         username: "test",
@@ -16,16 +25,15 @@ beforeAll(async () => {
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     user_id = res.body.user_id;
-    token = res.body.accessToken;
-
-    await request(app).post("/students").set("accessToken", token);
+    await user_agent.post("/students");
   } catch (err) {
     console.log(err);
   }
 
   try {
-    let res = await request(app)
+    const res = await tutor_agent
       .post("/signup")
       .send({
         username: "tutor",
@@ -34,15 +42,32 @@ beforeAll(async () => {
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     tutor_id = res.body.user_id;
-    tutor_token = res.body.accessToken;
     await sql.query("INSERT INTO tutors SET id=?, verified=1", [tutor_id]);
   } catch (err) {
     console.log(err);
   }
+
   try {
-    await createAdmin();
-    let res = await request(app)
+    let res = await admin_agent
+      .post("/signup")
+      .send({
+        username: "admin",
+        password: "Learnhub123!",
+        email: "admin@gmail.com",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
+    admin_id = res.body.user_id;
+    await sql.query("INSERT INTO admins SET id=?", [admin_id]);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    let res = await course_admin_agent
       .post("/signup")
       .send({
         username: "course_admin",
@@ -51,8 +76,8 @@ beforeAll(async () => {
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     course_admin_id = res.body.user_id;
-    course_admin_token = res.body.accessToken;
     await sql.query(
       "INSERT INTO admins SET id=?, courses_access=1, tutors_access=0, students_access=0, supporters_access=0",
       [course_admin_id],
@@ -88,6 +113,8 @@ beforeAll(async () => {
   }
   expect(user_id).toBeDefined();
   expect(tutor_id).toBeDefined();
+  expect(admin_id).toBeDefined();
+  expect(course_admin_id).toBeDefined();
   expect(course_1_id).toBeDefined();
   expect(course_2_id).toBeDefined();
 });
@@ -128,63 +155,49 @@ afterAll(async () => {
 
 describe("POST /users/cart/:id", () => {
   it("Add course 1 to cart", async () => {
-    const res = await request(app)
-      .post(`/users/cart/${course_1_id}`)
-      .set("accessToken", token);
+    const res = await user_agent.post(`/users/cart/${course_1_id}`);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.shopping_cart.student_id).toBe(user_id);
     expect(res.body.shopping_cart.course_id).toBe(String(course_1_id));
   });
-});
-
-describe("POST /users/cart/:id", () => {
   it("Add course 2 to cart", async () => {
-    const res = await request(app)
-      .post(`/users/cart/${course_2_id}`)
-      .set("accessToken", token);
+    const res = await user_agent.post(`/users/cart/${course_2_id}`);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.shopping_cart.student_id).toBe(user_id);
     expect(res.body.shopping_cart.course_id).toBe(String(course_2_id));
   });
-});
-
-describe("POST /users/cart/:id", () => {
   it("Add course 2 to cart (not student)", async () => {
-    const res = await request(app)
-      .post(`/users/cart/${course_2_id}`)
-      .set("accessToken", tutor_token);
+    const res = await tutor_agent.post(`/users/cart/${course_2_id}`);
 
     expect(res.statusCode).toBe(401);
   });
-});
-
-describe("POST /users/cart/:id", () => {
   it("Add unknown course to cart", async () => {
-    const res = await request(app)
-      .post(`/users/cart/11111111`)
-      .set("accessToken", token);
+    const res = await user_agent.post(`/users/cart/11111111`);
 
     expect(res.statusCode).toBe(404);
   });
 });
 
 describe("GET /users/cart", () => {
-  it("Get cart information", async () => {
-    const res = await request(app).get(`/users/cart`).set("accessToken", token);
+  it("Get cart information by student", async () => {
+    const res = await user_agent.get(`/users/cart`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.course_ids).toBeInstanceOf(Array);
     expect(res.body.course_ids.length).toBe(2);
   });
+  it("Get cart information not by student", async () => {
+    const res = await tutor_agent.get(`/users/cart`);
+
+    expect(res.statusCode).toBe(401);
+  });
 });
 
 describe("DELETE /users/cart/:id", () => {
-  it("Delete one course", async () => {
-    const res = await request(app)
-      .delete(`/users/cart/${course_1_id}`)
-      .set("accessToken", token);
+  it("Delete one course from cart", async () => {
+    const res = await user_agent.delete(`/users/cart/${course_1_id}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.course_ids[0].course_id).toBe(course_1_id);
@@ -192,10 +205,8 @@ describe("DELETE /users/cart/:id", () => {
 });
 
 describe("DELETE /users/cart", () => {
-  it("Delete all course", async () => {
-    const res = await request(app)
-      .delete(`/users/cart`)
-      .set("accessToken", token);
+  it("Delete all courses from cart", async () => {
+    const res = await user_agent.delete(`/users/cart`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.course_ids[0].course_id).toBe(course_2_id);
@@ -204,19 +215,12 @@ describe("DELETE /users/cart", () => {
 
 describe("POST /users/payments", () => {
   it("Pay 2 courses", async () => {
-    await request(app)
-      .post(`/users/cart/${course_1_id}`)
-      .set("accessToken", token);
-    await request(app)
-      .post(`/users/cart/${course_2_id}`)
-      .set("accessToken", token);
+    await user_agent.post(`/users/cart/${course_1_id}`);
+    await user_agent.post(`/users/cart/${course_2_id}`);
 
-    const res = await request(app)
-      .post("/users/payments")
-      .send({
-        discounted: 0.2,
-      })
-      .set("accessToken", token);
+    const res = await user_agent.post("/users/payments").send({
+      discounted: 0.2,
+    });
 
     expect(res.statusCode).toBe(201);
     expect(res.body.payment.id).toBeDefined();
@@ -237,15 +241,10 @@ describe("POST /users/payments", () => {
     );
     expect(paidCourses.length).toBe(2);
   });
-});
-describe("POST /users/payments", () => {
   it("Pay with invalid discounted amount", async () => {
-    const res = await request(app)
-      .post("/users/payments")
-      .send({
-        discounted: 2,
-      })
-      .set("accessToken", token);
+    const res = await user_agent.post("/users/payments").send({
+      discounted: 2,
+    });
 
     expect(res.statusCode).toBe(422);
   });
@@ -253,67 +252,63 @@ describe("POST /users/payments", () => {
 
 describe("GET /users/payments", () => {
   it("Get all payments", async () => {
-    const res = await request(app)
-      .get("/users/payments")
-      .set("accessToken", token);
+    const res = await user_agent.get("/users/payments");
+
     expect(res.statusCode).toBe(200);
     expect(res.body.payments).toBeInstanceOf(Array);
 
-    let info_res = await request(app)
-      .get(`/users/payments/${res.body.payments[0].id}`)
-      .set("accessToken", token);
+    let info_res = await user_agent.get(
+      `/users/payments/${res.body.payments[0].id}`,
+    );
+
     expect(info_res.statusCode).toBe(200);
     expect(info_res.body.payment.courses.length).toBe(2);
     expect(info_res.body.payment.courses[0].price).toBeDefined();
     expect(info_res.body.payment.courses[0].discounted).toBeDefined();
 
-    info_res = await request(app)
-      .get(`/users/payments/${res.body.payments[0].id}`)
-      .set("accessToken", tutor_token);
+    info_res = await tutor_agent.get(
+      `/users/payments/${res.body.payments[0].id}`,
+    );
+
     expect(info_res.statusCode).toBe(401);
   });
 });
+
 describe("POST /users/cart/:id", () => {
-  it("Add course 2 to cart", async () => {
-    const res = await request(app)
-      .post(`/users/cart/${course_2_id}`)
-      .set("accessToken", token);
+  it("Add course 2 to cart after payment", async () => {
+    const res = await user_agent.post(`/users/cart/${course_2_id}`);
 
     expect(res.statusCode).toBe(400);
   });
 });
+
 describe("POST /courses/:id/register", () => {
   it("Register to course 1", async () => {
-    const res = await request(app)
-      .post(`/courses/${course_1_id}/register`)
-      .set("accessToken", token);
+    const res = await user_agent.post(`/courses/${course_1_id}/register`);
 
     expect(res.statusCode).toBe(200);
   });
 });
+
 describe("POST /courses/:id/register", () => {
   it("Register to course 1 (duplicate)", async () => {
-    const res = await request(app)
-      .post(`/courses/${course_1_id}/register`)
-      .set("accessToken", token);
+    const res = await user_agent.post(`/courses/${course_1_id}/register`);
 
     expect(res.statusCode).toBe(409);
   });
 });
+
 describe("POST /courses/:id/register", () => {
   it("Register to course 1 not by student", async () => {
-    const res = await request(app)
-      .post(`/courses/${course_1_id}/register`)
-      .set("accessToken", tutor_token);
+    const res = await tutor_agent.post(`/courses/${course_1_id}/register`);
 
     expect(res.statusCode).toBe(401);
   });
 });
+
 describe("GET /courses/:id/progress", () => {
   it("Get course 1 progress", async () => {
-    const res = await request(app)
-      .get(`/courses/${course_1_id}/progress`)
-      .set("accessToken", token);
+    const res = await user_agent.get(`/courses/${course_1_id}/progress`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.progress).toBeDefined();
@@ -322,55 +317,54 @@ describe("GET /courses/:id/progress", () => {
 
 describe("POST /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1 wrong field", async () => {
-    const res = await request(app)
+    const res = await user_agent
       .post(`/courses/${course_1_id}/financialAids`)
-      .set("accessToken", token);
 
     expect(res.statusCode).toBe(422);
   });
 });
+
 describe("POST /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1", async () => {
-    const res = await request(app)
+    const res = await user_agent
       .post(`/courses/${course_1_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
       })
-      .set("accessToken", token);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.financialAid.essay).toBe("Please I am poor.");
     expect(res.body.financialAid.amount).toBe(100);
   });
 });
+
 describe("POST /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1 (duplicate)", async () => {
-    const res = await request(app)
+    const res = await user_agent
       .post(`/courses/${course_1_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
       })
-      .set("accessToken", token);
 
     expect(res.statusCode).toBe(409);
   });
 });
+
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by student", async () => {
-    const res = await request(app)
+    const res = await user_agent
       .get(`/courses/${course_1_id}/financialAids`)
-      .set("accessToken", token);
 
     expect(res.statusCode).toBe(401);
   });
 });
+
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by owner", async () => {
-    const res = await request(app)
+    const res = await tutor_agent
       .get(`/courses/${course_1_id}/financialAids`)
-      .set("accessToken", tutor_token);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAids).toBeInstanceOf(Array);
@@ -380,11 +374,11 @@ describe("GET /courses/:course_id/financialAids/", () => {
     expect(res.body.financialAids[0].status).toBe("PENDING");
   });
 });
+
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by course admin", async () => {
-    const res = await request(app)
+    const res = await course_admin_agent
       .get(`/courses/${course_1_id}/financialAids`)
-      .set("accessToken", course_admin_token);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAids).toBeInstanceOf(Array);
@@ -394,11 +388,11 @@ describe("GET /courses/:course_id/financialAids/", () => {
     expect(res.body.financialAids[0].status).toBe("PENDING");
   });
 });
+
 describe("GET /courses/:course_id/financialAids/:student_id", () => {
   it("Get financial aids for course 1 sent by specific student by course admin", async () => {
-    const res = await request(app)
+    const res = await course_admin_agent
       .get(`/courses/${course_1_id}/financialAids/${user_id}`)
-      .set("accessToken", course_admin_token);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAid.essay).toBe("Please I am poor.");
@@ -406,26 +400,26 @@ describe("GET /courses/:course_id/financialAids/:student_id", () => {
     expect(res.body.financialAid.status).toBe("PENDING");
   });
 });
+
 describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   it("Update financial aid status for course 1 by owner (before admin)", async () => {
-    const res = await request(app)
+    const res = await tutor_agent
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
       })
-      .set("accessToken", tutor_token);
 
     expect(res.statusCode).toBe(401);
   });
 });
+
 describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   it("Update financial aid status for course 1 by course admin", async () => {
-    const res = await request(app)
+    const res = await course_admin_agent
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
       })
-      .set("accessToken", course_admin_token);
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -435,14 +429,14 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
     expect(rows.length).toBe(1);
   });
 });
+
 describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   it("Update financial aid status for course 1 by owner (after admin)", async () => {
-    const res = await request(app)
+    const res = await tutor_agent
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
       })
-      .set("accessToken", tutor_token);
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -452,29 +446,29 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
     expect(rows.length).toBe(1);
   });
 });
+
 describe("POST /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 2", async () => {
-    const res = await request(app)
+    const res = await user_agent
       .post(`/courses/${course_2_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
       })
-      .set("accessToken", token);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.financialAid.essay).toBe("Please I am poor.");
     expect(res.body.financialAid.amount).toBe(100);
   });
 });
+
 describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   it("Update financial aid status for course 2 by course admin (deny)", async () => {
-    const res = await request(app)
+    const res = await course_admin_agent
       .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
       .send({
         status: "DENIED",
       })
-      .set("accessToken", course_admin_token);
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -484,14 +478,14 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
     expect(rows.length).toBe(1);
   });
 });
+
 describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   it("Update financial aid status for course 2 by owner after admin denied", async () => {
-    const res = await request(app)
+    const res = await tutor_agent
       .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
       .send({
         status: "DENIED",
       })
-      .set("accessToken", tutor_token);
 
     expect(res.statusCode).toBe(401);
   });
