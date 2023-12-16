@@ -7,7 +7,6 @@ import { getCourses } from "@/actions/course";
 const CoursesPage = async () => {
 
     const courses = await getCourses();
-    console.log(courses);
 
     return ( 
     <div className="p-6">

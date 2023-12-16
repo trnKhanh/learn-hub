@@ -10,6 +10,18 @@ export const getAllTutors = async () => {
     console.error(err);
   }
 };
+export const getTutor = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/tutors/${id}`, {
+      credentials: "include",
+    });
+    const data: { message: string; tutor: Tutor } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
 export const deleteTutor = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/tutors/${id}`, {

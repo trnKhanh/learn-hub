@@ -103,11 +103,10 @@ const adminRoutes = [
 export const SidebarRoutes = () => {
   const [routes, setRoutes] = useState(guestRoutes);
   const pathname = usePathname();
-  console.log('123')
 
   useEffect(() => {
     const isAdmin = localStorage.getItem("is_admin");
-    if (isAdmin) {
+    if (isAdmin == '1') {
       setRoutes(adminRoutes);
       return;
     }

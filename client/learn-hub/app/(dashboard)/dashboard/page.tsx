@@ -134,7 +134,6 @@ const TutorUI = () => {
 };
 
 export default async function Dashboard() {
-  console.log(123)
   const verifiedTutor = await isTutor("tutor");
 
   return <div className="p-6 space-y-4">{verifiedTutor && <TutorUI />}</div>;

@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
-import { Form, FormField, FormMessage } from "@/components/ui/form";
+import { Form, FormDescription, FormField, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
@@ -29,12 +29,14 @@ const signUpFormSchema = z
     }),
     password: z
       .string()
-      .min(6, {
-        message: "Password must be at least 6 characters.",
-      })
-      .max(255, {
-        message: "Password must not be longer than 255 characters.",
-      }),
+      .regex(new RegExp(".*[A-Z].*"), "Must contains at least 1 uppercase character")
+      .regex(new RegExp(".*[a-z].*"), "Must contains at least 1 lowercase character")
+      .regex(new RegExp(".*\\d.*"), "Must contains at least 1 number")
+      .regex(
+        new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*"),
+        "Must contains at least 1 special character",
+      )
+      .min(8, "Must be at least 8 characters in length"),
     confirmPassword: z.string(),
   })
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -69,6 +71,7 @@ export const SignupForm = () => {
   const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     const res = await signup(values.username, values.password, values.email);
     if (res) {
+      console.log(res);
       if (res.status == 201) {
         setAuth(true);
         router.push("/");
@@ -76,7 +79,7 @@ export const SignupForm = () => {
         localStorage.setItem("is_tutor", res.data.is_tutor);
         localStorage.setItem("is_student", res.data.is_student);
         localStorage.setItem("is_supporter", res.data.is_supporter);
-        toast.success(res.data.message)
+        toast.success(res.data.message);
       } else {
         toast.error(res.data.message);
       }
@@ -175,6 +178,7 @@ export const SignupForm = () => {
                       </div>
                     </div>
                     <div className="bg-neutral-400 flex w-[430px] shrink-0 h-0.5 flex-col max-md:mt-0 mt-2.5 max-md:max-w-full" />
+                    <FormDescription>Password must contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character</FormDescription>
                     <FormMessage />
                   </div>
                 )}

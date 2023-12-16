@@ -9,7 +9,6 @@ export const CourseThumbnail = ({ course_id }: { course_id: string }) => {
 
   useEffect(() => {
     getCourse(course_id).then((res) => {
-      console.log(res);
       if (res && res.status == 200) setCourse(res.data.course);
     });
   }, []);

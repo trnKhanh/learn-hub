@@ -60,3 +60,13 @@ type FinancialAid = {
   amount: number;
   status: string;
 };
+
+type Subject = {
+  id: string,
+  name: string,
+}
+
+type Language = {
+  id: string,
+  name: string,
+}

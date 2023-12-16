@@ -10,6 +10,33 @@ export const getAllCourses = async () => {
     console.error(err);
   }
 };
+interface Filters {
+  subjects: string[] | [],
+  languages: string[] | [],
+  courseName: string | "",
+  difficulties: string[] | [],
+  priceMax?: number,
+  priceMin?: number,
+}
+export const searchCourses = async (filter: Filters) => {
+  try {
+    const res = await fetch("http://localhost:3001/courses/search?"+new URLSearchParams({
+      subjects: filter.subjects.join(","),
+      languages: filter.languages.join(","),
+      name: filter.courseName,
+      difficulties: filter.difficulties.join(","),
+      priceMax: `${filter.priceMax}`,
+      priceMin: `${filter.priceMin}`,
+    }), {
+      credentials: "include",
+    });
+    const data: { message: string; courses: Course[] } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 export const getCourse = async (id: string) => {
   try {
