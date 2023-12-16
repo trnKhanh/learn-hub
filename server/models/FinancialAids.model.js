@@ -3,10 +3,10 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class FinancialAid {
   constructor(financialAid) {
-    this.student_id = financialAid.student_id || null;
-    this.course_id = financialAid.course_id || null;
-    this.essay = financialAid.essay || null;
-    this.amount = financialAid.amount || null;
+    this.student_id = financialAid.student_id;
+    this.course_id = financialAid.course_id;
+    this.essay = financialAid.essay;
+    this.amount = financialAid.amount;
     this.status = financialAid.state || "PENDING";
   }
 

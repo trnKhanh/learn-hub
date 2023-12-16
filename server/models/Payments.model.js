@@ -4,8 +4,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Payment {
   constructor(payment) {
-    this.student_id = payment.student_id || null;
-    this.discounted = payment.discounted || null;
+    this.student_id = payment.student_id;
+    this.discounted = payment.discounted;
   }
   static queryFields = `id, student_id, paid_at, discounted`;
 

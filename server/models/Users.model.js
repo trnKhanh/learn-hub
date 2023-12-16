@@ -5,16 +5,16 @@ const { randomUUID } = require("crypto");
 // User constructor
 class User {
   constructor(user) {
-    this.email = user.email || null;
-    this.username = user.username || null;
-    this.password = user.password || null;
-    this.full_name = user.full_name || null;
-    this.date_of_birth = user.day_of_birth || null;
-    this.phone_number = user.phone_number || null;
-    this.institute = user.institution || null;
-    this.area_of_study = user.area_of_study || null;
-    this.profile_picture = user.profile_picture || null;
-    this.biography = user.biography || null;
+    this.email = user.email;
+    this.username = user.username;
+    this.password = user.password;
+    this.full_name = user.full_name;
+    this.date_of_birth = user.day_of_birth;
+    this.phone_number = user.phone_number;
+    this.institute = user.institution;
+    this.area_of_study = user.area_of_study;
+    this.profile_picture = user.profile_picture;
+    this.biography = user.biography;
   }
   static queryFields = `id, email, username, full_name, date_of_birth, phone_number, institute, area_of_study, profile_picture, biography`;
 

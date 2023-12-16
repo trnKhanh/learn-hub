@@ -4,8 +4,8 @@ const User = require("../models/Users.model");
 // Constructor
 class Supporter {
   constructor(supporter) {
-    this.id = supporter.id || null;
-    this.role = supporter.role || null;
+    this.id = supporter.id;
+    this.role = supporter.role;
   }
 
   static queryFields = `${User.queryFields}, role`;
