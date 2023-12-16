@@ -10,6 +10,15 @@ const createDocumentsScheme = [
     .withMessage("Name must be not empty"),
 ];
 
+const updateDocumentsScheme = [
+  body("name")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Name must be not empty"),
+];
+
 module.exports = {
   createDocumentsScheme,
+  updateDocumentsScheme,
 };

@@ -136,6 +136,13 @@ class LessonsController {
 
     const data = matchedData(req);
 
+    if (!Object.keys(data).length) {
+      res.status(400).json({
+        message: "Must provide valid fields",
+      });
+      return;
+    }
+
     const lesson_id = req.params.lesson_id;
     const course_id = req.course.id;
 

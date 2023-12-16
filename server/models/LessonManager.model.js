@@ -133,7 +133,7 @@ class LessonManager {
         `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
         filterValues
       );
-      
+
       return rows;
     } catch (errors) {
       console.log(errors);

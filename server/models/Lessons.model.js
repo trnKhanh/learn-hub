@@ -23,7 +23,7 @@ class Lesson {
       `SELECT MAX(id) max_id FROM lessons`
     );
 
-    console.log("Found max id: ", { results: rows[0] });
+    // console.log("Found max id: ", { results: rows[0] });
 
     this.id = rows[0].max_id + 1;
 
