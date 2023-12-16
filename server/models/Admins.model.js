@@ -20,10 +20,10 @@ class Admin {
 
       const [res, _] = await con.query(`INSERT INTO admins SET ?`, newAdmin);
       const [rows, fields] = await con.query(
-        `SELECT ${Admin.queryFields} 
-         FROM admins NATURAL JOIN users 
-         WHERE id=?`,
-        [newAdmin.id],
+          `SELECT ${Admin.queryFields} 
+          FROM admins NATURAL JOIN users 
+          WHERE id=?`,
+          [newAdmin.id],
       );
 
       await con.commit();
@@ -43,10 +43,10 @@ class Admin {
   static findOne = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${Admin.queryFields} 
-       FROM admins NATURAL JOIN users 
-       WHERE ${filterKeys}`,
-      filterValues,
+        `SELECT ${Admin.queryFields} 
+        FROM admins NATURAL JOIN users 
+        WHERE ${filterKeys}`,
+        filterValues,
     );
     if (rows.length) {
       console.log("Found admin: ", { filters: filters, results: rows[0] });
@@ -61,10 +61,10 @@ class Admin {
   static findAll = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${Admin.queryFields} 
-       FROM admins NATURAL JOIN users  
-       WHERE ${filterKeys}`,
-      filterValues,
+        `SELECT ${Admin.queryFields} 
+        FROM admins NATURAL JOIN users  
+        WHERE ${filterKeys}`,
+        filterValues,
     );
     console.log("Found admins: ", { filters: filters, results: rows });
     return rows;
@@ -72,8 +72,8 @@ class Admin {
 
   static getAll = async () => {
     const [rows, fields] = await sql.query(
-      `SELECT ${Admin.queryFields} 
-       FROM admins NATURAL JOIN users`,
+        `SELECT ${Admin.queryFields} 
+        FROM admins NATURAL JOIN users`,
     );
     console.log("Get all admins: ", { results: rows });
     return rows;
@@ -91,10 +91,10 @@ class Admin {
         [columns, id],
       );
       const [rows, fields] = await con.query(
-        `SELECT ${Admin.queryFields} 
-         FROM admins NATURAL JOIN users
-         WHERE id=?`,
-        [id],
+          `SELECT ${Admin.queryFields} 
+          FROM admins NATURAL JOIN users
+          WHERE id=?`,
+          [id],
       );
 
       console.log("Updated admins by Id", {
@@ -122,10 +122,10 @@ class Admin {
     try {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
-        `SELECT ${Admin.queryFields} 
-         FROM admins NATURAL JOIN users
-         WHERE id=?`,
-        [id],
+          `SELECT ${Admin.queryFields} 
+          FROM admins NATURAL JOIN users
+          WHERE id=?`,
+          [id],
       );
 
       const [res, _] = await con.query(

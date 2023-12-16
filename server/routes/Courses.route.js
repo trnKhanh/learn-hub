@@ -1,4 +1,7 @@
 const coursesController = require("../controllers/Courses.controller");
+const lessonsController = require("../controllers/Lessons.controller");
+const documentsController = require("../controllers/Documents.controller");
+const subjectsController = require("../controllers/Subjects.controller");
 const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
@@ -22,6 +25,12 @@ const upload = multer({
 router.get("/", coursesController.getAllCourses);
 
 router.get("/:course_id", coursesController.getCourse);
+
+router.get("/:course_id/lessons", lessonsController.getAllLessonsOfCourse);
+
+router.get("/:course_id/documents", documentsController.getAllDocumentsOfCourse);
+
+router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
 
 router.post(
   "/",

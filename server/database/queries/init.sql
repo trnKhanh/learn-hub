@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS courses (
   price DOUBLE NOT NULL CHECK(price >= 0),
   discount DOUBLE CHECK (discount >= 0 AND discount <= 1),
   profile_picture VARCHAR(255),
+  isPublished BOOL DEFAULT FALSE,
   PRIMARY KEY (id),
   FOREIGN KEY (owner_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -80,6 +81,8 @@ CREATE TABLE IF NOT EXISTS lessons (
   course_id INT NOT NULL,
   id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
+  isPublished BOOL DEFAULT FALSE,
+  isFree BOOL DEFAULT FALSE,
   PRIMARY KEY (course_id, id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

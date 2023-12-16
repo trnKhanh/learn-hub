@@ -8,9 +8,6 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-var cors = require('cors')
-app.use(cors())
-
 // Use users router
 const authRouter = require("./routes/Auth.route");
 app.use("/", authRouter);
@@ -33,5 +30,8 @@ app.use("/supporters", supportersRouter);
 
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
+
+const categoriesRouter = require("./routes/Subjects.route");
+app.use("/subjects", categoriesRouter);
 
 module.exports = app;
