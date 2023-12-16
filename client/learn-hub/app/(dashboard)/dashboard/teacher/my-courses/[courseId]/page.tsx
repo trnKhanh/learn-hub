@@ -98,7 +98,7 @@ const CourseIdPage = async ({
     course.profile_picture,
     course.price,
     categoriesOfCourse[0].id.toString(),
-    lessons.some(chapter => chapter.isPublished),
+    //lessons.some(chapter => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;

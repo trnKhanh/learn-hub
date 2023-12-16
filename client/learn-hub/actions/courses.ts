@@ -24,9 +24,9 @@ export const getCourse = async (id: string) => {
 export const getCategoriesOfCourseId = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
-    const data: { message: string; categories: Category[] } = await res.json();
+    const data: { message: string; subjects: Subject[] } = await res.json();
     
-    return data.categories;
+    return data.subjects;
   } catch (err) {
     console.error(err);
     return [];
@@ -35,10 +35,10 @@ export const getCategoriesOfCourseId = async (id: string) => {
 
 export const getAllLessonsByCourseId = async (id: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/courses/${id}/chapters`);
-    const data: { message: string; chapters: Lesson[] } = await res.json();
+    const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
+    const data: { message: string; lessons: Lesson[] } = await res.json();
 
-    return data.chapters;
+    return data.lessons;
   } catch (err) {
     console.error(err);
     return [];

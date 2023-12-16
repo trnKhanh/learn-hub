@@ -2,11 +2,11 @@ import { redirect } from "next/navigation";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { getCourses } from "@/actions/course";
+import { getCourse } from "@/actions/courses";
 
 const CoursesPage = async () => {
 
-    const courses = await getCourses();
+    const courses = await getCourse("1");
     console.log(courses);
 
     return ( 

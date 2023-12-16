@@ -6,7 +6,7 @@ export const getAllCategories = async() => {
             throw new Error(response.statusText);
         }
 
-        const data: { message: string; subjects: Category[] } = await response.json();
+        const data: { message: string; subjects: Subject[] } = await response.json();
 
         return data.subjects;
     } catch (error) {
