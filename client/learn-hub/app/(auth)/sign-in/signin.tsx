@@ -1,6 +1,5 @@
 "use client";
 
-// signin.tsx
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -147,7 +146,7 @@ function Signin(_props: any) {
                   <button className="font-semibold text-gray-400">Forgot Password?</button>
                 </div>
               </div>
-              <Button type="submit" disabled={!form.formState.isValid || form.formState.isSubmitting} className="mt-5 w-full">Sign In</Button>
+              <Button type="submit" disabled={!form.formState.isValid || form.formState.isSubmitting} className="mt-5 w-full">Login</Button>
             </form>
           </Form>
         </div>
