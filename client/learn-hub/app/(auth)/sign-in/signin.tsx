@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+// signin.tsx
+import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -22,6 +23,7 @@ const signInFormSchema = z.object({
     .max(255, {
       message: "Password must not be longer than 255 characters.",
     }),
+  rememberMe: z.boolean(),
 });
 
 type signInFormValues = z.infer<typeof signInFormSchema>;
@@ -29,6 +31,7 @@ type signInFormValues = z.infer<typeof signInFormSchema>;
 const defaultValues: Partial<signInFormValues> = {
   email: "",
   password: "",
+  rememberMe: false, // Giá trị mặc định của rememberMe
 }
 
 function Signin(_props: any) {
@@ -77,11 +80,11 @@ function Signin(_props: any) {
           Sign In
         </div>
         <div className="text-black text-base self-stretch whitespace-nowrap mt-8 max-md:max-w-full">
-          If you don't have an account, you can
+            If you don’t have an account register
         </div>
         <div className="text-sky-500 text-base self-stretch mt-3.5 max-md:max-w-full">
-          <span className=" text-black">Sign up </span>
-          <button className="font-semibold text-sky-500">here !</button>
+          <span className=" text-black">You can </span>
+          <button className="font-semibold text-sky-500"> Register here !</button>
         </div>
         <div className="flex w-[470px] max-w-full flex-col rounded-3xl max-md:my-10">
           <Form {...form}>
@@ -130,6 +133,20 @@ function Signin(_props: any) {
                 )}
               />
               <div className="bg-neutral-400 self-stretch flex w-full shrink-0 h-0.5 flex-col mt-2.5 max-md:max-w-full" />
+              <div className="self-stretch flex w-full justify-between items-center mt-5 max-md:max-w-full max-md:flex-wrap">
+                <div className="flex items-center gap-3 text-neutral-400 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    className="rounded border-gray-300"
+                    {...form.register("rememberMe")}
+                  />
+                  <label htmlFor="rememberMe">Remember me</label>
+                </div>
+                <div className="text-sky-500 text-sm font-medium max-md:max-w-full max-md:mt-5">
+                  <button className="font-semibold text-gray-400">Forgot Password?</button>
+                </div>
+              </div>
               <Button type="submit" disabled={!form.formState.isValid || form.formState.isSubmitting} className="mt-5 w-full">Sign In</Button>
             </form>
           </Form>
