@@ -1,12 +1,13 @@
 const Supporter = require("../models/Supporters.model");
 
 const createSupporter = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
+  const errors = validationResult(req); 
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
     return;
   }
+  const data = matchedData(req); 
+
   try {
     const newSupporter = new Supporter(req.body);
     const supporter = await Supporter.create(newSupporter);

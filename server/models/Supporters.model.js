@@ -19,6 +19,12 @@ class Supporter {
         `INSERT INTO supporters SET ?`,
         newSupporter,
       );
+      const [rows, fields] = await con.query(
+        `SELECT ${Supporter.queryFields} 
+         FROM supporters NATURAL JOIN users 
+         WHERE id=?`, 
+        [newSupporter.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);

@@ -21,4 +21,13 @@ app.use("/tutors", tutorsRouter);
 const supportersRouter = require("./routes/Supporters.route");
 app.use("/supporters", supportersRouter);
 
+const coursesRouter = require("./routes/Courses.route");
+app.use("/courses", coursesRouter);
+
+const languageRouter = require("./routes/Language.route");
+app.use("/language" , languageRouter);
+
+const notificationsRouter = require("./routes/Notifications.route");
+app.use("/notifications" , notificationsRouter);
+
 module.exports = app;
