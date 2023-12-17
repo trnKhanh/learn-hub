@@ -26,7 +26,7 @@ export default function Layout({
         if (res.status == 200) {
           setCourse(res.data.course);
         } else {
-          router.push("/dashboard");
+          router.push("/dashboard/admin");
         }
       }
     });

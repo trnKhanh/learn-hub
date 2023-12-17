@@ -1,4 +1,4 @@
-import { isTutor, isUser } from "@/actions/auth";
+"use client";
 import {
   Card,
   CardContent,
@@ -8,6 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Overview } from "../_components/overview";
 import { RecentSales } from "../_components/recent-sale";
+import useEnhancedEffect from "@mui/material/utils/useEnhancedEffect";
+import { useEffect, useState } from "react";
+import { getMineTutor } from "@/actions/tutors";
 
 const TutorUI = () => {
   return (
@@ -133,8 +136,16 @@ const TutorUI = () => {
   );
 };
 
-export default async function Dashboard() {
-  const verifiedTutor = await isTutor("tutor");
-
-  return <div className="p-6 space-y-4">{verifiedTutor && <TutorUI />}</div>;
+export default function Dashboard() {
+  const [tutor, setTutor] = useState<Tutor>();
+  useEffect(() => {
+    getMineTutor().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setTutor(res.data.tutor);
+        }
+      }
+    });
+  }, []);
+  return <div className="p-6 space-y-4">{tutor && <TutorUI />}</div>;
 }

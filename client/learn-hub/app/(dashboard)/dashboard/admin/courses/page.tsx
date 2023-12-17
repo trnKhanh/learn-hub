@@ -34,7 +34,7 @@ export default function Courses() {
           setIsLoading(false);
         } else {
           toast.error(res.data.message);
-          router.push("/dashboard");
+          router.push("/dashboard/admin");
         }
       }
     });
