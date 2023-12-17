@@ -1,12 +1,14 @@
 // models
 const LessonManager = require("./LessonManager.model");
+const sql = require("../database/db");
 
 class Documents {
   constructor(document) {
     this.course_id = document.course_id || null;
     this.lesson_id = document.lesson_id || null;
     this.name = document.name || null;
-    this.path = document.path || null;
+    this.file_path = document.file_path || null;
+    this.id = document.id || null;
   }
 
   async create() {
@@ -118,6 +120,7 @@ class Documents {
   async deleteById() {
     const con = await sql.getConnection();
 
+    console.log(">>> Documents.model > deleteById > this: ", this.id);
     try {
       await con.beginTransaction();
 

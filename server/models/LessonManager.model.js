@@ -117,8 +117,12 @@ class LessonManager {
 
   async findAllWithDocument(filters) {
     if (filters === null) filters = {};
+    let newFilters = {};
+    for (let key in filters) {
+      newFilters[`d.${key}`] = filters[key];
+    }
 
-    filters = { ...this.basic_filter, ...filters };
+    filters = { ...this.basic_filter, ...newFilters };
 
     try {
       const { filterKeys, filterValues } = formatFilters(filters);

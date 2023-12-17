@@ -56,6 +56,7 @@ router.patch(
     validateToken,
     getCourse,
     getLesson,
+    validateLessonChangePermission,
     updateDocumentsScheme,
     upload.single("file"),
   ],

@@ -69,10 +69,16 @@ class DocumentController {
 
     const data = matchedData(req);
     data.course_id = req.course.id;
-    data.lesson_id = req.lesson.id;
+    console.log(`lesson = `, req.lesson);
+    data.lesson_id = req.lesson.lesson_id;
 
     if (req.file) {
-      data.file = req.file.path;
+      data.file_path = req.file.path;
+    } else {
+      res.status(400).json({
+        message: "Must provide file",
+      });
+      return;
     }
 
     try {
