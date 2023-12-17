@@ -6,12 +6,16 @@ class DocumentController {
   static async getAllDocuments(req, res) {
     const course_id = req.course.id;
     const lesson_id = req.lesson.id;
+    const validPublished = req.validPublished;
 
     try {
-      const documents = await Documents.getAll({
-        course_id: course_id,
-        lesson_id: lesson_id,
-      });
+      const documents = await Documents.findAll(
+        {
+          course_id: course_id,
+          lesson_id: lesson_id,
+        },
+        !validPublished ? { "l.is_published": 1 } : {}
+      );
 
       res.status(200).json({
         message: "Retrieve all documents' information successfully",

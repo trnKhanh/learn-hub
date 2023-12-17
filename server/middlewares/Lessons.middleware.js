@@ -156,6 +156,7 @@ const validateLessonGetPermission = async (req, res, next) => {
 
     if (admin || creator || tutor) {
       next();
+      req.validPublish = true;
     } else if (is_published && (learner || is_free)) {
       next();
     } else {

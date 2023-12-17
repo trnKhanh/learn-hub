@@ -19,7 +19,7 @@ class LessonManager {
   }
 
   static LessonTables = `lessons l`;
-  static LessonFields = `l.id lesson_id, l.name lesson_name`;
+  static LessonFields = `l.id lesson_id, l.name lesson_name , l.is_free lesson_is_free, l.is_published lesson_is_published`;
   static LessonOrder = `l.id ASC`;
 
   static DocumentTables = `documents d`;
@@ -117,12 +117,13 @@ class LessonManager {
 
   async findAllWithDocument(filters) {
     if (filters === null) filters = {};
-    let newFilters = {};
-    for (let key in filters) {
-      newFilters[`d.${key}`] = filters[key];
-    }
 
-    filters = { ...this.basic_filter, ...newFilters };
+    console.log(
+      ">>> LessonManager >> findAllWithDocument >> filters: ",
+      filters
+    );
+
+    filters = { ...this.basic_filter, ...filters };
 
     try {
       const { filterKeys, filterValues } = formatFilters(filters);

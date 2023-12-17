@@ -54,13 +54,29 @@ class Documents {
     }
   }
 
-  static async getAll(document) {
+  static async findAll(document, filters) {
     try {
       let lessonManager = new LessonManager(
         document.course_id,
         document.lesson_id
       );
-      let documents = await lessonManager.findAllWithDocument();
+      let documents = await lessonManager.findAllWithDocument(filters);
+      return documents;
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  static async getAllPublished(document) {
+    try {
+      let lessonManager = new LessonManager(
+        document.course_id,
+        document.lesson_id
+      );
+      let documents = await lessonManager.findAllWithDocument({
+        "l.is_published": true,
+      });
       return documents;
     } catch (errors) {
       console.log(errors);
@@ -75,7 +91,7 @@ class Documents {
         document.lesson_id
       );
       let documents = await lessonManager.findAllWithDocument({
-        id: document.id,
+        "d.id": document.id,
       });
 
       if (!documents.length) {
