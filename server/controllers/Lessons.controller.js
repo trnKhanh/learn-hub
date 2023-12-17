@@ -30,6 +30,13 @@ class LessonsController {
       // Update to Database
       const new_lesson = await lesson.create();
 
+      if (!new_lesson) {
+        res.status(500).json({
+          message: "Errors occur when creating new lesson",
+        });
+        return;
+      }
+
       res.status(200).json({
         message: "Create lesson successfully",
         lesson: new_lesson,

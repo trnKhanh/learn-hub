@@ -73,7 +73,7 @@ class DocumentController {
 
     const data = matchedData(req);
     data.course_id = req.course.id;
-    console.log(`lesson = `, req.lesson);
+    // console.log(`lesson = `, req.lesson);
     data.lesson_id = req.lesson.lesson_id;
 
     if (req.file) {
@@ -87,6 +87,18 @@ class DocumentController {
 
     try {
       const newDocument = await new Documents(data).create();
+      if (!newDocument) {
+        res.status(500).json({
+          message: "Errors occur when creating new document",
+        });
+      } else {
+        res.status(201).json({
+          message: "Create new document successfully",
+          document: newDocument,
+          course: req.course,
+          lesson: req.lesson,
+        });
+      }
     } catch (err) {
       console.log(err);
       res.status(500).json({

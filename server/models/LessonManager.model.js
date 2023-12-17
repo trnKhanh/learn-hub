@@ -118,11 +118,6 @@ class LessonManager {
   async findAllWithDocument(filters) {
     if (filters === null) filters = {};
 
-    console.log(
-      ">>> LessonManager >> findAllWithDocument >> filters: ",
-      filters
-    );
-
     filters = { ...this.basic_filter, ...filters };
 
     try {
