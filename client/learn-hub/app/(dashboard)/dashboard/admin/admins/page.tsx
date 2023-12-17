@@ -12,7 +12,7 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { Shield, Trash2 } from "lucide-react";
 import { AdminDeleteDialog } from "./_components/admin-delete-dialog";
 import { notFound } from "next/navigation";
 import { AdminInfoDialog } from "./_components/admin-info-dialog";
@@ -55,7 +55,7 @@ export default function Admins() {
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Admins</DashboardSectionHeader>
+      <DashboardSectionHeader icon={Shield}>Admins</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {admins &&

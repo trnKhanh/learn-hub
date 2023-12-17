@@ -12,7 +12,7 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { BookUser, Trash2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { TutorInfoDialog } from "./_components/tutor-info-dialog";
 import { TutorDeleteDialog } from "./_components/tutor-delete-dialog";
@@ -56,7 +56,7 @@ export default function Tutors() {
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Tutors</DashboardSectionHeader>
+      <DashboardSectionHeader icon={BookUser}>Tutors</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {tutors &&

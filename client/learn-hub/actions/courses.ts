@@ -99,6 +99,20 @@ export const getAllFinancialAids = async (id: string) => {
     console.error(err);
   }
 };
+export const getAllFinancialAidsForTutor = async (id: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3001/courses/${id}/financialAids/tutor`,
+      { credentials: "include" },
+    );
+    const data: { message: string; financialAids: FinancialAid[] } =
+      await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 export const putFinancialAid = async (
   course_id: string,
@@ -170,6 +184,34 @@ export const updateFinancialAid = async (
       },
     );
     const data: { message: string; financialAids: FinancialAid[] } =
+      await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+export const getCart = async () => {
+  try {
+    const res = await fetch("http://localhost:3001/users/cart", {
+      credentials: "include",
+    });
+    const data: { message: string; course_ids: { course_id: string }[] } =
+      await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const removeCart = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/users/cart/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    const data: { message: string; course_ids: { course_id: string }[] } =
       await res.json();
 
     return { status: res.status, data: data };

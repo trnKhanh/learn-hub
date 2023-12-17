@@ -12,7 +12,7 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { Trash2, User } from "lucide-react";
 import { StudentDeleteDialog } from "./_components/student-delete-dialog";
 import { notFound } from "next/navigation";
 import { StudentInfoDialog } from "./_components/student-info-dialog";
@@ -54,7 +54,7 @@ export default function Students() {
   }
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Students</DashboardSectionHeader>
+      <DashboardSectionHeader icon={User}>Students</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {students &&

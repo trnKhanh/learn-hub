@@ -12,7 +12,7 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { Trash2, UserCog } from "lucide-react";
 import { SupporterDeleteDialog } from "./_components/supporter-delete-dialog";
 import { notFound } from "next/navigation";
 import { toast } from "react-toastify";
@@ -55,7 +55,7 @@ export default function Supporters() {
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Supporters</DashboardSectionHeader>
+      <DashboardSectionHeader icon={UserCog}>Supporters</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {supporters &&

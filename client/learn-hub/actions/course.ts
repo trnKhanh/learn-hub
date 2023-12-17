@@ -13,3 +13,4 @@ export const getCourses = async () => {
     return [];
   }
 };
+

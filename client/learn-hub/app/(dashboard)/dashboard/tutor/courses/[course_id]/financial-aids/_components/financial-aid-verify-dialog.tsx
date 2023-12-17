@@ -26,32 +26,12 @@ export const FinancialAidVerifyDialog = ({
   const [status, setStatus] = useState(financialAid.status);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  if (status == "ADMIN_PASSED") {
-    return (
-      <DashboardSectionButton
-        className="bg-lime-300"
-        icon={ShieldCheck}
-        label="Admin Passed"
-        hover={false}
-      />
-    );
-  }
   if (status == "TUTOR_PASSED") {
     return (
       <DashboardSectionButton
         className="bg-lime-300"
         icon={ShieldCheck}
         label="Tutor Passed"
-        hover={false}
-      />
-    );
-  }
-  if (status == "ADMIN_DENIED") {
-    return (
-      <DashboardSectionButton
-        className="bg-red-300"
-        icon={ShieldX}
-        label="Admin Denied"
         hover={false}
       />
     );
