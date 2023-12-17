@@ -8,6 +8,7 @@ const createTutor = async (req, res) => {
     const tutor = await Tutor.create(newTutor);
 
     if (req.file) {
+      console.log(req.user)
       const newTutorCV = new TutorCV({
         tutor_id: req.user.id,
         cv_path: req.file.path,
@@ -36,7 +37,9 @@ const createTutor = async (req, res) => {
 
 const getTutor = async (req, res) => {
   try {
-    const tutor = await Tutor.findOne({ id: req.params.id });
+    const tutor = await Tutor.findOne({ 
+      id: req.params.id === undefined ? req.user.id : req.params.id,
+    });
     if (!tutor) {
       res.status(404).json({
         message: "Not found tutor",

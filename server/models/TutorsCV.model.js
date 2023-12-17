@@ -3,8 +3,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class TutorCV {
   constructor(tutorCV) {
-    this.tutor_id = tutorCV.id;
-    this.cv_path = tutorCV.admin_id;
+    this.tutor_id = tutorCV.tutor_id;
+    this.cv_path = tutorCV.cv_path;
     this.status = tutorCV.status || "PENDING";
   }
 

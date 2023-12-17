@@ -3,7 +3,7 @@ const Admin = require("../models/Admins.model");
 const Tutor = require("../models/Tutors.model");
 const { validationResult, matchedData } = require("express-validator");
 
-const createFinancialAid = async (req, res) => {
+const putFinancialAid = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).send(errors);
@@ -23,14 +23,32 @@ const createFinancialAid = async (req, res) => {
       financialAid: financialAid,
     });
   } catch (err) {
-    console.log(err);
-
     if (err.code == "ER_DUP_ENTRY") {
-      res.status(409).json({
-        message: "User has already applied for financial aid in this course",
-      });
+      try {
+        const newFinancialAid = new FinancialAid({
+          course_id: req.params.course_id,
+          student_id: req.user.id,
+          ...data,
+        });
+        const financialAid = await FinancialAid.updateById(
+          req.params.course_id,
+          req.user.id,
+          newFinancialAid,
+        );
+        res.status(201).json({
+          message: "Financial aid has been updated",
+          financialAid: financialAid,
+        });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({
+          message: "Errors occur when udpating financial aids",
+        });
+      }
       return;
     }
+
+    console.log(err);
     res.status(500).json({
       message: "Errors occur when creating new Financial aid",
     });
@@ -41,7 +59,10 @@ const getFinancialAid = async (req, res) => {
   try {
     const financialAid = await FinancialAid.findOne({
       course_id: req.params.course_id,
-      student_id: req.params.student_id,
+      student_id:
+        req.params.student_id === undefined
+          ? req.user.id
+          : req.params.student_id,
     });
     if (!financialAid) {
       res.status(404).json({
@@ -183,7 +204,7 @@ const deleteFinancialAid = async (req, res) => {
 };
 
 module.exports = {
-  createFinancialAid,
+  putFinancialAid,
   getFinancialAid,
   getAllFinancialAids,
   getAllFinancialAidsByCourseId,

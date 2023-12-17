@@ -17,12 +17,17 @@ const {
   updateStatusFinancialAidScheme,
 } = require("../middlewares/validators/FinancialAids.validator");
 
-router.post(
+router.put(
   "/",
   [validateToken, validateStudent, createFinancialAidScheme],
-  financialAidsController.createFinancialAid,
+  financialAidsController.putFinancialAid,
 );
 
+router.get(
+  "/mine",
+  [validateToken, validateStudent],
+  financialAidsController.getFinancialAid,
+);
 router.get(
   "/:student_id",
   [validateToken, validateCourseAccessPermission],
