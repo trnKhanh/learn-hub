@@ -28,7 +28,7 @@ class Admin {
       await con.commit();
       sql.releaseConnection(con);
 
-      // console.log("Created admins: ", { newAdmin: rows[0], results: res });
+      console.log("Created admins: ", { newAdmin: rows[0], results: res });
       return rows[0];
     } catch (err) {
       await con.rollback();
