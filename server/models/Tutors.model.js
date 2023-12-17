@@ -1,5 +1,6 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Tutor {
   constructor(tutor) {
@@ -9,7 +10,7 @@ class Tutor {
     this.profit = tutor.profit || 0;
   }
 
-  static queryFields = `id, admin_id, verified, profit`;
+  static queryFields = `${User.queryFields}, admin_id, verified, profit`;
 
   // Create new tutor
   static create = async (newTutor) => {
@@ -18,12 +19,18 @@ class Tutor {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO tutors SET ?`, newTutor);
+      const [rows, fields] = await con.query(
+        `SELECT ${Tutor.queryFields} 
+         FROM tutors NATURAL JOIN users 
+         WHERE id=?`,
+        [newTutor.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created tutors: ", { newTutor: newTutor, results: res });
-      return newTutor;
+      console.log("Created tutors: ", { newTutor: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -77,6 +84,7 @@ class Tutor {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE tutors SET ?
         WHERE id=?`,
@@ -84,7 +92,7 @@ class Tutor {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors 
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -112,9 +120,10 @@ class Tutor {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors  
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -144,4 +153,3 @@ class Tutor {
   };
 }
 module.exports = Tutor;
-

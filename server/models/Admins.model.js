@@ -1,5 +1,6 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Admin {
   constructor(admin) {
@@ -9,7 +10,7 @@ class Admin {
     this.students_access = admin.students_access || 0;
   }
 
-  static queryFields = `id, courses_access, tutors_access, students_access`;
+  static queryFields = `${User.queryFields}, courses_access, tutors_access, students_access, supporters_access`;
 
   // Create new Admin
   static create = async (newAdmin) => {
@@ -18,12 +19,18 @@ class Admin {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO admins SET ?`, newAdmin);
+      const [rows, fields] = await con.query(
+        `SELECT ${Admin.queryFields} 
+         FROM admins NATURAL JOIN users 
+         WHERE id=?`,
+        [newAdmin.id],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created admins: ", { newAdmin: newAdmin, results: res });
-      return newAdmin;
+      console.log("Created admins: ", { newAdmin: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -77,6 +84,7 @@ class Admin {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE admins SET ?
         WHERE id=?`,
@@ -84,7 +92,7 @@ class Admin {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
-         FROM admins 
+         FROM admins NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -112,15 +120,16 @@ class Admin {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
-         FROM admins  
+         FROM admins NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
 
       const [res, _] = await con.query(
-        `DELETE FROM admins 
+        `DELETE FROM admins
         WHERE id=?`,
         [id],
       );

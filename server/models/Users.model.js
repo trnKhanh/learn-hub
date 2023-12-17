@@ -13,9 +13,10 @@ class User {
     this.phone_number = user.phone_number;
     this.institute = user.institution;
     this.area_of_study = user.area_of_study;
+    this.profile_picture = user.profile_picture;
     this.biography = user.biography;
   }
-  static queryFields = `id, email, username, full_name, date_of_birth, phone_number, institute, area_of_study, biography`;
+  static queryFields = `id, email, username, full_name, date_of_birth, phone_number, institute, area_of_study, profile_picture, biography`;
 
   // Create new User
   static create = async (newUser) => {
@@ -24,13 +25,18 @@ class User {
       await con.beginTransaction();
 
       const [res, _] = await con.query(`INSERT INTO users SET ?`, newUser);
-
-      console.log("Created user: ", { newUser: newUser, results: res });
+      const [rows, fields] = await con.query(
+        `SELECT ${User.queryFields} 
+         FROM users 
+         WHERE id=?`,
+        [res.insertId],
+      );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      return newUser;
+      console.log("Created user: ", { newUser: rows[0], results: res });
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -83,6 +89,7 @@ class User {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(`UPDATE users SET ? WHERE id=?`, [
         columns,
         id,
@@ -115,6 +122,7 @@ class User {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${User.queryFields} FROM users WHERE id=?`,
         [id],

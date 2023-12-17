@@ -1,4 +1,5 @@
 const Admin = require("../models/Admins.model");
+const Tutor = require("../models/Tutors.model");
 
 const validateTutorAccessPermission = async (req, res, next) => {
   try {
@@ -13,9 +14,27 @@ const validateTutorAccessPermission = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: "Errors occur when validating create tutor permission",
+      message: "Errors occur when validating access tutor permission",
     });
   }
 };
 
-module.exports = { validateTutorAccessPermission };
+const validateTutor = async (req, res, next) => {
+  try {
+    const tutor = await Tutor.findOne({ id: req.user.id });
+    if (!tutor) {
+      res.status(401).json({
+        message: "This user is not tutor",
+      });
+    } else {
+      next();
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occurs when validating tutor",
+    });
+  }
+};
+
+module.exports = { validateTutorAccessPermission, validateTutor };

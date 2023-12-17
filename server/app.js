@@ -2,7 +2,16 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
 
 // Use users router
 const authRouter = require("./routes/Auth.route");
@@ -17,6 +26,9 @@ app.use("/admins", adminsRouter);
 
 const tutorsRouter = require("./routes/Tutors.route");
 app.use("/tutors", tutorsRouter);
+
+const studentsRouter = require("./routes/Students.route");
+app.use("/students", studentsRouter);
 
 const supportersRouter = require("./routes/Supporters.route");
 app.use("/supporters", supportersRouter);

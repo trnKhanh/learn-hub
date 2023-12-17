@@ -1,10 +1,22 @@
 const authController = require("../controllers/Auth.controller");
 const express = require("express");
 const router = express.Router();
-const authMiddleWare = require("../middlewares/Auth.middleware");
+const { validateToken } = require("../middlewares/Auth.middleware");
+const {
+  signupScheme,
+  loginScheme,
+} = require("../middlewares/validators/Auth.validator");
 
-router.post("/signup", authController.signup);
+router.post("/signup", signupScheme, authController.signup);
 
-router.post("/login", authController.login);
+router.post("/login", loginScheme, authController.login);
+
+router.post("/logout", [validateToken], authController.logout);
+
+router.post("/auth", [validateToken], (req, res) => {
+  res.status(200).json({
+    message: "This user is authenticated",
+  });
+});
 
 module.exports = router;

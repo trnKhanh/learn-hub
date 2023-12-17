@@ -1,5 +1,6 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Supporter {
   constructor(supporter) {
@@ -7,7 +8,7 @@ class Supporter {
     this.role = supporter.role;
   }
 
-  static queryFields = `id, role`;
+  static queryFields = `${User.queryFields}, role`;
 
   // Create new Supporter
   static create = async (newSupporter) => {
@@ -22,7 +23,7 @@ class Supporter {
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
          FROM supporters NATURAL JOIN users 
-         WHERE id=?`, 
+         WHERE id=?`,
         [newSupporter.id],
       );
 
@@ -30,10 +31,10 @@ class Supporter {
       sql.releaseConnection(con);
 
       console.log("Created supporters: ", {
-        newSupporter: newSupporter,
+        newSupporter: rows[0],
         results: res,
       });
-      return newSupporter;
+      return rows[0];
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);
@@ -87,6 +88,7 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [res, _] = await con.query(
         `UPDATE supporters SET ?
         WHERE id=?`,
@@ -94,7 +96,7 @@ class Supporter {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters 
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -122,9 +124,10 @@ class Supporter {
     const con = await sql.getConnection();
 
     try {
+      await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters  
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );

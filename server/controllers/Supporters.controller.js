@@ -1,15 +1,16 @@
 const Supporter = require("../models/Supporters.model");
+const { validationResult, matchedData } = require("express-validator");
 
 const createSupporter = async (req, res) => {
-  const errors = validationResult(req); 
+  const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).send(errors);
     return;
   }
-  const data = matchedData(req); 
+  const data = matchedData(req);
 
   try {
-    const newSupporter = new Supporter(req.body);
+    const newSupporter = new Supporter(data);
     const supporter = await Supporter.create(newSupporter);
 
     res.status(201).json({
@@ -19,25 +20,12 @@ const createSupporter = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
-    if (err.code == "WARN_DATA_TRUNCATED") {
-      res.status(400).json({
-        message: "Wrong roles"
-      });
-      return;
-    }
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
         message: "This user is an supporter",
       });
       return;
     }
-
     res.status(500).json({
       message: "Errors occur when creating new supporter",
     });
@@ -45,13 +33,6 @@ const createSupporter = async (req, res) => {
 };
 
 const getSupporter = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const supporter = await Supporter.findOne({ id: req.params.id });
     if (!supporter) {
@@ -66,6 +47,7 @@ const getSupporter = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
+
     res.status(500).json({
       message: "Errors occur when getting supporter's information",
     });
@@ -89,15 +71,21 @@ const getAllSupporters = async (req, res) => {
 
 // Update supporter information
 const updateSupporterById = async (req, res) => {
-  if (!req.body || !req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+  if (!Object.keys(data).length) {
+    res.status(400).json({
+      message: "Must provide valid fields",
     });
     return;
   }
 
   try {
-    const supporters = await Supporter.updateById(req.params.id, req.body);
+    const supporters = await Supporter.updateById(req.params.id, data);
     if (!supporters) {
       res.status(404).json({
         message: "Not found supporter id",
@@ -111,18 +99,6 @@ const updateSupporterById = async (req, res) => {
   } catch (err) {
     console.log(err);
 
-    if (err.code == "WARN_DATA_TRUNCATED") {
-      res.status(400).json({
-        message: "Wrong roles"
-      });
-      return;
-    }
-    if (err.code == "ER_BAD_FIELD_ERROR") {
-      res.status(400).json({
-        message: "Wrong fields",
-      });
-      return;
-    }
     res.status(500).json({
       message: "Errors occur when updating supporters' information",
     });
@@ -130,13 +106,6 @@ const updateSupporterById = async (req, res) => {
 };
 
 const deleteSupporterById = async (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const supporters = await Supporter.deleteById(req.params.id);
     if (!supporters) {

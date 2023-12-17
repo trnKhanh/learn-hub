@@ -6,6 +6,11 @@ const {
   validateAccessAdminPermission,
 } = require("../middlewares/Admins.middleware");
 
+const {
+  createAdminSchema,
+  updateAdminSchema,
+} = require("../middlewares/validators/Admins.validators");
+
 router.get(
   "/",
   [validateToken, validateAccessAdminPermission],
@@ -19,13 +24,13 @@ router.get(
 
 router.post(
   "/",
-  [validateToken, validateAccessAdminPermission],
+  [validateToken, validateAccessAdminPermission, createAdminSchema],
   adminsController.createAdmin,
 );
 
 router.patch(
   "/:id",
-  [validateToken, validateAccessAdminPermission],
+  [validateToken, validateAccessAdminPermission, updateAdminSchema],
   adminsController.updateAdminById,
 );
 

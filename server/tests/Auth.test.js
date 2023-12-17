@@ -8,58 +8,82 @@ afterAll(async () => {
   await sql.query("DELETE FROM users WHERE username='test'");
   await sql.end();
 });
+
+const agent = request.agent(app);
 describe("POST /signup", () => {
   it("Sign up", async () => {
-    let res = await request(app)
+    let res = await agent
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(201);
     expect(res.body.username).toBe("test");
-    expect(res.body.accessToken).toBeDefined();
+    expect(res.body.user_id).toBeDefined();
+
+    res = await agent.post("/auth");
+    expect(res.statusCode).toBe(200);
+  });
+});
+describe("POST /logout", () => {
+  it("Log out", async () => {
+    let res = await agent
+      .post("/logout");
+
+    expect(res.statusCode).toBe(200);
+
+    res = await agent.post("/auth");
+    expect(res.statusCode).toBe(401);
   });
 });
 
 describe("POST /signup", () => {
   it("Sign up with existed username", async () => {
-    let res = await request(app)
+    let res = await agent
       .post("/signup")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(409);
+
+    res = await agent.post("/auth");
+    expect(res.statusCode).toBe(401);
   });
 });
 
 describe("POST /login", () => {
   it("Log in", async () => {
-    let res = await request(app)
+    let res = await agent
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
+        email: "test@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.username).toBe("test");
-    expect(res.body.accessToken).toBeDefined();
+
+    res = await agent.post("/auth");
+    expect(res.statusCode).toBe(200);
   });
 });
 
 describe("POST /login", () => {
   it("Log in with wrong password", async () => {
-    let res = await request(app)
+    let res = await agent 
       .post("/login")
       .send({
         username: "test",
@@ -78,7 +102,7 @@ describe("GET /users/:id", () => {
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
@@ -86,7 +110,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/${user_id}`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.user).toBeDefined();
@@ -100,7 +124,7 @@ describe("GET /users/:id", () => {
     let res = await request(app)
       .get(`/users/112313131`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(404);
   });
@@ -111,7 +135,7 @@ describe("GET /users", () => {
     let res = await request(app)
       .get(`/users`)
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(200);
     expect(res.body.users).toBeInstanceOf(Array);
@@ -120,15 +144,13 @@ describe("GET /users", () => {
 
 describe("PATCH /users", () => {
   it("Update user informations", async () => {
-    const accessToken = await getAccessToken("test", "test");
-    let res = await request(app)
+    let res = await agent
       .patch("/users")
       .send({
         full_name: "test guy",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .set("accessToken", accessToken);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.users).toBeInstanceOf(Array);
@@ -138,12 +160,10 @@ describe("PATCH /users", () => {
 
 describe("DELETE /users", () => {
   it("DELETE user", async () => {
-    const accessToken = await getAccessToken("test", "test");
-    let res = await request(app)
+    let res = await agent
       .delete("/users")
       .set("Content-Type", "application/json")
       .set("Accept", "application/json")
-      .set("accessToken", accessToken);
 
     expect(res.statusCode).toBe(200);
   });
@@ -151,11 +171,11 @@ describe("DELETE /users", () => {
 
 describe("POST /login", () => {
   it("Log in with unknown username", async () => {
-    let res = await request(app)
+    let res = await agent
       .post("/login")
       .send({
         username: "test",
-        password: "test",
+        password: "Learnhub123!",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
