@@ -29,14 +29,20 @@ router.get(
   financialAidsController.getFinancialAid,
 );
 router.get(
-  "/:student_id",
-  [validateToken, validateCourseAccessPermission],
-  financialAidsController.getFinancialAid,
-);
-router.get(
   "/",
   [validateToken, validateCourseAccessPermission],
   financialAidsController.getAllFinancialAidsByCourseId,
+);
+router.get(
+  "/tutor",
+  [validateToken, validateCourseAccessPermission],
+  financialAidsController.getAllFinancialAidsByCourseIdForTutor,
+);
+
+router.get(
+  "/:student_id",
+  [validateToken, validateCourseAccessPermission],
+  financialAidsController.getFinancialAid,
 );
 
 router.patch(

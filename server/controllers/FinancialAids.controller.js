@@ -84,8 +84,30 @@ const getFinancialAid = async (req, res) => {
 
 const getAllFinancialAidsByCourseId = async (req, res) => {
   try {
-    const financialAids = await FinancialAid.findAll({
+    let financialAids = await FinancialAid.findAll({
       course_id: req.params.course_id,
+    });
+    res.status(200).json({
+      message: "Retrieve Financial aid successfully",
+      financialAids: financialAids,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when getting Financial aid",
+    });
+  }
+};
+const getAllFinancialAidsByCourseIdForTutor = async (req, res) => {
+  try {
+    let financialAids = await FinancialAid.findAll({
+      course_id: req.params.course_id,
+    });
+    financialAids = financialAids.filter((financialAid) => {
+      return (
+        financialAid.status != "PENDING" &&
+        financialAid.status != "ADMIN_DENIED"
+      );
     });
     res.status(200).json({
       message: "Retrieve Financial aid successfully",
@@ -208,6 +230,7 @@ module.exports = {
   getFinancialAid,
   getAllFinancialAids,
   getAllFinancialAidsByCourseId,
+  getAllFinancialAidsByCourseIdForTutor,
   getAllFinancialAidsByStudentId,
   deleteFinancialAid,
   updateFinancialAidStatus,
