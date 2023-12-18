@@ -1,13 +1,14 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Supporter {
   constructor(supporter) {
-    this.id = supporter.id || null;
-    this.role = supporter.role || null;
+    this.id = supporter.id;
+    this.role = supporter.role;
   }
 
-  static queryFields = `id, role`;
+  static queryFields = `${User.queryFields}, role`;
 
   // Create new Supporter
   static create = async (newSupporter) => {
@@ -95,7 +96,7 @@ class Supporter {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters 
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -126,7 +127,7 @@ class Supporter {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Supporter.queryFields} 
-         FROM supporters  
+         FROM supporters NATURAL JOIN users
          WHERE id=?`,
         [id],
       );

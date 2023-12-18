@@ -1,15 +1,16 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Tutor {
   constructor(tutor) {
-    this.id = tutor.id || null;
-    this.admin_id = tutor.admin_id || null;
+    this.id = tutor.id;
+    this.admin_id = tutor.admin_id;
     this.verified = tutor.verified || 0;
     this.profit = tutor.profit || 0;
   }
 
-  static queryFields = `id, admin_id, verified, profit`;
+  static queryFields = `${User.queryFields}, admin_id, verified, profit`;
 
   // Create new tutor
   static create = async (newTutor) => {
@@ -91,7 +92,7 @@ class Tutor {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors 
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id]
       );
@@ -122,7 +123,7 @@ class Tutor {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors  
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
         [id]
       );

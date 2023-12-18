@@ -4,16 +4,16 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Course {
   constructor(course) {
-    this.name = course.name || null;
-    this.description = course.description || null;
-    this.difficulty = course.difficulty || null;
-    this.duration = course.duration || null;
-    this.owner_id = course.owner_id || null;
-    this.price = course.price || null;
-    this.profile_picture = course.profile_picture || null;
-    this.discount = course.discount || null;
+    this.name = course.name;
+    this.description = course.description;
+    this.difficulty = course.difficulty;
+    this.duration = course.duration;
+    this.owner_id = course.owner_id;
+    this.price = course.price;
+    this.profile_picture = course.profile_picture;
+    this.discount = course.discount;
   }
-  static queryFields = `id, name, description, difficulty, duration, owner_id, price, profile_picture, discount`;
+  static queryFields = `courses.id as id, name, description, difficulty, duration, owner_id, price, profile_picture, discount`;
 
   // Create new Course
   static create = async (newCourse) => {
@@ -206,6 +206,45 @@ class Course {
       sql.releaseConnection(con);
       throw err;
     }
+  };
+
+  static search = async (filters) => {
+    let conditions = [];
+    let values = [];
+    if (filters.priceMin != undefined) {
+      conditions.push(`courses.price>=?`);
+      values.push(filters.priceMin);
+    }
+    if (filters.priceMax != undefined) {
+      conditions.push(`courses.price<=?`);
+      values.push(filters.priceMax);
+    }
+    if (filters.name) {
+      conditions.push(`courses.name LIKE ?`);
+      values.push("%" + filters.name + "%");
+    }
+    if (filters.difficulties) {
+      conditions.push(`courses.difficulty IN (?)`);
+      values.push(filters.difficulties);
+    }
+    if (filters.subjects) {
+      conditions.push(`subject_id IN (?)`);
+      values.push(filters.subjects);
+    }
+    if (filters.languages) {
+      conditions.push(`language_id IN (?)`);
+      values.push(filters.languages);
+    }
+    const sqlCondition = conditions.join(" AND ");
+    const [rows, fields] = await sql.query(
+      `SELECT DISTINCT ${Course.queryFields} 
+      FROM ((courses LEFT JOIN courses_subjects ON courses.id=courses_subjects.course_id)
+            LEFT JOIN courses_languages ON courses.id=courses_languages.course_id)
+      ${sqlCondition.length ? "WHERE" : ""} ${sqlCondition}`,
+      values,
+    );
+    console.log("Found courses: ", { filters: filters, results: rows });
+    return rows;
   };
 }
 module.exports = Course;

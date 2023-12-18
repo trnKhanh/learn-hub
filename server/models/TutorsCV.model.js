@@ -3,8 +3,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class TutorCV {
   constructor(tutorCV) {
-    this.tutor_id = tutorCV.id || null;
-    this.cv_path = tutorCV.admin_id || null;
+    this.tutor_id = tutorCV.tutor_id;
+    this.cv_path = tutorCV.cv_path;
     this.status = tutorCV.status || "PENDING";
   }
 
@@ -38,10 +38,10 @@ class TutorCV {
   };
 
   // Find one tutorCV by filter
-  static findOne = async (filters, cv_path=false) => {
+  static findOne = async (filters, cv_path = false) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${TutorCV.queryFields}${cv_path ? ', cv_path': ''}
+      `SELECT ${TutorCV.queryFields}${cv_path ? ", cv_path" : ""}
        FROM tutor_cvs 
        WHERE ${filterKeys}`,
       filterValues,
@@ -56,10 +56,10 @@ class TutorCV {
   };
 
   // Find all tutorCVs by filter
-  static findAll = async (filters, cv_path=false) => {
+  static findAll = async (filters, cv_path = false) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${TutorCV.queryFields}${cv_path ? ', cv_path': ''}
+      `SELECT ${TutorCV.queryFields}${cv_path ? ", cv_path" : ""}
        FROM tutor_cvs  
        WHERE ${filterKeys}`,
       filterValues,

@@ -4,8 +4,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class ShoppingCart {
   constructor(shoppingCart) {
-    this.student_id = shoppingCart.student_id || null;
-    this.course_id = shoppingCart.course_id || null;
+    this.student_id = shoppingCart.student_id;
+    this.course_id = shoppingCart.course_id;
   }
   static queryFields = `course_id`;
 

@@ -4,7 +4,7 @@ import { ButtonCustomized, Highlight } from "../ui/button-customized";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import Link from 'next/link';
-import { getCourses } from "@/actions/get-course";
+import { getCourses } from "@/actions/course";
 import { CourseCard } from "../course-card";
 
 import Slider from "react-slick";
