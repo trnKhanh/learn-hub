@@ -20,12 +20,12 @@ class LessonsController {
       // create Lesson Object by Class Lesson
       const lesson = new Lesson(data);
 
-      if (await lesson.isExist()) {
-        res.status(409).json({
-          message: "Lesson with the same name has existed",
-        });
-        return;
-      }
+      // if (await lesson.isExist()) {
+      //   res.status(409).json({
+      //     message: "Lesson with the same name has existed",
+      //   });
+      //   return;
+      // }
 
       // Update to Database
       const new_lesson = await lesson.create();
@@ -44,6 +44,13 @@ class LessonsController {
       });
     } catch (err) {
       // console.log(err);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
+
       res.status(500).json({
         message: "Errors occur when creating new lesson",
       });
@@ -160,14 +167,14 @@ class LessonsController {
       // create Lesson Object by Class Lesson
       const lesson = new Lesson(data);
 
-      console.log(`>>> LessonsController >> update >> lesson: `, lesson);
+      // console.log(`>>> LessonsController >> update >> lesson: `, lesson);
 
-      if (await lesson.isExist()) {
-        res.status(409).json({
-          message: "Data is in use, Change another",
-        });
-        return;
-      }
+      // if (await lesson.isExist()) {
+      //   res.status(409).json({
+      //     message: "Data is in use, Change another",
+      //   });
+      //   return;
+      // }
 
       // Update to Database
       const updated_lesson = await lesson.update();
@@ -185,7 +192,12 @@ class LessonsController {
         course: req.course,
       });
     } catch (err) {
-      // console.log(err);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
       res.status(500).json({
         message: "Errors occur when updating lesson",
       });

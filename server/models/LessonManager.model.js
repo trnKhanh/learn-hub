@@ -39,8 +39,8 @@ class LessonManager {
 
       console.log(">>> LessonManager >> create >> newLesson: ", newLesson);
 
-      const [res, _] = await sql.query(`INSERT INTO lessons SET ?`, newLesson);
-      const [rows, fields] = await sql.query(
+      const [res, _] = await con.query(`INSERT INTO lessons SET ?`, newLesson);
+      const [rows, fields] = await con.query(
         `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables} WHERE id=?`,
         [newLesson.id]
       );

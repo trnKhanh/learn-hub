@@ -20,7 +20,9 @@ const Lesson = require("../models/Lessons.model");
 
 // ----------------------------------------
 // get all lesson
-router.get("/", [getCourse], LessonsController.getAllLessons);
+router.get("/", [getCourse], LessonsController.getAllPublishedLessons);
+
+router.get("/edit", [getCourse], LessonsController.getAllLessons);
 
 // get lesson by id
 router.get(

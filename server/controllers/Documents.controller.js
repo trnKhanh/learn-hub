@@ -101,6 +101,12 @@ class DocumentController {
       }
     } catch (err) {
       console.log(err);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
       res.status(500).json({
         message: "Errors occur when creating new document",
       });
@@ -145,6 +151,12 @@ class DocumentController {
       });
     } catch (err) {
       console.log(err);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
       res.status(500).json({
         message: "Errors occur when updating document's information",
       });

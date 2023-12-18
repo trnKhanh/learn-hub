@@ -33,8 +33,8 @@ class Exams {
       await con.beginTransaction();
 
       this.getId();
-      const [res, _] = await sql.query(`INSERT INTO exams SET ?`, this);
-      const [rows, fields] = await sql.query(`SELECT * FROM exams WHERE id=?`, [
+      const [res, _] = await con.query(`INSERT INTO exams SET ?`, this);
+      const [rows, fields] = await con.query(`SELECT * FROM exams WHERE id=?`, [
         this.id,
       ]);
 
@@ -88,11 +88,11 @@ class Exams {
     try {
       await con.beginTransaction();
       const [filtersKeys, filtersValues] = formatFilters(filters);
-      const [res, _] = await sql.query(
+      const [res, _] = await con.query(
         `UPDATE exams SET ? WHERE course_id=${this.course_id} AND lesson_id=${this.lesson_id} AND id=${this.id}`,
         filters
       );
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM exams WHERE course_id=${this.course_id} AND lesson_id=${this.lesson_id} AND id=${this.id}`
       );
 
@@ -116,11 +116,11 @@ class Exams {
     try {
       await con.beginTransaction();
 
-      const [rows, fields] = await sql.query(`SELECT * FROM exams WHERE id=?`, [
+      const [rows, fields] = await con.query(`SELECT * FROM exams WHERE id=?`, [
         this.id,
       ]);
 
-      const [res, _] = await sql.query(
+      const [res, _] = await con.query(
         `DELETE FROM exams WHERE course_id=${this.course_id} AND lesson_id=${this.lesson_id} AND id=${this.id}`
       );
 

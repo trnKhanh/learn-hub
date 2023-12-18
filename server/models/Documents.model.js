@@ -18,8 +18,8 @@ class Documents {
       await con.beginTransaction();
 
       this.getId();
-      const [res, _] = await sql.query(`INSERT INTO documents SET ?`, this);
-      const [rows, fields] = await sql.query(
+      const [res, _] = await con.query(`INSERT INTO documents SET ?`, this);
+      const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE id=?`,
         [this.id]
       );
@@ -110,11 +110,11 @@ class Documents {
     try {
       await con.beginTransaction();
 
-      const [res, _] = await sql.query(`UPDATE documents SET ? WHERE id=?`, [
+      const [res, _] = await con.query(`UPDATE documents SET ? WHERE id=?`, [
         this,
         this.id,
       ]);
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE id=?`,
         [this.id]
       );
@@ -140,12 +140,12 @@ class Documents {
     try {
       await con.beginTransaction();
 
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE id=?`,
         [this.id]
       );
 
-      const [res, _] = await sql.query(`DELETE FROM documents WHERE id=?`, [
+      const [res, _] = await con.query(`DELETE FROM documents WHERE id=?`, [
         this.id,
       ]);
 

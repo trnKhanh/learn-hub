@@ -106,12 +106,12 @@ class LearnCourses {
     try {
       await con.beginTransaction();
 
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM learn_courses WHERE ${filterKeys}`,
         filterValues
       );
 
-      const [res, _] = await sql.query(
+      const [res, _] = await con.query(
         `DELETE FROM learn_courses WHERE ${filterKeys}`,
         filterValues
       );
@@ -137,12 +137,12 @@ class LearnCourses {
     const { filterKeys, filterValues } = formatFilters(filters);
     try {
       await con.beginTransaction();
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM learn_courses WHERE ${filterKeys}`,
         filterValues
       );
 
-      const [res, _] = await sql.query(
+      const [res, _] = await con.query(
         `DELETE FROM learn_courses WHERE ${filterKeys}`,
         filterValues
       );

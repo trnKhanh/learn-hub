@@ -140,7 +140,7 @@ class Course {
   };
 
   static isPaid = async (student_id, id) => {
-    const [res, _] = await sql.query(
+    const [res, _] = await con.query(
       `SELECT * FROM payments JOIN payments_courses ON id=payment_id
       WHERE student_id=? AND course_id=?`,
       [student_id, id]
@@ -153,7 +153,7 @@ class Course {
   };
 
   static register = async (student_id, id) => {
-    const [res, _] = await sql.query(`INSERT INTO learn_courses SET ?`, {
+    const [res, _] = await con.query(`INSERT INTO learn_courses SET ?`, {
       student_id: student_id,
       course_id: id,
     });

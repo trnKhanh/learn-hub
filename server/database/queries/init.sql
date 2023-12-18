@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS subjects (
 CREATE TABLE IF NOT EXISTS lessons (
   course_id INT NOT NULL,
   id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   is_free BOOL NOT NULL DEFAULT 0,
   is_published BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY (course_id, id),
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS documents (
   course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   file_path VARCHAR(255) NOT NULL,
   PRIMARY KEY (course_id, lesson_id, id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS exams (
   course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   percentage DOUBLE NOT NULL CHECK(percentage >= 0 AND percentage <= 1),
   PRIMARY KEY (course_id, lesson_id, id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE

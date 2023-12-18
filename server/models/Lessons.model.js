@@ -37,10 +37,10 @@ class Lesson {
 
       await this.getId();
 
-      console.log(">>> LessonManager >> create >> newLesson: ", this);
+      // console.log(">>> LessonManager >> create >> newLesson: ", this);
 
-      const [res, _] = await sql.query(`INSERT INTO lessons SET ?`, this);
-      const [rows, fields] = await sql.query(
+      const [res, _] = await con.query(`INSERT INTO lessons SET ?`, this);
+      const [rows, fields] = await con.query(
         `SELECT * FROM lessons WHERE id=?`,
         [this.id]
       );
@@ -102,11 +102,11 @@ class Lesson {
     try {
       await con.beginTransaction();
 
-      const [res, _] = await sql.query(`UPDATE lessons SET ? WHERE id=?`, [
+      const [res, _] = await con.query(`UPDATE lessons SET ? WHERE id=?`, [
         this,
         this.id,
       ]);
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM lessons WHERE id=?`,
         [this.id]
       );

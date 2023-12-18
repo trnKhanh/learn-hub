@@ -40,6 +40,12 @@ class ExamsController {
       });
     } catch (errors) {
       console.log(errors);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
       res.status(500).json({
         message: "Errors occur when creating exam",
       });
@@ -142,6 +148,12 @@ class ExamsController {
       });
     } catch (errors) {
       console.log(errors);
+      if (err.code == "ER_DUP_ENTRY") {
+        res.status(409).json({
+          message: "This lesson is already existed",
+        });
+        return;
+      }
       res.status(500).json({
         message: "Errors occur when updating exam",
       });
