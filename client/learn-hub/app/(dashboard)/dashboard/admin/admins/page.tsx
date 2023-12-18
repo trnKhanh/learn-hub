@@ -3,7 +3,7 @@
 import { deleteAdmin, getAllAdmins } from "@/actions/admins";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-//import { InfoButton } from "../../_components/info-button";
+import { InfoButton } from "../_components/info-button";
 import {
   DashboardSectionHeader,
   DashboardSection,
@@ -16,7 +16,7 @@ import { UserThumbnail } from "../../_components/user-thumbnail";
 import { Trash2 } from "lucide-react";
 import { AdminDeleteDialog } from "./_components/admin-delete-dialog";
 import { notFound } from "next/navigation";
-import { UserInfoTable } from "../../_components/user-info-table";
+import { UserInfoTable } from "../_components/user-info-table";
 import { AdminInfoDialog } from "./_components/admin-info-dialog";
 import { toast } from "react-toastify";
 

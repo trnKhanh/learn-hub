@@ -15,6 +15,7 @@ const { validateStudent } = require("../middlewares/Students.middleware");
 const {
   createCourseScheme,
   updateCourseScheme,
+  searchCourseScheme,
 } = require("../middlewares/validators/Courses.validator");
 
 const multer = require("multer");
@@ -26,11 +27,13 @@ router.get("/", coursesController.getAllCourses);
 
 router.get("/:course_id", coursesController.getCourse);
 
-router.get("/:course_id/lessons", lessonsController.getAllLessonsOfCourse);
+router.get("/:course_id/lessons", lessonsController.getAllLessons);
 
 router.get("/:course_id/documents", documentsController.getAllDocumentsOfCourse);
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
+
+router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 
 router.post(
   "/",

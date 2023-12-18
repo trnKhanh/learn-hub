@@ -207,5 +207,45 @@ class Course {
       throw err;
     }
   };
+
+  static search = async (filters) => {
+    let conditions = [];
+    let values = [];
+    if (filters.priceMin != undefined) {
+      conditions.push(`courses.price>=?`);
+      values.push(filters.priceMin);
+    }
+    if (filters.priceMax != undefined) {
+      conditions.push(`courses.price<=?`);
+      values.push(filters.priceMax);
+    }
+    if (filters.name) {
+      conditions.push(`courses.name LIKE ?`);
+      values.push("%"+filters.name+"%");
+    }
+    if (filters.difficulties) {
+      conditions.push(`courses.difficulty IN (?)`);
+      values.push(filters.difficulties);
+    }
+    if (filters.subjects) {
+      conditions.push(`subjects.id IN (?)`);
+      values.push(filters.subjects);
+    }
+    if (filters.languages) {
+      conditions.push(`languages.id IN (?)`);
+      values.push(filters.languages);
+    }
+    const sqlCondition = conditions.join(" AND ");
+    console.log(sqlCondition)
+    const [rows, fields] = await sql.query(
+      `SELECT DISTINCT ${Course.queryFields} 
+      FROM ((courses LEFT JOIN courses_subjects ON courses.id=courses_subjects.course_id)
+            LEFT JOIN courses_languages ON courses.id=courses_languages.course_id)
+      ${sqlCondition.length ? "WHERE" : ""} ${sqlCondition}`,
+      values,
+    );
+    console.log("Found courses: ", { filters: filters, results: rows });
+    return rows;
+  };
 }
 module.exports = Course;

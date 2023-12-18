@@ -1,6 +1,8 @@
 export const getAllStudents = async () => {
   try {
-    const res = await fetch(`http://localhost:3001/students`);
+    const res = await fetch(`http://localhost:3001/students`, {
+      credentials: "include",
+    });
     const data: { message: string; students: Student[] } = await res.json();
 
     return { status: res.status, data: data };
@@ -10,7 +12,9 @@ export const getAllStudents = async () => {
 };
 export const getStudent = async (id: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/students/${id}`);
+    const res = await fetch(`http://localhost:3001/students/${id}`, {
+      credentials: "include",
+    });
     const data: { message: string; student: Student } = await res.json();
 
     return { status: res.status, data: data };
@@ -21,6 +25,7 @@ export const getStudent = async (id: string) => {
 export const deleteStudent = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/students/${id}`, {
+      credentials: "include",
       method: "DELETE",
     });
     const data: { message: string; students: Student[] } = await res.json();

@@ -8,13 +8,13 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
 
   if (pathname.startsWith("/dashboard") === false) {
     return (
-      <>
+      <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="bg-page-gradient pt-navigation-height">
+        <main className="flex-1 bg-page-gradient pt-navigation-height">
           {children}
         </main>
         <Footer />
-      </>
+      </div>
     );
   }
 

@@ -1,10 +1,10 @@
 type Course = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   difficulty: string;
   duration: number;
-  owner_id: number;
+  owner_id: string;
   price: number;
   discount: number;
   profile_picture: string;
@@ -26,6 +26,14 @@ type Documents = {
   name: string;
   file_path: string;
 }
+
+type VideoData = {
+  assetId: string;
+  playbackId: string;
+
+  lesson_id: number;
+  course_id: number;
+};
 
 type Subject = {
   id: string;

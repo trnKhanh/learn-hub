@@ -13,7 +13,7 @@ import {
   User,
   UserCog,
   Shield,
-  FolderPlus
+  FolderPlus,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -101,12 +101,11 @@ const adminRoutes = [
 ];
 
 export const SidebarRoutes = () => {
-  const [routes, setRoutes] = useState(teacherRoutes);
+  //const [routes, setRoutes] = useState(teacherRoutes);
+  const [routes, setRoutes] = useState(guestRoutes);
   const pathname = usePathname();
+  console.log('123')
 
-  //const isTeacherPage = pathname?.includes("/teacher");
-
-  //const routes = isTeacherPage ? teacherRoutes : guestRoutes;
   useEffect(() => {
     const isAdmin = localStorage.getItem("is_admin");
     if (isAdmin) {

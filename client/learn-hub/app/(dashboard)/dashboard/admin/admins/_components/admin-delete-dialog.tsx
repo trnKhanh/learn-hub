@@ -18,7 +18,6 @@ interface AdminDeleteDialogProps {
   setIsDeleting: Dispatch<SetStateAction<boolean>>;
   onDelete: { (e: React.MouseEvent<HTMLElement>): void };
 }
-
 export const AdminDeleteDialog = ({
   isDeleting,
   setIsDeleting,
@@ -47,7 +46,7 @@ export const AdminDeleteDialog = ({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-slate-500 hover:bg-slate-600"
-            onClick={async (e: any) => {
+            onClick={async (e) => {
               setIsDeleting(true);
               await onDelete(e);
               setIsDeleting(false);

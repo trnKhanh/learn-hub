@@ -1,6 +1,5 @@
 import { Sidebar } from "../_components/sidebar";
 import { NavbarDashboard } from "../_components/navbar";
-import { Toaster } from "@/components/ui/toaster";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -21,10 +21,10 @@ class Student {
         newStudent,
       );
       const [rows, fields] = await con.query(
-          `SELECT ${Student.queryFields} 
-          FROM students NATURAL JOIN users 
-          WHERE id=?`,
-          [newStudent.id],
+        `SELECT ${Student.queryFields} 
+         FROM students NATURAL JOIN users 
+         WHERE id=?`,
+        [newStudent.id],
       );
 
       await con.commit();
@@ -47,10 +47,10 @@ class Student {
   static findOne = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-        `SELECT ${Student.queryFields} 
-        FROM students NATURAL JOIN users 
-        WHERE ${filterKeys}`,
-        filterValues,
+      `SELECT ${Student.queryFields} 
+       FROM students NATURAL JOIN users 
+       WHERE ${filterKeys}`,
+      filterValues,
     );
     if (rows.length) {
       console.log("Found student: ", { filters: filters, results: rows[0] });
@@ -65,10 +65,10 @@ class Student {
   static findAll = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-        `SELECT ${Student.queryFields} 
-        FROM students NATURAL JOIN users  
-        WHERE ${filterKeys}`,
-        filterValues,
+      `SELECT ${Student.queryFields} 
+       FROM students NATURAL JOIN users  
+       WHERE ${filterKeys}`,
+      filterValues,
     );
     console.log("Found students: ", { filters: filters, results: rows });
     return rows;
@@ -76,8 +76,8 @@ class Student {
 
   static getAll = async () => {
     const [rows, fields] = await sql.query(
-        `SELECT ${Student.queryFields} 
-        FROM students NATURAL JOIN users`,
+      `SELECT ${Student.queryFields} 
+       FROM students NATURAL JOIN users`,
     );
     console.log("Get all students: ", { results: rows });
     return rows;
@@ -95,10 +95,10 @@ class Student {
         [columns, id],
       );
       const [rows, fields] = await con.query(
-          `SELECT ${Student.queryFields} 
-          FROM students NATURAL JOIN users
-          WHERE id=?`,
-          [id],
+        `SELECT ${Student.queryFields} 
+         FROM students NATURAL JOIN users
+         WHERE id=?`,
+        [id],
       );
 
       console.log("Updated students by Id", {
@@ -126,10 +126,10 @@ class Student {
     try {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
-          `SELECT ${Student.queryFields} 
-          FROM students NATURAL JOIN users
-          WHERE id=?`,
-          [id],
+        `SELECT ${Student.queryFields} 
+         FROM students NATURAL JOIN users
+         WHERE id=?`,
+        [id],
       );
 
       const [res, _] = await con.query(

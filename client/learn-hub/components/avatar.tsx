@@ -31,12 +31,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { cookies } from "next/headers";
+import { logout } from "@/actions/auth";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { AuthContext } from "@/app/auth-provider";
+import { toast } from "react-toastify";
 
 const handleAvatarClick = (e: React.MouseEvent<HTMLDivElement>) => {
   e.stopPropagation();
 };
 
 const CustomizedAvatar = () => {
+  const { isAuth, setAuth } = useContext(AuthContext);
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -121,7 +129,16 @@ const CustomizedAvatar = () => {
           <span>API</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={async () => {
+            const res = await logout();
+            if (res && res.status == 200) {
+              toast.success(res.data.message);
+              setAuth(false);
+              router.push("/");
+            }
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>

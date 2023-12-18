@@ -285,7 +285,16 @@ CREATE TABLE IF NOT EXISTS payments_courses (
   PRIMARY KEY (payment_id, course_id),
   FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
-
 );
+
+CREATE TABLE IF NOT EXISTS video_lesson (
+  course_id INT NOT NULL,
+  lesson_id INT NOT NULL,
+  asset_id VARCHAR(255),
+  playback_id VARCHAR(255),
+  PRIMARY KEY (course_id, lesson_id),
+  FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 

@@ -5,7 +5,12 @@ const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    }),
+);
 app.use(cookieParser());
 
 // Use users router
@@ -30,6 +35,9 @@ app.use("/supporters", supportersRouter);
 
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
+
+const lessonsRouter = require("./routes/Lessons.route");
+app.use("/courses/:course_id/lessons", lessonsRouter);
 
 const categoriesRouter = require("./routes/Subjects.route");
 app.use("/subjects", categoriesRouter);

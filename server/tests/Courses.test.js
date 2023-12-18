@@ -5,57 +5,80 @@ const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
 let tutor_id;
-let tutor_token;
 let u_tutor_id;
-let u_tutor_token;
 let course_admin_id;
-let course_admin_token;
+let admin_id;
 let course_id;
+
+const tutor_agent = request.agent(app);
+const u_tutor_agent = request.agent(app);
+const course_admin_agent = request.agent(app);
+const admin_agent = request.agent(app);
+
 beforeAll(async () => {
   try {
-    let res = await request(app)
+    const res = await tutor_agent
       .post("/signup")
       .send({
         username: "tutor",
         password: "Learnhub123!",
-        email: "tutor@gmail.com"
+        email: "tutor@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
-
+    expect(res.body.user_id).toBeDefined();
     tutor_id = res.body.user_id;
-    tutor_token = res.body.accessToken;
     await sql.query("INSERT INTO tutors SET id=?, verified=1", [tutor_id]);
+  } catch (err) {
+    console.log(err);
+  }
 
-    res = await request(app)
+  try {
+    const res = await u_tutor_agent
       .post("/signup")
       .send({
         username: "u_tutor",
         password: "Learnhub123!",
-        email: "u_tutor@gmail.com"
+        email: "u_tutor@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
-
+    expect(res.body.user_id).toBeDefined();
     u_tutor_id = res.body.user_id;
-    u_tutor_token = res.body.accessToken;
     await sql.query("INSERT INTO tutors SET id=?, verified=0", [u_tutor_id]);
   } catch (err) {
     console.log(err);
   }
+
   try {
-    await createAdmin();
-    let res = await request(app)
+    const res = await admin_agent
+      .post("/signup")
+      .send({
+        username: "admin",
+        password: "Learnhub123!",
+        email: "admin@gmail.com",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
+    admin_id = res.body.user_id;
+    await sql.query("INSERT INTO admins SET id=?", [admin_id]);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const res = await course_admin_agent
       .post("/signup")
       .send({
         username: "course_admin",
         password: "Learnhub123!",
-        email: "courseadmin@gmail.com"
+        email: "courseadmin@gmail.com",
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     course_admin_id = res.body.user_id;
-    course_admin_token = res.body.accessToken;
     await sql.query(
       "INSERT INTO admins SET id=?, courses_access=1, tutors_access=0, students_access=0, supporters_access=0",
       [course_admin_id],
@@ -63,6 +86,10 @@ beforeAll(async () => {
   } catch (err) {
     console.log(err);
   }
+  expect(tutor_id).toBeDefined();
+  expect(u_tutor_id).toBeDefined();
+  expect(admin_id).toBeDefined();
+  expect(course_admin_id).toBeDefined();
 });
 
 afterAll(async () => {
@@ -77,6 +104,11 @@ afterAll(async () => {
     console.log(err);
   }
   try {
+    await sql.query("DELETE FROM users WHERE username=?", ["admin"]);
+  } catch (err) {
+    console.log(err);
+  }
+  try {
     await sql.query("DELETE FROM users WHERE username=?", ["course_admin"]);
   } catch (err) {
     console.log(err);
@@ -86,9 +118,7 @@ afterAll(async () => {
 
 describe("POST /courses", () => {
   it("Create course by course admin", async () => {
-    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await course_admin_agent
       .post("/courses")
       .send({
         name: "test_course",
@@ -99,8 +129,7 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(201);
     expect(res.body.course.name).toBe("test_course");
@@ -112,13 +141,8 @@ describe("POST /courses", () => {
     expect(res.body.course.discount).toBe(null);
     course_id = res.body.course.id;
   });
-});
-
-describe("POST /courses", () => {
   it("Create course by course_admin (duplicate)", async () => {
-    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await course_admin_agent
       .post("/courses")
       .send({
         name: "test_course",
@@ -129,18 +153,12 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(409);
   });
-});
-
-describe("POST /courses", () => {
   it("Create course by course admin, assigned course to unverified tutor", async () => {
-    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await course_admin_agent
       .post("/courses")
       .send({
         name: "test_course",
@@ -151,18 +169,12 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(422);
   });
-});
-
-describe("POST /courses", () => {
   it("Create course not by course_admin", async () => {
-    const accessToken = await getAccessToken("admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await admin_agent
       .post("/courses")
       .send({
         name: "test_course",
@@ -173,20 +185,15 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(401);
   });
 });
 
 describe("DELETE /courses/:id", () => {
-  it("Delete course by id (admin)", async () => {
-    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .delete(`/courses/${course_id}`)
-      .set("accessToken", accessToken);
+  it("Delete course by id (course admin)", async () => {
+    let res = await course_admin_agent.delete(`/courses/${course_id}`);
 
     expect(res.statusCode).toBe(200);
   });
@@ -194,7 +201,7 @@ describe("DELETE /courses/:id", () => {
 
 describe("POST /courses", () => {
   it("Create course by verified tutor", async () => {
-    let res = await request(app)
+    let res = await tutor_agent
       .post("/courses")
       .send({
         name: "tutor_course",
@@ -204,8 +211,7 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", tutor_token);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(201);
     expect(res.body.course.name).toBe("tutor_course");
@@ -217,11 +223,8 @@ describe("POST /courses", () => {
     expect(res.body.course.discount).toBe(null);
     course_id = res.body.course.id;
   });
-});
-
-describe("POST /courses", () => {
   it("Create course by verified tutor (duplicate)", async () => {
-    let res = await request(app)
+    let res = await tutor_agent
       .post("/courses")
       .send({
         name: "tutor_course",
@@ -231,16 +234,12 @@ describe("POST /courses", () => {
         price: 200,
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", tutor_token);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(409);
   });
-});
-
-describe("POST /courses", () => {
   it("Create course by unverified tutor", async () => {
-    let res = await request(app)
+    let res = await u_tutor_agent
       .post("/courses")
       .send({
         name: "test_course",
@@ -270,9 +269,6 @@ describe("GET /courses/:id", () => {
     expect(res.body.course.price).toBe(200);
     expect(res.body.course.discount).toBe(null);
   });
-});
-
-describe("GET /courses/:id", () => {
   it("Get course by unknown id", async () => {
     let res = await request(app).get(`/courses/12312321`);
 
@@ -291,13 +287,10 @@ describe("GET /courses", () => {
 
 describe("PATCH /courses/:id", () => {
   it("Update course by id", async () => {
-    let res = await request(app)
-      .patch(`/courses/${course_id}`)
-      .send({
-        price: 250,
-        discount: 0.2,
-      })
-      .set("accessToken", tutor_token);
+    let res = await tutor_agent.patch(`/courses/${course_id}`).send({
+      price: 250,
+      discount: 0.2,
+    });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.courses[0].name).toBe("tutor_course");
@@ -308,42 +301,25 @@ describe("PATCH /courses/:id", () => {
     expect(res.body.courses[0].price).toBe(250);
     expect(res.body.courses[0].discount).toBe(0.2);
   });
-});
-
-describe("PATCH /courses/:id", () => {
   it("Update course not by owner", async () => {
-    let res = await request(app)
-      .patch(`/courses/${course_id}`)
-      .send({
-        price: 250,
-        discount: 0.2,
-      })
-      .set("accessToken", u_tutor_token);
+    let res = await u_tutor_agent.patch(`/courses/${course_id}`).send({
+      price: 250,
+      discount: 0.2,
+    });
 
     expect(res.statusCode).toBe(401);
   });
-});
-describe("PATCH /courses/:id", () => {
   it("Update course with unknown fields", async () => {
-    let res = await request(app)
-      .patch(`/courses/${course_id}`)
-      .send({
-        abc: 1,
-      })
-      .set("accessToken", tutor_token);
+    let res = await tutor_agent.patch(`/courses/${course_id}`).send({
+      abc: 1,
+    });
 
     expect(res.statusCode).toBe(400);
   });
-});
-
-describe("PATCH /courses/:id", () => {
   it("Update course by unknown id", async () => {
-    let res = await request(app)
-      .patch(`/courses/123111111`)
-      .send({
-        price: 200,
-      })
-      .set("accessToken", tutor_token);
+    let res = await tutor_agent.patch(`/courses/123111111`).send({
+      price: 200,
+    });
 
     expect(res.statusCode).toBe(404);
   });
@@ -351,18 +327,14 @@ describe("PATCH /courses/:id", () => {
 
 describe("DELETE /courses/:id", () => {
   it("Delete course not by owner", async () => {
-    let res = await request(app)
-      .delete(`/courses/${course_id}`)
-      .set("accessToken", u_tutor_token);
+    let res = await u_tutor_agent
+      .delete(`/courses/${course_id}`);
 
     expect(res.statusCode).toBe(401);
   });
-});
-describe("DELETE /courses/:id", () => {
   it("Delete course by id", async () => {
-    let res = await request(app)
-      .delete(`/courses/${course_id}`)
-      .set("accessToken", tutor_token);
+    let res = await tutor_agent
+      .delete(`/courses/${course_id}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.courses[0].name).toBe("tutor_course");
@@ -373,15 +345,9 @@ describe("DELETE /courses/:id", () => {
     expect(res.body.courses[0].price).toBe(250);
     expect(res.body.courses[0].discount).toBe(0.2);
   });
-});
-
-describe("DELETE /courses/:id", () => {
   it("Delete course by unknown id", async () => {
-    const accessToken = await getAccessToken("course_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .delete(`/courses/${tutor_id}`)
-      .set("accessToken", accessToken);
+    let res = await course_admin_agent
+      .delete(`/courses/${tutor_id}`);
 
     expect(res.statusCode).toBe(404);
   });
