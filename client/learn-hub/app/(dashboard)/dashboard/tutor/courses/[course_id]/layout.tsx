@@ -7,6 +7,7 @@ import {
   DashboardSectionHeader,
 } from "../../../_components/dashboard-section";
 import { useRouter } from "next/navigation";
+import { List } from "lucide-react";
 
 export default function Layout({
   params,
@@ -34,7 +35,7 @@ export default function Layout({
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>
+      <DashboardSectionHeader icon={List}>
         <span className="font-bold text-slate-400">Course:</span>{" "}
         {course ? course.name : "Loading..."}
       </DashboardSectionHeader>
