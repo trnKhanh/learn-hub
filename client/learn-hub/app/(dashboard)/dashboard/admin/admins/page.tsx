@@ -3,7 +3,6 @@
 import { deleteAdmin, getAllAdmins } from "@/actions/admins";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { InfoButton } from "../_components/info-button";
 import {
   DashboardSectionHeader,
   DashboardSection,
@@ -13,10 +12,9 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { Shield, Trash2 } from "lucide-react";
 import { AdminDeleteDialog } from "./_components/admin-delete-dialog";
 import { notFound } from "next/navigation";
-import { UserInfoTable } from "../_components/user-info-table";
 import { AdminInfoDialog } from "./_components/admin-info-dialog";
 import { toast } from "react-toastify";
 
@@ -34,7 +32,7 @@ export default function Admins() {
           setIsLoading(false);
         } else {
           toast.error(res.data.message);
-          router.push("/dashboard");
+          router.push("/dashboard/admin");
         }
       }
     });
@@ -47,11 +45,17 @@ export default function Admins() {
       </div>
     );
 
-  if (admins && !admins.length) notFound();
+  if (admins && !admins.length) {
+    return (
+      <div className="flex p-6">
+        <p className="text-2xl text mx-auto">Found no admins</p>
+      </div>
+    );
+  }
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Admins</DashboardSectionHeader>
+      <DashboardSectionHeader icon={Shield}>Admins</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {admins &&
@@ -68,8 +72,7 @@ export default function Admins() {
                   setIsDeleting={setIsDeleting}
                   onDelete={async () => {
                     const res = await deleteAdmin(admin.id);
-                    if (res && res.status != 200)
-                      toast.error(res.data.message)
+                    if (res && res.status != 200) toast.error(res.data.message);
                   }}
                 />
               </DashboardSectionItemRight>
@@ -79,4 +82,3 @@ export default function Admins() {
     </DashboardSection>
   );
 }
-

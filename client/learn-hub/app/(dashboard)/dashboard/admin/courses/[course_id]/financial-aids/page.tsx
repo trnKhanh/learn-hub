@@ -50,7 +50,13 @@ export default function FinancialAids({
       </div>
     );
 
-  if (financialAids && !financialAids.length) notFound();
+  if (financialAids && !financialAids.length) {
+    return (
+      <div className="flex p-6">
+        <p className="text-2xl text mx-auto">Found no financial aids</p>
+      </div>
+    );
+  }
 
   return (
     <DashboardSection>

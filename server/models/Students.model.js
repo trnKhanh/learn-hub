@@ -4,8 +4,8 @@ const User = require("../models/Users.model");
 // Constructor
 class Student {
   constructor(student) {
-    this.id = student.id || null;
-    this.membership = student.membership || null;
+    this.id = student.id;
+    this.membership = student.membership;
   }
 
   static queryFields = `${User.queryFields}, membership`;

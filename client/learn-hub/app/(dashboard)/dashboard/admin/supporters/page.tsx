@@ -3,7 +3,6 @@
 import { deleteSupporter, getAllSupporters } from "@/actions/supporters";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { InfoButton } from "../_components/info-button";
 import {
   DashboardSectionHeader,
   DashboardSection,
@@ -13,11 +12,10 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { Trash2 } from "lucide-react";
+import { Trash2, UserCog } from "lucide-react";
 import { SupporterDeleteDialog } from "./_components/supporter-delete-dialog";
 import { notFound } from "next/navigation";
 import { toast } from "react-toastify";
-import { UserInfoTable } from "../_components/user-info-table";
 import { SupporterInfoDialog } from "./_components/supporter-info-dialog";
 
 export default function Supporters() {
@@ -34,7 +32,7 @@ export default function Supporters() {
           setIsLoading(false);
         } else {
           toast.error(res.data.message);
-          router.push("/dashboard");
+          router.push("/dashboard/admin");
         }
       }
     });
@@ -47,11 +45,17 @@ export default function Supporters() {
       </div>
     );
 
-  if (supporters && !supporters.length) notFound();
+  if (supporters && !supporters.length) {
+    return (
+      <div className="flex p-6">
+        <p className="text-2xl text mx-auto">Found no supporters</p>
+      </div>
+    );
+  }
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Supporters</DashboardSectionHeader>
+      <DashboardSectionHeader icon={UserCog}>Supporters</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {supporters &&

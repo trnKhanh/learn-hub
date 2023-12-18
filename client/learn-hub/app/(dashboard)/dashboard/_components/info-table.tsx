@@ -8,9 +8,9 @@ export const InfoTable = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-col">
+    <div className="w-full overflow-auto">
       <div className="text-center text-xl">{label}</div>
-      <table className="border border-collapse ">{children}</table>
+      <table className="table-fixed w-full border border-collapse">{children}</table>
     </div>
   );
 };
@@ -21,14 +21,14 @@ export const InfoTableRow = ({ children }: { children: React.ReactNode }) => {
 
 export const InfoTableKey = ({ children }: { children: React.ReactNode }) => {
   return (
-    <th className="w-1/2 text-left border border-slate-700 p-1">{children}</th>
+    <th className="w-1/2  text-left border border-slate-700 p-1">{children}</th>
   );
 };
 
 export const InfoTableValue = ({ children }: { children: React.ReactNode }) => {
   return (
-    <th className="w-1/2 text-left border border-slate-700 p-1 font-normal">
+    <td className="overflow-auto w-1/2 text-left border border-slate-700 p-1 font-normal">
       {children}
-    </th>
+    </td>
   );
 };

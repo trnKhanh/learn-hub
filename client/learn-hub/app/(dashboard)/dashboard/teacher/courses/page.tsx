@@ -2,12 +2,11 @@ import { redirect } from "next/navigation";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { getCourse } from "@/actions/courses";
+import { getCourses } from "@/actions/courses";
 
 const CoursesPage = async () => {
 
-    const courses = await getCourse("1");
-    console.log(courses);
+    const courses = await getCourses();
 
     return ( 
     <div className="p-6">

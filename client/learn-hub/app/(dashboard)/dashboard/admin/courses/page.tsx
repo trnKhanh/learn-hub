@@ -13,7 +13,7 @@ import {
   DashboardSectionItemRight,
 } from "../../_components/dashboard-section";
 import { UserThumbnail } from "../../_components/user-thumbnail";
-import { ArrowUpRightSquare, Trash2 } from "lucide-react";
+import { ArrowUpRightSquare, List, Trash2 } from "lucide-react";
 import { CourseDeleteDialog } from "./_components/course-delete-dialog";
 import { notFound } from "next/navigation";
 import { CourseInfoDialog } from "./_components/course-info-dialog";
@@ -34,7 +34,7 @@ export default function Courses() {
           setIsLoading(false);
         } else {
           toast.error(res.data.message);
-          router.push("/dashboard");
+          router.push("/dashboard/admin");
         }
       }
     });
@@ -51,7 +51,7 @@ export default function Courses() {
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Courses</DashboardSectionHeader>
+      <DashboardSectionHeader icon={List}>Courses</DashboardSectionHeader>
 
       <DashboardSectionContent>
         {courses &&

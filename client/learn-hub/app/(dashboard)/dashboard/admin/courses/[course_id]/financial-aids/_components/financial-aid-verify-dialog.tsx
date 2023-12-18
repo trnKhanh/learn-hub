@@ -84,7 +84,7 @@ export const FinancialAidVerifyDialog = ({
           hover={true}
         />
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="h-56 md:h-96">
         <AlertDialogHeader>
           <AlertDialogTitle>
             Are you sure to pass this financial aid?

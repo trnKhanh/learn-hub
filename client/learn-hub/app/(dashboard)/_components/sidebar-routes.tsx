@@ -22,11 +22,11 @@ import { SidebarItem } from "./sidebar-item";
 import { useEffect, useState } from "react";
 
 const guestRoutes = [
-  {
-    icon: Layout,
-    label: "Dashboard",
-    href: "/dashboard",
-  },
+  // {
+  //   icon: Layout,
+  //   label: "Dashboard",
+  //   href: "/dashboard",
+  // },
   {
     icon: FolderOpenDot,
     label: "My Courses",
@@ -51,7 +51,7 @@ const guestRoutes = [
     icon: UserRoundCog,
     label: "Profile",
     href: "/dashboard/profile",
-  }
+  },
 ];
 
 const teacherRoutes = [
@@ -100,22 +100,27 @@ const adminRoutes = [
   },
 ];
 
-export const SidebarRoutes = () => {
-  //const [routes, setRoutes] = useState(teacherRoutes);
+export const SidebarRoutes = ({ role }: { role?: string }) => {
   const [routes, setRoutes] = useState(guestRoutes);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isTutor, setIsTutor] = useState(false);
   const pathname = usePathname();
-  console.log('123')
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("is_admin");
-    if (isAdmin) {
-      setRoutes(adminRoutes);
-      return;
+    console.log(role);
+    if (role === undefined) {
+      const isAdmin = localStorage.getItem("is_admin");
+      if (isAdmin == "1") {
+        setIsAdmin(true);
+      }
+      const isTutor = localStorage.getItem("is_tutor");
+      if (isTutor == "1") {
+        setIsTutor(true);
+      }
     }
-    const isTeacher = pathname?.includes("/teacher");
-    if (isTeacher) {
-      setRoutes(teacherRoutes);
-      return;
+
+    if (role == "admin") {
+      setRoutes(adminRoutes);
     }
   }, []);
 
@@ -129,6 +134,22 @@ export const SidebarRoutes = () => {
           href={route.href}
         />
       ))}
+      {isAdmin && (
+        <SidebarItem
+          key={"/dashboard/admin"}
+          icon={Shield}
+          label={"Admin"}
+          href={"/dashboard/admin"}
+        />
+      )}
+      {isTutor && (
+        <SidebarItem
+          key={"/dashboard/tutor"}
+          icon={BookUser}
+          label={"Tutor"}
+          href={"/dashboard/tutor"}
+        />
+      )}
     </div>
   );
 };

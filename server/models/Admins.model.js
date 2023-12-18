@@ -4,7 +4,7 @@ const User = require("../models/Users.model");
 // Constructor
 class Admin {
   constructor(admin) {
-    this.id = admin.id || null;
+    this.id = admin.id;
     this.courses_access = admin.courses_access || 0;
     this.tutors_access = admin.tutors_access || 0;
     this.students_access = admin.students_access || 0;

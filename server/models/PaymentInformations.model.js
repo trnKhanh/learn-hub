@@ -4,9 +4,9 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class PaymentInformation {
   constructor(paymentInformation) {
-    this.user_id = paymentInformation.user_id || null;
-    this.card = paymentInformation.card || null;
-    this.expire_date = paymentInformation.expire_date || null;
+    this.user_id = paymentInformation.user_id;
+    this.card = paymentInformation.card;
+    this.expire_date = paymentInformation.expire_date;
   }
   static queryFields = `card, expire_date`;
 

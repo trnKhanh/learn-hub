@@ -125,7 +125,7 @@ export const TutorVerifyDialog = ({ tutor }: TutorVerifyButtonProps) => {
             className="bg-lime-500 hover:bg-lime-600"
             onClick={async () => {
               setIsUpdating(true);
-              const res = await updateTutorCV(tutor.id, "REFUSED");
+              const res = await updateTutorCV(tutor.id, "PASSED");
               if (res) {
                 if (res.status == 200) {
                   setStatus(res.data.tutorCVs[0].status);

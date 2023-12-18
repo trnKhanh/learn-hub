@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.5.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.2",
+    "@mui/icons-material": "^5.15.0",
+    "@mui/material": "^5.15.0",
     "@mux/mux-node": "^7.3.3",
     "@mux/mux-player-react": "^2.3.0",
     "@radix-ui/react-accordion": "^1.1.2",

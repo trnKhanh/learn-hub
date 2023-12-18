@@ -9,7 +9,6 @@ export const UserThumbnail = ({ user_id }: { user_id: string }) => {
 
   useEffect(() => {
     getUser(user_id).then((res) => {
-      console.log(res);
       if (res && res.status == 200) setUser(res.data.user);
     });
   }, []);

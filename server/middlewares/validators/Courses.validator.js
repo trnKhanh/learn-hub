@@ -84,18 +84,9 @@ const searchCourseScheme = [
     .optional()
     .isFloat({ min: 0 })
     .withMessage("Price must be a positive float"),
-  query("subjects")
-    .optional()
-    .isArray()
-    .withMessage("Subjects must be an array"),
-  query("languages")
-    .optional()
-    .isArray()
-    .withMessage("Languages must be an array"),
-  query("difficulties")
-    .optional()
-    .isArray()
-    .withMessage("Difficulties must be an array"),
+  query("subjects").optional(),
+  query("languages").optional(),
+  query("difficulties").optional(),
 ];
 
 module.exports = {

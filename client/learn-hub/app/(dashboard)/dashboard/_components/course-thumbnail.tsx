@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 export const CourseThumbnail = ({ course_id }: { course_id: string }) => {
   const [course, setCourse] = useState<Course>();
 
+  console.log(course_id)
   useEffect(() => {
     getCourse(course_id).then((res) => {
-      console.log(res);
       if (res && res.status == 200) setCourse(res.data.course);
     });
   }, []);

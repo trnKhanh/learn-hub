@@ -24,9 +24,11 @@ const putTutorCV = async (req, res) => {
 
     if (err.code == "ER_DUP_ENTRY") {
       try {
-        const tutorCV = await TutorCV.updateById(req.user.id, {
+        const newTutorCV = new TutorCV({
+          tutor_id: req.user.id,
           cv_path: req.file.path,
         });
+        const tutorCV = await TutorCV.updateById(req.user.id, newTutorCV);
         res.status(201).json({
           message: "Tutor CV has been updated",
         });
@@ -45,7 +47,9 @@ const putTutorCV = async (req, res) => {
 
 const getTutorCV = async (req, res) => {
   try {
-    const tutorCV = await TutorCV.findOne({ tutor_id: req.params.id });
+    const tutorCV = await TutorCV.findOne({
+      tutor_id: req.params.id === undefined ? req.user.id : req.params.id,
+    });
     if (!tutorCV) {
       res.status(404).json({
         message: "Not found tutor CV",

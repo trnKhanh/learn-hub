@@ -13,11 +13,18 @@ export const DashboardSection = ({
 };
 
 export const DashboardSectionHeader = ({
+  icon: Icon,
   children,
 }: {
+  icon: LucideIcon;
   children: React.ReactNode;
 }) => {
-  return <p className="text-2xl font-bold px-5">{children}</p>;
+  return (
+    <div className="flex items-center space-x-4 text-2xl font-bold px-5">
+      <Icon />
+      <span>{children}</span>
+    </div>
+  );
 };
 export const DashboardSectionSubHeader = ({
   children,
@@ -69,6 +76,7 @@ interface DashboardSectionButtonProps {
   className?: string;
   hover?: boolean | false;
   href?: string;
+  onClick?: React.MouseEventHandler;
 }
 export const DashboardSectionButton = ({
   icon: Icon,
@@ -76,10 +84,12 @@ export const DashboardSectionButton = ({
   className,
   hover,
   href,
+  onClick,
 }: DashboardSectionButtonProps) => {
   if (href) {
     return (
       <Link
+        onClick={onClick}
         href={href}
         className={cn(
           cn(
@@ -103,6 +113,7 @@ export const DashboardSectionButton = ({
   }
   return (
     <button
+      onClick={onClick}
       className={cn(
         cn(
           "flex items-center bg-slate-300 text-slate-500 p-2 rounded-xl cursor-default",
