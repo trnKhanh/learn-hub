@@ -1,5 +1,5 @@
 const LessonManager = require("./LessonManager.model");
-const formatFilters = require("../utils/formatFilters");
+const formatFilters = require("../utils/query.utils");
 
 class Exams {
   constructor(exams) {
