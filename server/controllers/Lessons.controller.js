@@ -1,8 +1,10 @@
 const { validationResult, matchedData } = require("express-validator");
 
 // models
+const Document = require("../models/Documents.model");
 const Lesson = require("../models/Lessons.model");
-const LessonManager = require("../models/LessonManager.model");
+// const LessonManager = require("../models/LessonManager.model");
+const Exam = require("../models/Exams.model");
 
 class LessonsController {
   static async create(req, res) {
@@ -14,19 +16,10 @@ class LessonsController {
 
     const data = matchedData(req);
     data.course_id = req.course.id;
-    // console.log(">>> LessonsController >> creatLess >> data: ", data);
 
     try {
       // create Lesson Object by Class Lesson
       const lesson = new Lesson(data);
-
-      // if (await lesson.isExist()) {
-      //   res.status(409).json({
-      //     message: "Lesson with the same name has existed",
-      //   });
-      //   return;
-      // }
-
       // Update to Database
       const new_lesson = await lesson.create();
 
@@ -58,14 +51,14 @@ class LessonsController {
   }
 
   static async getAllLessons(req, res) {
-    let lessonManager = new LessonManager(req.course.id);
+    // let lessonManager = new LessonManager(req.course.id);
 
     try {
-      const lessons = await lessonManager.findAll();
-      // console.log(
-      //   ">>> LessonsController >> getAllLessons >> lessons: ",
-      //   lessons
-      // );
+      // const lessons = await lessonManager.findAll();
+      const lessons = await new Lesson({
+        course_id: req.course.id,
+      }).findAll();
+
       res.status(200).json({
         message: "Retrieve lessons' information successfully",
         lessons: lessons,
@@ -80,10 +73,15 @@ class LessonsController {
   }
 
   static async getAllPublishedLessons(req, res) {
-    let lessonManager = new LessonManager(req.course.id);
+    // let lessonManager = new LessonManager(req.course.id);
 
     try {
-      const lessons = await lessonManager.findAll({
+      // const lessons = await lessonManager.findAll({
+      //   is_published: true,
+      // });
+      const lessons = await new Lesson({
+        course_id: req.course.id,
+      }).findAll({
         is_published: true,
       });
       res.status(200).json({
@@ -100,35 +98,28 @@ class LessonsController {
   }
 
   static async getLessonWithDocumentAndExamById(req, res) {
-    let lesson_id = req.params.lesson_id;
-    let lessonManager = new LessonManager(req.course.id, lesson_id);
+    const lesson_id = req.params.lesson_id;
+    const course_id = req.course.id;
+    // let lessonManager = new LessonManager(course_id, lesson_id);
 
     try {
       const promises = [
-        lessonManager.findAllWithDocument(),
-        lessonManager.findAllWithExam(),
+        new Lesson({ course_id: course_id }).findOne({ id: lesson_id }),
+        new Document({ lesson_id: lesson_id, course_id: course_id }).findAll(),
+        new Exam({ lesson_id: lesson_id, course_id: course_id }).findAll(),
       ];
-      let [documents, exams] = await Promise.all(promises);
+      let [lesson, documents, exams] = await Promise.all(promises);
 
-      if (!documents.length) {
+      if (!lesson) {
         res.status(404).json({
           message: "Not found lesson",
         });
         return;
       }
 
-      const lesson_detail = {
-        id: lesson_id,
-        name: documents[0].lesson_name,
-      };
-
-      // Filter
-      documents = documents.filter((document) => document.document_id !== null);
-      exams = exams.filter((exam) => exam.exam_id !== null);
-
       res.status(200).json({
         message: "Retrieve lesson's information successfully",
-        lesson: lesson_detail,
+        lesson: lesson,
         documents: documents,
         exams: exams,
         course: req.course,
@@ -177,7 +168,7 @@ class LessonsController {
       // }
 
       // Update to Database
-      const updated_lesson = await lesson.update();
+      const updated_lesson = await lesson.updateById(data);
 
       if (!updated_lesson) {
         res.status(404).json({
@@ -209,10 +200,10 @@ class LessonsController {
     const course_id = req.course.id;
 
     try {
-      const deleted_lesson = await Lesson.deleteById({
+      const deleted_lesson = await new Lesson({
         id: lesson_id,
         course_id: course_id,
-      });
+      }).deleteById();
 
       if (!deleted_lesson) {
         res.status(404).json({

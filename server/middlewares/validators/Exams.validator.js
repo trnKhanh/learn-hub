@@ -12,7 +12,9 @@ const createExamsScheme = [
 
   // the value in 0 -> 1
   body("percentage")
-    .optional()
+    .exists()
+    .withMessage("Percentage is required")
+    .bail()
     .isFloat({ min: 0, max: 1 })
     .withMessage("Percentage must be a number from 0 -> 1"),
 ];

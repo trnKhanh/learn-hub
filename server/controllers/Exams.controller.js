@@ -1,5 +1,6 @@
 const Exam = require("../models/Exams.model");
 const { validationResult, matchedData } = require("express-validator");
+const sql = require("../database/db");
 
 class ExamsController {
   static async create(req, res) {
@@ -39,13 +40,21 @@ class ExamsController {
         course: req.course,
       });
     } catch (errors) {
-      console.log(errors);
-      if (err.code == "ER_DUP_ENTRY") {
+      if (errors.code == "ER_DUP_ENTRY") {
         res.status(409).json({
           message: "This lesson is already existed",
         });
         return;
       }
+
+      if (errors.message == "Total percentage must be <= 1") {
+        res.status(400).json({
+          message: errors.message,
+        });
+        return;
+      }
+
+      console.log(errors);
       res.status(500).json({
         message: "Errors occur when creating exam",
       });
@@ -82,11 +91,11 @@ class ExamsController {
     const exam_id = req.params.exam_id;
 
     try {
-      const exam = await new Exam({
+      const exam = await Exam.findOne({
         course_id: course_id,
         lesson_id: lesson_id,
         id: exam_id,
-      }).findOne();
+      });
 
       if (!exam) {
         res.status(404).json({
@@ -121,6 +130,8 @@ class ExamsController {
 
     const data = matchedData(req);
 
+    // console.log(">>> Exams.controller > update: ", req.body);
+
     if (Object.keys(data).length == 0) {
       res.status(400).json({
         message: "No data to update",
@@ -131,15 +142,17 @@ class ExamsController {
     data.course_id = req.course.id;
     data.lesson_id = req.lesson.id;
     data.id = req.params.exam_id;
+    console.log(">>> Exams.controller > update: ", data);
 
     try {
-      const exam = await new Exam(data).updateById();
+      const exam = await new Exam(data).updateById(data);
       if (exam == null) {
         res.status(500).json({
           message: "Errors occur when updating exam",
         });
         return;
       }
+
       res.status(201).json({
         message: "Update exam successfully",
         exam: exam,
@@ -148,9 +161,15 @@ class ExamsController {
       });
     } catch (errors) {
       console.log(errors);
-      if (err.code == "ER_DUP_ENTRY") {
+      if (errors.code == "ER_DUP_ENTRY") {
         res.status(409).json({
           message: "This lesson is already existed",
+        });
+        return;
+      }
+      if (errors.message == "Total percentage must be <= 1") {
+        res.status(400).json({
+          message: errors.message,
         });
         return;
       }

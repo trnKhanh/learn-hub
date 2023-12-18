@@ -39,7 +39,11 @@ router.get(
   ExamsController.getAll
 );
 
-router.get("/:exam_id", ExamsController.getExamById);
+router.get(
+  "/:exam_id",
+  [validateToken, getCourse, getLesson, validateLessonGetPermission],
+  ExamsController.getExamById
+);
 
 router.patch(
   "/:exam_id",

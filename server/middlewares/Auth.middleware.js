@@ -9,6 +9,7 @@ let validateToken = async (req, res, next) => {
     const validToken = jwt.verify(accessToken, publicKey);
 
     req.user = validToken;
+    console.log("validateToken: ", req.user);
     next();
   } catch (err) {
     res.status(401).json(err);

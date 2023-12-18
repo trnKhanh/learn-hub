@@ -1,7 +1,9 @@
 // models
 const LessonManager = require("./LessonManager.model");
+
 const sql = require("../database/db");
 
+const { formatFilters } = require("../utils/query.utils");
 class Documents {
   constructor(document) {
     this.course_id = document.course_id || null;
@@ -9,6 +11,21 @@ class Documents {
     this.name = document.name || null;
     this.file_path = document.file_path || null;
     this.id = document.id || null;
+
+    this.basic_filters = {
+      course_id: this.course_id,
+      lesson_id: this.lesson_id,
+    };
+  }
+
+  getFiltersAfterFormat(filters = {}) {
+    filters = {
+      ...this.basic_filters,
+      ...filters,
+    };
+
+    const { filterKeys, filterValues } = formatFilters(filters);
+    return { filterKeys, filterValues };
   }
 
   async create() {
@@ -17,11 +34,16 @@ class Documents {
     try {
       await con.beginTransaction();
 
-      this.getId();
+      await this.getId();
       const [res, _] = await con.query(`INSERT INTO documents SET ?`, this);
+
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat({
+        id: this.id,
+      });
+
       const [rows, fields] = await con.query(
-        `SELECT * FROM documents WHERE id=?`,
-        [this.id]
+        `SELECT * FROM documents WHERE ${filterKeys}`,
+        { filterValues }
       );
 
       await con.commit();
@@ -42,9 +64,13 @@ class Documents {
     if (this.id) return this;
 
     try {
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat({});
       const [rows, fields] = await sql.query(
-        `SELECT MAX(id) max_id FROM documents WHERE course_id=${this.course_id} AND lesson_id=${this.lesson_id}`
+        `SELECT MAX(id) max_id FROM documents WHERE ${filterKeys}`,
+        filterValues
       );
+
+      if (!rows[0].max_id) rows[0].max_id = 0;
 
       this.id = rows[0].max_id + 1;
       return this;
@@ -54,69 +80,85 @@ class Documents {
     }
   }
 
-  static async findAll(document, filters) {
+  async findAll(filters) {
     try {
-      let lessonManager = new LessonManager(
-        document.course_id,
-        document.lesson_id
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM documents WHERE ${filterKeys}`,
+        filterValues
       );
-      let documents = await lessonManager.findAllWithDocument(filters);
-      return documents;
+      return rows;
     } catch (errors) {
       console.log(errors);
       throw errors;
     }
   }
 
-  static async getAllPublished(document) {
+  // static async getAllPublished(document) {
+  //   try {
+  //     let lessonManager = new LessonManager(
+  //       document.course_id,
+  //       document.lesson_id
+  //     );
+  //     let documents = await lessonManager.findAllWithDocument({
+  //       "l.is_published": true,
+  //     });
+  //     return documents;
+  //   } catch (errors) {
+  //     console.log(errors);
+  //     throw errors;
+  //   }
+  // }
+
+  async findOne() {
     try {
-      let lessonManager = new LessonManager(
-        document.course_id,
-        document.lesson_id
-      );
-      let documents = await lessonManager.findAllWithDocument({
-        "l.is_published": true,
+      // let lessonManager = new LessonManager(
+      //   document.course_id,
+      //   document.lesson_id
+      // );
+      // let documents = await lessonManager.findAllWithDocument({
+      //   "d.id": document.id,
+      // });
+
+      // if (!documents.length) {
+      //   return null;
+      // }
+      // return documents[0];
+
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat({
+        id: this.id,
       });
-      return documents;
-    } catch (errors) {
-      console.log(errors);
-      throw errors;
-    }
-  }
 
-  static async findOne(document) {
-    try {
-      let lessonManager = new LessonManager(
-        document.course_id,
-        document.lesson_id
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM documents WHERE ${filterKeys}`,
+        filterValues
       );
-      let documents = await lessonManager.findAllWithDocument({
-        "d.id": document.id,
-      });
 
-      if (!documents.length) {
-        return null;
-      }
-      return documents[0];
+      if (!rows.length) return null;
+      return rows[0];
     } catch (errors) {
       console.log(errors);
       throw errors;
     }
   }
 
-  async updateById() {
+  async updateById(newData) {
     const con = await sql.getConnection();
 
     try {
       await con.beginTransaction();
 
-      const [res, _] = await con.query(`UPDATE documents SET ? WHERE id=?`, [
-        this,
-        this.id,
-      ]);
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat({
+        id: this.id,
+      });
+
+      const [res, _] = await con.query(
+        `UPDATE documents SET ? WHERE ${filterKeys}`,
+        [newData, ...filterValues]
+      );
       const [rows, fields] = await con.query(
-        `SELECT * FROM documents WHERE id=?`,
-        [this.id]
+        `SELECT * FROM documents WHERE ${filterKeys}`,
+        filterValues
       );
 
       await con.commit();
@@ -136,18 +178,23 @@ class Documents {
   async deleteById() {
     const con = await sql.getConnection();
 
-    console.log(">>> Documents.model > deleteById > this: ", this.id);
+    // console.log(">>> Documents.model > deleteById > this: ", this.id);
     try {
       await con.beginTransaction();
 
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat({
+        id: this.id,
+      });
+
       const [rows, fields] = await con.query(
-        `SELECT * FROM documents WHERE id=?`,
-        [this.id]
+        `SELECT * FROM documents WHERE ${filterKeys}`,
+        filterValues
       );
 
-      const [res, _] = await con.query(`DELETE FROM documents WHERE id=?`, [
-        this.id,
-      ]);
+      const [res, _] = await con.query(
+        `DELETE FROM documents WHERE ${filterKeys}`,
+        filterValues
+      );
 
       await con.commit();
       sql.releaseConnection(con);

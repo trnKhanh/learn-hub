@@ -13,18 +13,43 @@ class Lesson {
       lesson.is_published == true || lesson.is_published == "true"
         ? true
         : false;
+
+    this.basic_filters = {
+      course_id: this.course_id,
+    };
+  }
+
+  getFiltersAfterFormat(filters = {}) {
+    filters = { ...this.basic_filters, ...filters };
+    return formatFilters(filters);
+  }
+
+  async findAll(filters = {}) {
+    try {
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues
+      );
+      return rows;
+    } catch (err) {
+      // console.log(err);
+      throw err;
+    }
   }
 
   async getId() {
     if (this.id) return this;
 
+    const { filterKeys, filterValues } = formatFilters(this.basic_filters);
+
     // find the max id in table
     const [rows, fields] = await sql.query(
-      `SELECT MAX(id) max_id FROM lessons`
+      `SELECT MAX(id) max_id FROM lessons WHERE ${filterKeys}`,
+      filterValues
     );
 
-    // console.log("Found max id: ", { results: rows[0] });
-
+    if (!rows[0].max_id) rows[0].max_id = 0;
     this.id = rows[0].max_id + 1;
 
     return this;
@@ -40,9 +65,14 @@ class Lesson {
       // console.log(">>> LessonManager >> create >> newLesson: ", this);
 
       const [res, _] = await con.query(`INSERT INTO lessons SET ?`, this);
+
+      const filter = this.basic_filters;
+      filter.id = this.id;
+      const { filterKeys, filterValues } = formatFilters(filter);
+
       const [rows, fields] = await con.query(
-        `SELECT * FROM lessons WHERE id=?`,
-        [this.id]
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues
       );
 
       await con.commit();
@@ -60,55 +90,67 @@ class Lesson {
     }
   }
 
-  async isExist() {
-    const filters = {
-      name: this.name,
-      course_id: this.course_id,
-    };
+  // async isExist() {
+  //   const filters = {
+  //     name: this.name,
+  //     course_id: this.course_id,
+  //   };
 
+  //   try {
+  //     const { filterKeys, filterValues } = formatFilters(filters);
+  //     const [rows, fields] = await sql.query(
+  //       `SELECT * FROM lessons WHERE ${filterKeys}`,
+  //       filterValues
+  //     );
+
+  //     if (rows.length) {
+  //       console.log(" >>> Lessons.models > isExist > Found lesson: ", {
+  //         lesson: this,
+  //       });
+  //       return true;
+  //     } else {
+  //       // console.log("Found no lesson: ", { lesson: this });
+  //       return false;
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     throw err;
+  //   }
+  // }
+
+  async findOne(filters) {
     try {
-      const { filterKeys, filterValues } = formatFilters(filters);
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
         filterValues
       );
 
-      if (rows.length) {
-        console.log(" >>> Lessons.models > isExist > Found lesson: ", {
-          lesson: this,
-        });
-        return true;
-      } else {
-        // console.log("Found no lesson: ", { lesson: this });
-        return false;
-      }
+      if (rows.length) return rows[0];
+      else return null;
     } catch (err) {
       console.log(err);
       throw err;
     }
   }
 
-  async findOne(filters) {
-    try {
-      return await new LessonManager(this.course_id, this.id).findOne(filters);
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  }
-
-  async update() {
+  async updateById(newData) {
     const con = await sql.getConnection();
     try {
       await con.beginTransaction();
 
-      const [res, _] = await con.query(`UPDATE lessons SET ? WHERE id=?`, [
-        this,
-        this.id,
-      ]);
+      const filters = this.basic_filters;
+      filters.id = this.id;
+
+      const { filterKeys, filterValues } = formatFilters(filters);
+
+      const [res, _] = await con.query(
+        `UPDATE lessons SET ? WHERE ${filterKeys}`,
+        [newData, ...filterValues]
+      );
       const [rows, fields] = await con.query(
-        `SELECT * FROM lessons WHERE id=?`,
-        [this.id]
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues
       );
 
       await con.commit();
@@ -126,8 +168,10 @@ class Lesson {
     }
   }
 
-  static async deleteById(filter) {
-    const { filterKeys, filterValues } = formatFilters(filter);
+  async deleteById() {
+    const filters = this.basic_filters;
+    filters.id = this.id;
+    const { filterKeys, filterValues } = formatFilters(filters);
 
     const con = await sql.getConnection();
     try {
@@ -142,10 +186,6 @@ class Lesson {
         `DELETE FROM lessons WHERE ${filterKeys}`,
         filterValues
       );
-      // console.log("Deleted lessons", {
-      //   filter: filter,
-      //   results: res,
-      // });
 
       await con.commit();
       sql.releaseConnection(con);

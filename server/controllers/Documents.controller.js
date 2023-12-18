@@ -6,16 +6,12 @@ class DocumentController {
   static async getAllDocuments(req, res) {
     const course_id = req.course.id;
     const lesson_id = req.lesson.id;
-    const validPublished = req.validPublished;
 
     try {
-      const documents = await Documents.findAll(
-        {
-          course_id: course_id,
-          lesson_id: lesson_id,
-        },
-        !validPublished ? { "l.is_published": 1 } : {}
-      );
+      const documents = await new Documents({
+        course_id: course_id,
+        lesson_id: lesson_id,
+      }).findAll();
 
       res.status(200).json({
         message: "Retrieve all documents' information successfully",
@@ -37,11 +33,11 @@ class DocumentController {
     const document_id = req.params.document_id;
 
     try {
-      const document = await Documents.findOne({
+      const document = await new Documents({
         course_id: course_id,
         lesson_id: lesson_id,
         id: document_id,
-      });
+      }).findOne();
 
       if (!document) {
         res.status(404).json({
@@ -135,7 +131,7 @@ class DocumentController {
     data.id = req.params.document_id;
 
     try {
-      const document = await new Documents(data).updateById();
+      const document = await new Documents(data).updateById(data);
       if (!document) {
         res.status(404).json({
           message: "Document not found",
