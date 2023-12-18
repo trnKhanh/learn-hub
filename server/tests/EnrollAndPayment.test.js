@@ -315,47 +315,48 @@ describe("GET /courses/:id/progress", () => {
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1 wrong field", async () => {
-    const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+    const res = await user_agent.put(`/courses/${course_1_id}/financialAids`);
 
     expect(res.statusCode).toBe(422);
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1", async () => {
     const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+      .put(`/courses/${course_1_id}/financialAids`)
       .send({
-        essay: "Please I am poor.",
+        essay: "I am not poor but give me that aids",
         amount: 100,
-      })
+      });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body.financialAid.essay).toBe("Please I am poor.");
+    expect(res.body.financialAid.essay).toBe(
+      "I am not poor but give me that aids",
+    );
     expect(res.body.financialAid.amount).toBe(100);
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
-  it("Create financial aid for course 1 (duplicate)", async () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
+  it("Update financial aid for course 1 (duplicate)", async () => {
     const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+      .put(`/courses/${course_1_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
-      })
+      });
 
-    expect(res.statusCode).toBe(409);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.financialAid.essay).toBe("Please I am poor.");
   });
 });
 
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by student", async () => {
-    const res = await user_agent
-      .get(`/courses/${course_1_id}/financialAids`)
+    const res = await user_agent.get(`/courses/${course_1_id}/financialAids`);
 
     expect(res.statusCode).toBe(401);
   });
@@ -363,8 +364,7 @@ describe("GET /courses/:course_id/financialAids/", () => {
 
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by owner", async () => {
-    const res = await tutor_agent
-      .get(`/courses/${course_1_id}/financialAids`)
+    const res = await tutor_agent.get(`/courses/${course_1_id}/financialAids`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAids).toBeInstanceOf(Array);
@@ -377,8 +377,9 @@ describe("GET /courses/:course_id/financialAids/", () => {
 
 describe("GET /courses/:course_id/financialAids/", () => {
   it("Get all financial aids for course 1 by course admin", async () => {
-    const res = await course_admin_agent
-      .get(`/courses/${course_1_id}/financialAids`)
+    const res = await course_admin_agent.get(
+      `/courses/${course_1_id}/financialAids`,
+    );
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAids).toBeInstanceOf(Array);
@@ -391,8 +392,9 @@ describe("GET /courses/:course_id/financialAids/", () => {
 
 describe("GET /courses/:course_id/financialAids/:student_id", () => {
   it("Get financial aids for course 1 sent by specific student by course admin", async () => {
-    const res = await course_admin_agent
-      .get(`/courses/${course_1_id}/financialAids/${user_id}`)
+    const res = await course_admin_agent.get(
+      `/courses/${course_1_id}/financialAids/${user_id}`,
+    );
 
     expect(res.statusCode).toBe(200);
     expect(res.body.financialAid.essay).toBe("Please I am poor.");
@@ -407,7 +409,7 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
-      })
+      });
 
     expect(res.statusCode).toBe(401);
   });
@@ -419,7 +421,7 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
-      })
+      });
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -436,7 +438,7 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
       .patch(`/courses/${course_1_id}/financialAids/${user_id}`)
       .send({
         status: "PASSED",
-      })
+      });
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -447,14 +449,14 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 2", async () => {
     const res = await user_agent
-      .post(`/courses/${course_2_id}/financialAids`)
+      .put(`/courses/${course_2_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
-      })
+      });
 
     expect(res.statusCode).toBe(201);
     expect(res.body.financialAid.essay).toBe("Please I am poor.");
@@ -468,7 +470,7 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
       .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
       .send({
         status: "DENIED",
-      })
+      });
 
     expect(res.statusCode).toBe(200);
     const [rows, fields] = await sql.query(
@@ -485,7 +487,7 @@ describe("PATCH /courses/:course_id/financialAids/:student_id", () => {
       .patch(`/courses/${course_2_id}/financialAids/${user_id}`)
       .send({
         status: "DENIED",
-      })
+      });
 
     expect(res.statusCode).toBe(401);
   });
