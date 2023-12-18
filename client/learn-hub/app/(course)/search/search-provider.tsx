@@ -21,8 +21,6 @@ interface SearchContextProps {
   setCourseName: Dispatch<SetStateAction<string>>;
   results: Course[];
   setResults: Dispatch<SetStateAction<Course[]>>;
-  isSearching: boolean;
-  setIsSearching: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SearchContext = createContext<SearchContextProps>({
@@ -38,8 +36,6 @@ export const SearchContext = createContext<SearchContextProps>({
   setCourseName: () => {},
   results: [],
   setResults: () => {},
-  isSearching: false,
-  setIsSearching: () => {},
 });
 
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
@@ -49,10 +45,11 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const [languages, setLanguages] = useState<string[]>([]);
   const [difficulties, setDifficulties] = useState<string[]>([]);
   const [price, setPrice] = useState<number[]>([0, 1000]);
-  const [courseName, setCourseName] = useState<string>(searchParams.get("courseName") || "");
+  const [courseName, setCourseName] = useState<string>(
+    searchParams.get("courseName") || "",
+  );
   const [results, setResults] = useState<Course[]>([]);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  
+
   useEffect(() => {
     searchCourses({
       subjects: subjects,
@@ -65,9 +62,8 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
       if (res && res.status == 200) {
         setResults(res.data.courses);
       }
-      setIsSearching(false);
     });
-  }, [isSearching]);
+  }, [subjects, languages, difficulties, price, courseName]);
 
   return (
     <SearchContext.Provider
@@ -84,8 +80,6 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
         setCourseName,
         results,
         setResults,
-        isSearching,
-        setIsSearching,
       }}
     >
       {children}

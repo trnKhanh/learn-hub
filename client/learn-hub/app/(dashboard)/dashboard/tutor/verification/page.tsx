@@ -15,6 +15,7 @@ import {
   putTutorCV,
 } from "@/actions/tutors";
 import { toast } from "react-toastify";
+import { Activity } from "lucide-react";
 
 const Verification = () => {
   const [cv, setCV] = useState<File>();
@@ -51,7 +52,7 @@ const Verification = () => {
 
   return (
     <DashboardSection>
-      <DashboardSectionHeader>Verification status</DashboardSectionHeader>
+      <DashboardSectionHeader icon={Activity}>Verification status</DashboardSectionHeader>
 
       <DashboardSectionContent>
         <div className="flex">
@@ -67,7 +68,7 @@ const Verification = () => {
               ) : tutor.verified || (tutorCV && tutorCV.status === "PASSED") ? (
                 <>
                   <p className="font-bold text-lime-500 text-4xl">
-                    You has been verified
+                    You have been verified
                   </p>
                   <p className="">
                     We are looking forward to what you can offer for our

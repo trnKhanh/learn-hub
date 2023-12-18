@@ -3,7 +3,7 @@ import { SearchContext } from "../search-provider";
 import { Checkbox } from "@mui/material";
 
 export const DifficultiesFilter = () => {
-  const { difficulties, setDifficulties, setIsSearching } = useContext(SearchContext);
+  const { setDifficulties } = useContext(SearchContext);
   const difficultyList = [
     {
       id: "BEGINNER",
@@ -41,7 +41,6 @@ export const DifficultiesFilter = () => {
                 } else {
                   deselectDifficulty(difficulty.id);
                 }
-                setIsSearching(true);
               }}
             />
             <label htmlFor={difficulty.id}>{difficulty.name}</label>

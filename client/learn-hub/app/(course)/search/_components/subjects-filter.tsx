@@ -4,7 +4,7 @@ import { SearchContext } from "../search-provider";
 import { Checkbox } from "@mui/material";
 
 export const SubjectsFilter = () => {
-  const { subjects, setSubjects, setIsSearching } = useContext(SearchContext);
+  const { setSubjects } = useContext(SearchContext);
   const [subjectList, setSubjectList] = useState<Subject[]>([]);
   useEffect(() => {
     setSubjectList([
@@ -49,7 +49,6 @@ export const SubjectsFilter = () => {
                 } else {
                   deselectSubject(subject.id);
                 }
-                setIsSearching(true);
               }}
             />
             <label htmlFor={subject.id}>{subject.name}</label>

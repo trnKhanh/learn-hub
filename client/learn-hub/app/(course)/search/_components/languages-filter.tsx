@@ -4,7 +4,7 @@ import { SearchContext } from "../search-provider";
 import { Checkbox } from "@mui/material";
 
 export const LanguagesFilter = () => {
-  const { languages, setLanguages, setIsSearching } = useContext(SearchContext);
+  const { setLanguages } = useContext(SearchContext);
   const [languageList, setLanguageList] = useState<Language[]>([]);
   useEffect(() => {
     setLanguageList([
@@ -45,7 +45,6 @@ export const LanguagesFilter = () => {
                 } else {
                   deselectLanguage(language.id);
                 }
-                setIsSearching(true);
               }}
             />
             <label htmlFor={language.id}>{language.name}</label>
