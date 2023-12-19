@@ -14,7 +14,7 @@ interface ChapterActionsProps {
     courseId: string;
     chapterId: string;
     isPublished: boolean;
-};
+}
 
 export const ChapterActions = ({
     disabled,

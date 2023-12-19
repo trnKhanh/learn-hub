@@ -5,11 +5,11 @@ import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { ChapterTitleForm } from "./_components/chapter-title-form";
-import { ChapterDescriptionForm } from "./_components/chapter-description-form";
-import { ChapterAccessForm } from "./_components/chapter-access-form";
-//import { ChapterVideoForm } from "./_components/chapter-video-form";
-import { ChapterActions } from "./_components/chapter-actions";
+import { ChapterTitleForm } from "./_components/lesson-title-form";
+import { ChapterDescriptionForm } from "./_components/lesson-description-form";
+import { ChapterAccessForm } from "./_components/lesson-access-form";
+import { ChapterVideoForm } from "./_components/lesson-video-form";
+import { ChapterActions } from "./_components/lesson-actions";
 
 const ChapterIdPage = async ({
     params
@@ -106,6 +106,19 @@ const ChapterIdPage = async ({
                         lessonId={params.chapterId}
                     />
                     </div>
+                </div>
+                <div>
+                    <div className="flex items-center gap-x-2">
+                    <IconBadge icon={Video} />
+                    <h2 className="text-xl">
+                        Add a video
+                    </h2>
+                    </div>
+                    <ChapterVideoForm
+                        initialData={chapter}
+                        chapterId={params.chapterId}
+                        courseId={params.courseId}
+                    />
                 </div>
                 </div>
             </div>

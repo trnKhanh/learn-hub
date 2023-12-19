@@ -19,7 +19,7 @@ class LessonManager {
     }
 
     static LessonTables = `lessons l`;
-    static LessonFields = `l.id lesson_id, l.name lesson_name`;
+    static LessonFields = `l.id id, l.name name, l.isPublished isPublished, l.isFree isFree`;
     static LessonOrder = `l.id ASC`;
 
     static DocumentTables = `documents d`;

@@ -35,11 +35,6 @@ type VideoData = {
   course_id: number;
 };
 
-type Subject = {
-  id: string;
-  name: string;
-};
-
 type User = {
   id: string;
   email: string;

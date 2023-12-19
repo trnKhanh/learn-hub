@@ -1,13 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useContext, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 
 import {
     Form,
@@ -24,7 +21,7 @@ import { toast } from "react-toastify";
 
 interface TitleFormProps {
     title: string
-};
+}
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -52,7 +49,7 @@ export const TitleForm = ({
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+        //console.log(values);
         const res = await updateCourse(course.id.toString(), values);
         if (res && res.status === 200) {
             setCourse(res.data.courses[0]);

@@ -25,7 +25,7 @@ interface ChapterTitleFormProps {
     };
     courseId: string;
     chapterId: string;
-};
+}
 
 const formSchema = z.object({
     title: z.string().min(1),

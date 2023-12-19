@@ -1,13 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import MuxPlayer from "@mux/mux-player-react";
 import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
@@ -17,7 +14,7 @@ interface ChapterVideoFormProps {
     initialData: Lesson & Documents & { videoData?: VideoData | null };
     courseId: string;
     chapterId: string;
-};
+}
 
 const formSchema = z.object({
     videoUrl: z.string().min(1),
@@ -34,8 +31,8 @@ export const ChapterVideoForm = ({
 
     const router = useRouter();
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        await uploadVideo(values.videoUrl, courseId, chapterId);
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        uploadVideo(values.videoUrl, courseId, chapterId);
     }
 
     return (

@@ -16,7 +16,7 @@ interface ChaptersListProps {
     items: Lesson[];
     onReorder: (updateData: { id: string; position: number }[]) => void;
     onEdit: (id: string) => void;
-};
+}
 
 export const ChaptersList = ({
     items,
@@ -93,11 +93,11 @@ export const ChaptersList = ({
                         </div>
                         {lesson.name}
                         <div className="ml-auto pr-2 flex items-center gap-x-2">
-                        {lesson.isFree && (
+                        {lesson.isFree? (
                             <Badge>
                             Free
                             </Badge>
-                        )}
+                        ) : (<></>)}
                         <Badge
                             className={cn(
                             "bg-slate-500",

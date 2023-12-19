@@ -1,10 +1,7 @@
 "use client";
 
-import { getAllCategories } from "@/actions/category";
-import { getAllDocumentsByCourseId, getAllLessonsByCourseId, getCategoriesOfCourseId, getCourse, updateCourse } from "@/actions/courses";
+import { getCourse } from "@/actions/courses";
 import { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
-import { toast } from "react-toastify";
-
 
 interface EditContextProps {
     course: Course,

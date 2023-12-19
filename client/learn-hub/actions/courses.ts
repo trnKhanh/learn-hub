@@ -18,6 +18,7 @@ interface Filters {
   priceMax?: number;
   priceMin?: number;
 }
+
 export const searchCourses = async (filter: Filters) => {
   try {
     const res = await fetch(
@@ -54,27 +55,15 @@ export const getCourse = async (id: string) => {
   }
 };
 
-export const getCategoriesOfCourseId = async (id: string) => {
-  try {
-    const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
-    const data: { message: string; subjects: Subject[] } = await res.json();
-    
-    return data.subjects;
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
-}
-
 export const getAllLessonsByCourseId = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
     const data: { message: string; lessons: Lesson[] } = await res.json();
 
-    return data.lessons;
+    return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
-    return [];
+    return null;
   }
 };
 
@@ -90,7 +79,7 @@ export const getAllDocumentsByCourseId = async (id: string) => {
   }
 }
 
-export const updateCourse = async (id : string, attribute : any) => {
+export const updateCourse = async (id : string, attribute : unknown) => {
   console.log(id);
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}`, {

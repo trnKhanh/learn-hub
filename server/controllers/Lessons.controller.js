@@ -43,7 +43,7 @@ class LessonsController {
     }
 
     static async getAllLessons(req, res) {
-        let lessonManager = new LessonManager(req.course.id);
+        let lessonManager = new LessonManager(req.params.course_id);
 
         try {
         const lessons = await lessonManager.findAll();

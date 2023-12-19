@@ -90,7 +90,7 @@ const updateCourse = async (req, res) => {
     return;
   }
   const data = matchedData(req);
-  if (req.file) data.profile_picture = req.file.path;
+  //if (req.file) data.profile_picture = req.file.path;
   
   console.log(data);
 
