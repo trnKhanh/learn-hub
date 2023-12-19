@@ -3,12 +3,12 @@ const { formatFilters } = require("../utils/query.utils");
 
 class Notification {
     constructor(notification) {
-        this.user_id = notification.user_id || null;
-        this.notified_at = notified_at || null;
-        this.content = content | null;
+        this.user_id = notification.user_id;
+        this.notified_at = notified_at;
+        this.content = content;
     }
 
-    static queryFields = `user_id, notified_at, content`
+    static queryFields = `id, user_id, notified_at, content`
 
     static create = async (newNotification) => {
         const con = await sql.getConnection();
@@ -83,3 +83,5 @@ class Notification {
         }
     };
 }
+
+module.exports = Notification;

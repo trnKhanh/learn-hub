@@ -18,3 +18,5 @@ const validateNotificationAccessPermission = async (req, res, next) => {
     });
   }
 }
+
+module.exports = { validateNotificationAccessPermission };

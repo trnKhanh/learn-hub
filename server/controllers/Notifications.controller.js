@@ -29,15 +29,15 @@ const createNotification = async (req, res) => {
 //get all notification with user id
 const getNotificationById = async (req , res) => {
     try {
-        const Notification = await Notification.findNotificationByUserId({user_id: req.user.id});
-        if (!Notification) {
+        const notifications = await Notification.findNotificationByUserId({user_id: req.user.id});
+        if (!notifications) {
             res.status(404).json({
             message: "Not found notification",
             });
         } else {
             res.status(200).json({
             message: "Retrieve notification successfully",
-            Notification: Notification,
+            notifications: notifications,
             });
         }
     }
@@ -137,7 +137,7 @@ const deleteNotificationById = async (req , res) => {
 module.exports = {
     createNotification,
     getNotificationById,
-    getNotificationByIdTime,
+    // getNotificationByIdTime,
     updateNotification
     // deleteNotificationById
 };

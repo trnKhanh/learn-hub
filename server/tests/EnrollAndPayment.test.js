@@ -315,19 +315,19 @@ describe("GET /courses/:id/progress", () => {
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1 wrong field", async () => {
     const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+      .put(`/courses/${course_1_id}/financialAids`)
 
     expect(res.statusCode).toBe(422);
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1", async () => {
     const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+      .put(`/courses/${course_1_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,
@@ -339,10 +339,10 @@ describe("POST /courses/:course_id/financialAids/", () => {
   });
 });
 
-describe("POST /courses/:course_id/financialAids/", () => {
+describe("PUT /courses/:course_id/financialAids/", () => {
   it("Create financial aid for course 1 (duplicate)", async () => {
     const res = await user_agent
-      .post(`/courses/${course_1_id}/financialAids`)
+      .put(`/courses/${course_1_id}/financialAids`)
       .send({
         essay: "Please I am poor.",
         amount: 100,

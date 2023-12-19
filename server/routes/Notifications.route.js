@@ -1,4 +1,4 @@
-const notificationsController = require("../controllers/Notiofications.controller");
+const notificationsController = require("../controllers/Notifications.controller");
 const express = require("express");
 const router = express.Router();
 const {validateToken} = require("../middlewares/Auth.middleware");
@@ -15,7 +15,7 @@ const {
 
 // router.get("/" , )
 router.get("/" , 
-    [validateToken],
+    [validateToken, validateNotificationAccessPermission],
     notificationsController.getNotificationById
 );
 router.patch(

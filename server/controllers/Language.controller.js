@@ -91,8 +91,8 @@ const updateLanguage = async (req , res) => {
     }
 
     try {
-        const languages = await Language.updateById(req.params.id , data);
-        if(!languages) {
+        const language = await Language.updateById(req.params.id , data);
+        if(!language) {
             res.status(404).json({
                 message: "Not found language id",
             });
@@ -100,7 +100,7 @@ const updateLanguage = async (req , res) => {
         else {
             res.status(200).json({
                 message: "Language has been updated",
-                languages: languages,
+                language: language,
             });
         }
     }
@@ -125,7 +125,7 @@ const deleteLanguageById = async (req , res) => {
         else {
             res.status(200).json ({
                 message: "Language has been deleted",
-                language: languages
+                language: language
             });
         }
     }

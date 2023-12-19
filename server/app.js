@@ -37,7 +37,7 @@ const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
 const languageRouter = require("./routes/Language.route");
-app.use("/language" , languageRouter);
+app.use("/languages" , languageRouter);
 
 const notificationsRouter = require("./routes/Notifications.route");
 app.use("/notifications" , notificationsRouter);

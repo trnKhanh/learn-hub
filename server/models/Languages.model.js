@@ -12,7 +12,7 @@ class Language {
 
   // Create new language
   static create = async (newLanguage) => {
-    const con = await sql.getConnection(); //con luu gi
+    const con = await sql.getConnection();
     try {
       await con.beginTransaction();
 
@@ -25,7 +25,7 @@ class Language {
         `SELECT ${Language.queryFields}
         FROM languages
         WHERE language_name = ?`,
-        language_name
+        newLanguage.language_name
       );
 
       await con.commit();
@@ -45,12 +45,12 @@ class Language {
   };
 
   static findOne = async (filters) => {
-    const { filterKey, filterValue } = formatFilters(filters);
+    const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
       `SELECT ${Language.queryFields}
       FROM languages
-      WHERE ${filterKey}`,
-      filterValue
+      WHERE ${filterKeys}`,
+      filterValues,
     );
 
     if (rows.length) {
@@ -68,7 +68,7 @@ class Language {
       FROM languages`
     );
 
-    console.log("Get all languages: ", { results: row });
+    console.log("Get all languages: ", { results: rows });
     return rows;
   };
 
