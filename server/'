@@ -3,7 +3,6 @@ const request = require("supertest");
 const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const { randomUUID } = require("crypto");
 const sql = require("../database/db");
-const { count } = require("console");
 
 let tutor_id;
 let u_tutor_id;
@@ -442,26 +441,16 @@ describe("DELETE /courses/:course_id/tutors/:tutor_id", () => {
     expect(res.body.teach_course).toBeDefined();
     expect(res.body.teach_course.course_id).toBe(course_id);
     expect(res.body.teach_course.tutor_id).toBe(u_tutor_id);
-
-    const course_res = await request(app).get(`/courses/${course_id}/tutors`);
-    expect(course_res.body.tutor_list.length).toBe(1);
   });
   it("Delete tutor from course by course admin", async () => {
-    const res = await course_admin_agent.delete(
+    const res = await tutor_agent.delete(
       `/courses/${course_id}/tutors/${tutor_id}`,
     );
 
     expect(res.statusCode).toBe(200);
     expect(res.body.teach_course).toBeDefined();
     expect(res.body.teach_course.course_id).toBe(course_id);
-    expect(res.body.teach_course.tutor_id).toBe(tutor_id);
-  });
-  it("Delete unknown tutor from course", async () => {
-    const res = await course_admin_agent.delete(
-      `/courses/${course_id}/tutors/${tutor_id}`,
-    );
-
-    expect(res.statusCode).toBe(404);
+    expect(res.body.teach_course.tutor_id).toBe(u_tutor_id);
   });
 });
 

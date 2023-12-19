@@ -284,9 +284,13 @@ describe("POST /users/cart/:id", () => {
 
 describe("POST /courses/:id/register", () => {
   it("Register to course 1", async () => {
-    const res = await user_agent.post(`/courses/${course_1_id}/register`);
+    let res = await user_agent.post(`/courses/${course_1_id}/register`);
 
     expect(res.statusCode).toBe(200);
+    res = await request(app).get(`/courses/${course_1_id}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.course.number_of_students).toBe(1);
   });
 });
 

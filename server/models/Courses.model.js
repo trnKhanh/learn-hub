@@ -43,7 +43,10 @@ class Course {
   static findOne = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses WHERE ${filterKeys}`,
+      `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+      FROM courses LEFT JOIN learn_courses ON id=course_id
+      WHERE ${filterKeys}
+      GROUP BY ${Course.queryFields}`,
       filterValues,
     );
     if (rows.length) {
@@ -59,7 +62,10 @@ class Course {
   static findAll = async (filters) => {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses WHERE ${filterKeys}`,
+      `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+      FROM courses LEFT JOIN learn_courses ON id=course_id
+      WHERE ${filterKeys}
+      GROUP BY ${Course.queryFields}`,
       filterValues,
     );
     console.log("Found courses: ", { filters: filters, results: rows });
@@ -245,6 +251,118 @@ class Course {
     );
     console.log("Found courses: ", { filters: filters, results: rows });
     return rows;
+  };
+
+  static addTutorToCourse = async (course_id, tutor_id, info) => {
+    const con = await sql.getConnection();
+    try {
+      await con.beginTransaction();
+      let [res, _] = await con.query(`INSERT INTO teach_courses SET ?`, [
+        { course_id: course_id, tutor_id: tutor_id, ...info },
+      ]);
+      let [rows, fields] = await con.query(
+        `SELECT * FROM teach_courses WHERE course_id=? AND tutor_id=?`,
+        [course_id, tutor_id],
+      );
+
+      await con.commit();
+      sql.releaseConnection(con);
+
+      console.log("Add tutor to course: ", {
+        course_id: course_id,
+        info: info,
+        results: res,
+      });
+
+      return rows[0];
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+      throw err;
+    }
+  };
+  static getTutorList = async (course_id) => {
+    const [rows, fields] = await sql.query(
+      `SELECT tutor_id, profit_rate
+      FROM teach_courses
+      WHERE course_id=?`,
+      [course_id],
+    );
+    console.log("Get tutor list: ", { course_id: course_id, results: rows });
+
+    return rows;
+  };
+  static updateTutorProfitRate = async (course_id, tutor_id, profit_rate) => {
+    const con = await sql.getConnection();
+
+    try {
+      await con.beginTransaction();
+
+      const [res, _] = await con.query(
+        `UPDATE teach_courses 
+        SET profit_rate=?
+        WHERE course_id=? AND tutor_id=?`,
+        [profit_rate, course_id, tutor_id],
+      );
+      const [rows, fields] = await con.query(
+        `SELECT course_id, tutor_id, profit_rate 
+        FROM teach_courses 
+        WHERE course_id=? AND tutor_id=?`,
+        [course_id, tutor_id],
+      );
+
+      console.log("Updated tutor from course", {
+        course_id: course_id,
+        tutor_id: tutor_id,
+        results: res,
+      });
+
+      con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
+      else return rows[0];
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
+    }
+  };
+  static deleteTutorFromCourse = async (course_id, tutor_id) => {
+    const con = await sql.getConnection();
+
+    try {
+      await con.beginTransaction();
+      const [rows, fields] = await con.query(
+        `SELECT course_id, tutor_id, profit_rate 
+        FROM teach_courses 
+        WHERE course_id=? AND tutor_id=?`,
+        [course_id, tutor_id],
+      );
+
+      const [res, _] = await con.query(
+        `DELETE FROM teach_courses 
+        WHERE course_id=? AND tutor_id=?`,
+        [course_id, tutor_id],
+      );
+console.log("Deleted tutor from course", {
+        course_id: course_id,
+        tutor_id: tutor_id,
+        results: res,
+      });
+
+      con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
+      else return rows[0];
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
+    }
   };
 }
 module.exports = Course;

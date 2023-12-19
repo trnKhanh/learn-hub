@@ -89,8 +89,29 @@ const searchCourseScheme = [
   query("difficulties").optional(),
 ];
 
+const addTutorToCourseScheme = [
+  body("profit_rate")
+    .exists()
+    .exists()
+    .withMessage("Must provide profit rate")
+    .bail()
+    .isFloat({ min: 0, max: 1 })
+    .withMessage("Profit rate must be float in [0,1]"),
+];
+const updateTutorProfitRateScheme = [
+  body("profit_rate")
+    .exists()
+    .exists()
+    .withMessage("Must provide profit rate")
+    .bail()
+    .isFloat({ min: 0, max: 1 })
+    .withMessage("Profit rate must be float in [0,1]"),
+];
+
 module.exports = {
   createCourseScheme,
   updateCourseScheme,
   searchCourseScheme,
+  addTutorToCourseScheme,
+  updateTutorProfitRateScheme,
 };
