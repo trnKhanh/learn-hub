@@ -42,7 +42,7 @@ interface CreateSupporterDialogProps {
 
 export const CreateSupporterDialog = ({
   isCreating,
-  setIsCreating
+  setIsCreating,
 }: CreateSupporterDialogProps) => {
   const supporterSchema = z.object({
     username: z.string(),
@@ -71,16 +71,17 @@ export const CreateSupporterDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <DashboardSectionButton icon={Plus} label="Add" hover={true} 
-        className="bg-white ml-10 border-slate-500 border-2"/>
+        <DashboardSectionButton
+          icon={Plus}
+          label="Add"
+          hover={true}
+          className="bg-white ml-10 border-slate-500 border-2"
+        />
       </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action will delete all related information.
-          </AlertDialogDescription>
+          <AlertDialogTitle>Create new supporter</AlertDialogTitle>
         </AlertDialogHeader>
 
         <Form {...form}>
@@ -90,7 +91,7 @@ export const CreateSupporterDialog = ({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Reason you apply for aids</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter username here" {...field} />
                   </FormControl>
@@ -103,7 +104,7 @@ export const CreateSupporterDialog = ({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Role</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}

@@ -28,12 +28,26 @@ const Cart = () => {
   console.log(isUpdating);
   return (
     <DashboardSection>
-      <DashboardSectionHeader icon={ShoppingCart}>Shopping Cart</DashboardSectionHeader>
+      <DashboardSectionHeader icon={ShoppingCart}>
+        Shopping Cart
+      </DashboardSectionHeader>
       <DashboardSectionContent>
         <div className="flex flex-col items-center">
-          <Link 
-            className="text-1xl font-bold text-white bg-sky-500 p-3 rounded-full hover:bg-sky-600"
-            href="/payment">Pay now</Link>
+          {courseIds.length ? (
+            <Link
+              className="text-1xl font-bold text-white bg-sky-500 p-3 rounded-full hover:bg-sky-600"
+              href="/courses/payment"
+            >
+              Pay now
+            </Link>
+          ) : (
+            <Link
+              className="text-1xl font-bold text-white bg-sky-500 p-3 rounded-full hover:bg-sky-600"
+              href="/search"
+            >
+              Find course now
+            </Link>
+          )}
         </div>
         <div className="flex flex-col border-t-8">
           <div className="p-6 flex flex-col space-y-2 divide-y-2 grow overflow-auto">

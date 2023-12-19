@@ -86,7 +86,6 @@ const FinancialAid = ({
     });
   }, [isUpdating]);
 
-
   if (isLoading) {
     return <div className="pt-[6.4rem]">Loading...</div>;
   }

@@ -277,8 +277,11 @@ export const getCart = async () => {
     const res = await fetch("http://localhost:3001/users/cart", {
       credentials: "include",
     });
-    const data: { message: string; course_ids: { course_id: string }[] } =
-      await res.json();
+    const data: {
+      message: string;
+      course_ids: { course_id: string }[];
+      total_money: number;
+    } = await res.json();
 
     return { status: res.status, data: data };
   } catch (err) {

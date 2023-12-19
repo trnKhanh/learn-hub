@@ -16,7 +16,7 @@ const addCourseToCart = async (req, res) => {
       req.params.id,
     );
     res.status(201).json({
-      message: "ShoppingCart has been created",
+      message: "Course has been added to cart",
       shopping_cart: shopping_cart,
     });
   } catch (err) {
@@ -45,9 +45,11 @@ const getCart = async (req, res) => {
     const course_ids = await ShoppingCart.findAll({
       student_id: req.user.id,
     });
+    const total_money = await ShoppingCart.getTotalMoney(req.user.id);
     res.status(200).json({
       message: "Retrieve shopping cart's information successfully",
       course_ids: course_ids,
+      total_money: total_money,
     });
   } catch (err) {
     console.log(err);

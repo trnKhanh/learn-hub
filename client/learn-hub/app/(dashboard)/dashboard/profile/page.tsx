@@ -33,36 +33,71 @@ import { format } from "date-fns";
 
 import * as z from "zod";
 import { Calendar } from "@/components/ui/calendar";
-import { updateUser } from "@/actions/users";
+import { getMineUser, updateUser } from "@/actions/users";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 const profileFormSchema = z.object({
-  full_name: z.string(),
-  phone_number: z.string().min(8).max(15),
-  institute: z.string(),
-  area_of_study: z.string(),
-  biography: z.string().max(160).min(4),
-  date_of_birth: z.date({
-    required_error: "A date of birth is required.",
-  }),
+  full_name: z.string().optional(),
+  phone_number: z.string().min(8).max(15).optional(),
+  institute: z.string().optional(),
+  area_of_study: z.string().optional(),
+  biography: z.string().max(160).min(4).optional(),
+  date_of_birth: z
+    .date({
+      required_error: "A date of birth is required.",
+    })
+    .optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-// This can come from your database or API.
 const defaultValues: Partial<ProfileFormValues> = {};
 
 const Profile = () => {
+  const [user, setUser] = useState<User>();
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  // const { fields, append } = useFieldArray({
-  //   name: "urls",
-  //   control: form.control,
-  // });
+  useEffect(() => {
+    getMineUser().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setUser(res.data.user);
+          if (res.data.user.full_name) {
+            form.setValue("full_name", res.data.user.full_name);
+          }
+
+          if (res.data.user.phone_number) {
+            form.setValue("phone_number", res.data.user.phone_number);
+          }
+          if (res.data.user.date_of_birth) {
+            form.setValue(
+              "date_of_birth",
+              new Date(res.data.user.date_of_birth),
+            );
+          }
+          if (res.data.user.institute) {
+            form.setValue("institute", res.data.user.institute);
+          }
+          if (res.data.user.area_of_study) {
+            form.setValue("area_of_study", res.data.user.area_of_study);
+          }
+          if (res.data.user.biography) {
+            form.setValue("biography", res.data.user.biography);
+          }
+        }
+      }
+    });
+  }, []);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = async (data: ProfileFormValues) => {
     const res = await updateUser(data);
@@ -129,9 +164,6 @@ const Profile = () => {
                     />
                   </PopoverContent>
                 </Popover>
-                <FormDescription>
-                  Your date of birth is used to calculate your age.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -188,7 +220,7 @@ const Profile = () => {
               <FormItem>
                 <FormLabel>Biography</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your biography here" {...field} />
+                  <Textarea rows={2} placeholder="Enter your biography here" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

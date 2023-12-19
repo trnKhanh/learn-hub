@@ -28,7 +28,7 @@ import { TutorItem } from "./tutor-item";
 import { toast } from "react-toastify";
 
 interface CourseSectionProps {
-  course?: Course;
+  course: Course;
   review?: any;
 }
 
@@ -111,7 +111,11 @@ export function CourseSection({ course, review }: CourseSectionProps) {
             <CardContent className="space-y-2">
               <Accordion type="single" collapsible className="w-full">
                 {lessons.map((lesson, index) => (
-                  <LessonItem key={lesson.lesson_id} lesson={lesson} index={index} />
+                  <LessonItem
+                    key={lesson.lesson_id}
+                    lesson={lesson}
+                    index={index}
+                  />
                 ))}
               </Accordion>
             </CardContent>

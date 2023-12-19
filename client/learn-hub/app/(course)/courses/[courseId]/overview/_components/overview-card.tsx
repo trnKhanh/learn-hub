@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { addCart } from "@/actions/courses";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const difficultyMap: { [key: string]: string } = {
   BEGINNER: "Beginner",
@@ -40,6 +41,7 @@ const difficultyMap: { [key: string]: string } = {
 export const CourseOverviewCard = ({ course }: { course: Course }) => {
   const newPrice = course.price - course.price * course.discount;
   const formatDiscount = course.discount * 100;
+  const router = useRouter();
   return (
     <Card className="w-[350px] shadow-lg">
       <CardHeader>
@@ -113,17 +115,31 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
           <Button
             onClick={async (e) => {
               const res = await addCart(course.id);
-              if (res.status == 201) {
-                toast.success(res.data.message);
-              } else {
-                toast.error(res.data.message);
+              if (res) {
+                if (res.status == 201) {
+                  toast.success(res.data.message);
+                } else {
+                  toast.error(res.data.message);
+                }
               }
             }}
             className="w-full"
           >
             Add to cart
           </Button>
-          <Button variant="attract" className="w-full">
+          <Button
+            onClick={async (e) => {
+              const res = await addCart(course.id);
+              if (res) {
+                if (res.status == 201) {
+                  toast.success(res.data.message);
+                } 
+                router.push("/courses/payment");
+              }
+            }}
+            variant="attract"
+            className="w-full"
+          >
             Buy now
           </Button>
           <div className="flex flex-row space-x-2">
