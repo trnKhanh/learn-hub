@@ -16,8 +16,6 @@ const {
   createCourseScheme,
   updateCourseScheme,
   searchCourseScheme,
-  addTutorToCourseScheme,
-  updateTutorProfitRateScheme,
 } = require("../middlewares/validators/Courses.validator");
 
 const multer = require("multer");
@@ -27,9 +25,9 @@ const upload = multer({
 
 router.get("/", coursesController.getAllCourses);
 
+router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 router.get("/:course_id", coursesController.getCourse);
 
-router.get("/:course_id/lessons", lessonsController.getAllLessons);
 
 router.get(
   "/:course_id/documents",
@@ -37,8 +35,6 @@ router.get(
 );
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
-
-router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 
 router.post(
   "/",
@@ -83,22 +79,7 @@ router.get(
 const financialAidsRouter = require("./FinancialAids.route");
 router.use("/:course_id/financialAids/", financialAidsRouter);
 
-router.get("/:course_id/tutors", coursesController.getCourseTutorList);
-
-router.post(
-  "/:course_id/tutors/:tutor_id",
-  [validateToken, validateCourseAccessPermission, addTutorToCourseScheme],
-  coursesController.addTutorToCourse,
-);
-router.patch(
-  "/:course_id/tutors/:tutor_id",
-  [validateToken, validateCourseAccessPermission, updateTutorProfitRateScheme],
-  coursesController.updateTutorProfitRate,
-);
-router.delete(
-  "/:course_id/tutors/:tutor_id",
-  [validateToken, validateCourseAccessPermission],
-  coursesController.deleteTutorFromCourse,
-);
+const teachCoursesRouter = require("./TeachCourses.route");
+router.use("/:course_id/tutors/", teachCoursesRouter);
 
 module.exports = router;

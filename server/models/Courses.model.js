@@ -41,35 +41,106 @@ class Course {
 
   // Find one course by filter
   static findOne = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
-      FROM courses LEFT JOIN learn_courses ON id=course_id
-      WHERE ${filterKeys}
-      GROUP BY ${Course.queryFields}`,
-      filterValues,
-    );
-    if (rows.length) {
-      console.log("Found course: ", { filters: filters, results: rows[0] });
-      return rows[0];
-    } else {
-      console.log("Found no course: ", { filters: filters });
-      return null;
+    const con = await sql.getConnection();
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
+      const [rows, fields] = await con.query(
+        `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+        FROM courses LEFT JOIN learn_courses ON id=course_id
+        WHERE ${filterKeys}
+        GROUP BY ${Course.queryFields}`,
+        filterValues,
+      );
+      let course;
+
+      if (rows.length) {
+        course = rows[0];
+      } else {
+        await con.rollback();
+        sql.releaseConnection(con);
+        console.log("Found no course: ", { filters: filters });
+        return null;
+      }
+
+      let [languages, languages_fields] = await con.query(
+        `SELECT language_name 
+          FROM languages JOIN courses_languages ON languages.id=language_id
+          WHERE course_id=?`,
+        [course.id],
+      );
+      let [subjects, subjects_fields] = await con.query(
+        `SELECT subjects.name 
+          FROM subjects JOIN courses_subjects ON subjects.id=subject_id
+          WHERE course_id=?`,
+        [course.id],
+      );
+      languages = languages.map((row) => row.language_name);
+      subjects = subjects.map((row) => row.name);
+
+      course = {
+        languages: languages,
+        subjects: subjects,
+        ...course,
+      };
+
+      await con.commit();
+      sql.releaseConnection(con);
+      console.log("Found course: ", { filters: filters, course: course });
+
+      return course;
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
     }
   };
 
   // Find all courses by filter
   static findAll = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
-      FROM courses LEFT JOIN learn_courses ON id=course_id
-      WHERE ${filterKeys}
-      GROUP BY ${Course.queryFields}`,
-      filterValues,
-    );
-    console.log("Found courses: ", { filters: filters, results: rows });
-    return rows;
+    const con = await sql.getConnection();
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
+      let [rows, fields] = await con.query(
+        `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+        FROM courses LEFT JOIN learn_courses ON id=course_id
+        WHERE ${filterKeys}
+        GROUP BY ${Course.queryFields}`,
+        filterValues,
+      );
+      rows = rows.map(async (course) => {
+        const [languages, languages_fields] = await con.query(
+          `SELECT language_name 
+          FROM languages JOIN courses_languages ON languages.id=language_id
+          WHERE course_id=?`,
+          [course.id],
+        );
+        const [subjects, subjects_fields] = await con.query(
+          `SELECT subjects.name 
+          FROM subjects JOIN courses_subjects ON subjects.id=subject_id
+          WHERE course_id=?`,
+          [course.id],
+        );
+        languages.map((row) => row.language_name);
+        subjects.map((row) => row.name);
+
+        return {
+          languages: languages,
+          subjects: subjects,
+          ...course,
+        };
+      });
+
+      await con.commit();
+      sql.releaseConnection(con);
+      console.log("Found courses: ", { filters: filters, results: rows });
+      return rows;
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
+    }
   };
 
   static getAll = async () => {
@@ -251,118 +322,6 @@ class Course {
     );
     console.log("Found courses: ", { filters: filters, results: rows });
     return rows;
-  };
-
-  static addTutorToCourse = async (course_id, tutor_id, info) => {
-    const con = await sql.getConnection();
-    try {
-      await con.beginTransaction();
-      let [res, _] = await con.query(`INSERT INTO teach_courses SET ?`, [
-        { course_id: course_id, tutor_id: tutor_id, ...info },
-      ]);
-      let [rows, fields] = await con.query(
-        `SELECT * FROM teach_courses WHERE course_id=? AND tutor_id=?`,
-        [course_id, tutor_id],
-      );
-
-      await con.commit();
-      sql.releaseConnection(con);
-
-      console.log("Add tutor to course: ", {
-        course_id: course_id,
-        info: info,
-        results: res,
-      });
-
-      return rows[0];
-    } catch (err) {
-      await con.rollback();
-      sql.releaseConnection(con);
-      throw err;
-    }
-  };
-  static getTutorList = async (course_id) => {
-    const [rows, fields] = await sql.query(
-      `SELECT tutor_id, profit_rate
-      FROM teach_courses
-      WHERE course_id=?`,
-      [course_id],
-    );
-    console.log("Get tutor list: ", { course_id: course_id, results: rows });
-
-    return rows;
-  };
-  static updateTutorProfitRate = async (course_id, tutor_id, profit_rate) => {
-    const con = await sql.getConnection();
-
-    try {
-      await con.beginTransaction();
-
-      const [res, _] = await con.query(
-        `UPDATE teach_courses 
-        SET profit_rate=?
-        WHERE course_id=? AND tutor_id=?`,
-        [profit_rate, course_id, tutor_id],
-      );
-      const [rows, fields] = await con.query(
-        `SELECT course_id, tutor_id, profit_rate 
-        FROM teach_courses 
-        WHERE course_id=? AND tutor_id=?`,
-        [course_id, tutor_id],
-      );
-
-      console.log("Updated tutor from course", {
-        course_id: course_id,
-        tutor_id: tutor_id,
-        results: res,
-      });
-
-      con.commit();
-      sql.releaseConnection(con);
-
-      if (res.affectedRows == 0) return null;
-      else return rows[0];
-    } catch (err) {
-      await con.rollback();
-      sql.releaseConnection(con);
-
-      throw err;
-    }
-  };
-  static deleteTutorFromCourse = async (course_id, tutor_id) => {
-    const con = await sql.getConnection();
-
-    try {
-      await con.beginTransaction();
-      const [rows, fields] = await con.query(
-        `SELECT course_id, tutor_id, profit_rate 
-        FROM teach_courses 
-        WHERE course_id=? AND tutor_id=?`,
-        [course_id, tutor_id],
-      );
-
-      const [res, _] = await con.query(
-        `DELETE FROM teach_courses 
-        WHERE course_id=? AND tutor_id=?`,
-        [course_id, tutor_id],
-      );
-console.log("Deleted tutor from course", {
-        course_id: course_id,
-        tutor_id: tutor_id,
-        results: res,
-      });
-
-      con.commit();
-      sql.releaseConnection(con);
-
-      if (res.affectedRows == 0) return null;
-      else return rows[0];
-    } catch (err) {
-      await con.rollback();
-      sql.releaseConnection(con);
-
-      throw err;
-    }
   };
 }
 module.exports = Course;

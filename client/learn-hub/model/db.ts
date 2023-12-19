@@ -9,35 +9,27 @@ type Course = {
   discount: number;
   profile_picture: string;
   isPublished: boolean;
+  number_of_students?: number | undefined;
+  languages: string[],
+  subjects: string[],
 };
 
 type Lesson = {
-  id: number;
-  course_id: number;
+  lesson_id: string;
+  course_id: string;
   name: string;
   isPublished: boolean;
   isFree: boolean;
-}
-
-type Documents = {
-  id: number;
-  course_id: number;
-  lesson_id: number;
-  name: string;
-  file_path: string;
-}
-
-type VideoData = {
   assetId: string;
   playbackId: string;
-
-  lesson_id: number;
-  course_id: number;
 };
 
-type Subject = {
-  id: string;
+type CourseDocument = {
+  document_id: number;
+  course_id: string;
+  lesson_id: string;
   name: string;
+  file_path: string;
 };
 
 type User = {
@@ -86,11 +78,11 @@ type FinancialAid = {
 };
 
 type Subject = {
-  id: string,
-  name: string,
-}
+  id: string;
+  name: string;
+};
 
 type Language = {
-  id: string,
-  name: string,
-}
+  id: string;
+  name: string;
+};

@@ -1,7 +1,6 @@
 const app = require("../app");
 const request = require("supertest");
-const { getAccessToken, createAdmin } = require("../utils/test.utils");
-const { randomUUID } = require("crypto");
+const { getAccessToken, createAdmin } = require("../utils/test.utils"); const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 const { count } = require("console");
 
@@ -270,6 +269,8 @@ describe("GET /courses/:id", () => {
     expect(res.body.course.price).toBe(200);
     expect(res.body.course.discount).toBe(null);
     expect(res.body.course.number_of_students).toBe(0);
+    expect(res.body.course.languages).toBeInstanceOf(Array);
+    expect(res.body.course.subjects).toBeInstanceOf(Array);
   });
   it("Get course by unknown id", async () => {
     let res = await request(app).get(`/courses/12312321`);
