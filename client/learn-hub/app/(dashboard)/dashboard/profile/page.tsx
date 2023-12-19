@@ -37,19 +37,6 @@ import { updateUser } from "@/actions/users";
 import { toast } from "react-toastify";
 
 const profileFormSchema = z.object({
-  // username: z
-  //   .string()
-  //   .min(2, {
-  //     message: "Username must be at least 2 characters.",
-  //   })
-  //   .max(30, {
-  //     message: "Username must not be longer than 30 characters.",
-  //   }),
-  // email: z
-  //   .string({
-  //     required_error: "Please select an email to display.",
-  //   })
-  //   .email(),
   full_name: z.string(),
   phone_number: z.string().min(8).max(15),
   institute: z.string(),
@@ -58,9 +45,6 @@ const profileFormSchema = z.object({
   date_of_birth: z.date({
     required_error: "A date of birth is required.",
   }),
-  // language: z.string({
-  //   required_error: "Please select a language.",
-  // }),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
