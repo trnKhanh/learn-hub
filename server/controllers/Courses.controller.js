@@ -83,6 +83,7 @@ const getAllCourses = async (req, res) => {
 
 // Update course information
 const updateCourse = async (req, res) => {
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).send(errors);
@@ -90,6 +91,8 @@ const updateCourse = async (req, res) => {
   }
   const data = matchedData(req);
   if (req.file) data.profile_picture = req.file.path;
+  
+  console.log(data);
 
   if (!Object.keys(data).length) {
     res.status(400).json({

@@ -5,13 +5,37 @@ type Course = {
   difficulty: string;
   duration: number;
   owner_id: string;
-  created_at: string;
   price: number;
-  profile_picture: string;
   discount: number;
+  profile_picture: string;
+  isPublished: boolean;
 };
 
-type Category = {
+type Lesson = {
+  id: number;
+  course_id: number;
+  name: string;
+  isPublished: boolean;
+  isFree: boolean;
+}
+
+type Documents = {
+  id: number;
+  course_id: number;
+  lesson_id: number;
+  name: string;
+  file_path: string;
+}
+
+type VideoData = {
+  assetId: string;
+  playbackId: string;
+
+  lesson_id: number;
+  course_id: number;
+};
+
+type Subject = {
   id: string;
   name: string;
 };

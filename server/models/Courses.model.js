@@ -13,7 +13,7 @@ class Course {
     this.profile_picture = course.profile_picture;
     this.discount = course.discount;
   }
-  static queryFields = `courses.id as id, name, description, difficulty, duration, owner_id, price, profile_picture, discount`;
+  static queryFields = `id, name, description, difficulty, duration, owner_id, price, profile_picture, discount, isPublished`;
 
   // Create new Course
   static create = async (newCourse) => {
@@ -173,10 +173,10 @@ class Course {
           `(SELECT id, lesson_id 
             FROM exams
             WHERE course_id=?)
-           EXCEPT
-           (SELECT exam_id, lesson_id
-            FROM do_exams
-            WHERE course_id=? AND student_id=? AND score>=5)`,
+            EXCEPT
+            (SELECT exam_id, lesson_id
+              FROM do_exams
+              WHERE course_id=? AND student_id=? AND score>=5)`,
           [id, id, student_id],
         );
 

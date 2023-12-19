@@ -191,7 +191,6 @@ describe("PATCH /tutors/:id", () => {
     expect(res.statusCode).toBe(422);
   });
 });
-
 describe("GET /tutors/:id", () => {
   it("Get tutor by id after admin verified", async () => {
     let res = await request(app).get(`/tutors/${user_id}`);

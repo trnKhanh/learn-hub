@@ -44,16 +44,71 @@ export const searchCourses = async (filter: Filters) => {
 
 export const getCourse = async (id: string) => {
   try {
+    const res = await fetch(`http://localhost:3001/courses/${id}`);
+    const data: { message: string; course: Course } = await res.json();
+    
+    return { status : res.status, data : data};
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getCategoriesOfCourseId = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
+    const data: { message: string; subjects: Subject[] } = await res.json();
+    
+    return data.subjects;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export const getAllLessonsByCourseId = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
+    const data: { message: string; lessons: Lesson[] } = await res.json();
+
+    return data.lessons;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+};
+
+export const getAllDocumentsByCourseId = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/documents`);
+    const data: { message: string; documents: Documents[] } = await res.json();
+
+    return data.documents;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+export const updateCourse = async (id : string, attribute : any) => {
+  console.log(id);
+  try {
     const res = await fetch(`http://localhost:3001/courses/${id}`, {
       credentials: "include",
+      method: "PATCH",
+      body: JSON.stringify(
+        attribute),
+      headers: new Headers({
+        "content-type": "application/json",
+      }),
     });
-    const data: { message: string; course: Course } = await res.json();
+    const data: { message: string; courses: Course[] } = await res.json();
 
     return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
   }
-};
+}
 
 export const deleteCourse = async (id: string) => {
   try {

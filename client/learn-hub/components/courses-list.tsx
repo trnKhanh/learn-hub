@@ -2,9 +2,10 @@ import {CourseCard} from "@/components/course-card";
 import { CourseCardHorizontal } from "./course-card-horizontal";
 
 type CourseWithProgressWithCategory = Course & {
-    category: Category | null;
+    category: Subject | null;
     chapters: { id: string }[];
     progress: number | null;
+    image_url: string | null;
 };
 
 interface CoursesListProps {

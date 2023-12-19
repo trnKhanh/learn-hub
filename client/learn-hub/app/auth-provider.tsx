@@ -1,11 +1,6 @@
 "use client";
 
 import { checkAuth } from "@/actions/auth";
-import { MenuNavbar } from "@/components/menu-navbar";
-import NavbarItem from "@/components/navbar-item";
-import { Button } from "@/components/ui/button";
-import UserNavbar from "@/components/user-navbar";
-import Link from "next/link";
 import { createContext, useEffect, useState } from "react";
 
 interface AuthContextProps {
