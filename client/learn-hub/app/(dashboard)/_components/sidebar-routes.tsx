@@ -14,6 +14,8 @@ import {
   UserCog,
   Shield,
   FolderPlus,
+  Cog,
+  Cross,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -51,6 +53,11 @@ const guestRoutes = [
     icon: UserRoundCog,
     label: "Profile",
     href: "/dashboard/profile",
+  },
+  {
+    icon: Cross,
+    label: "Support",
+    href: "/dashboard/support",
   },
 ];
 
