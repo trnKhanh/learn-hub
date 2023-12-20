@@ -12,11 +12,18 @@ type Course = {
 };
 
 type Lesson = {
-  id: number;
-  course_id: number;
+  id: string;
+  course_id: string;
   name: string;
   isPublished: boolean;
   isFree: boolean;
+}
+
+type LearnLesson = {
+  course_id: string;
+  lesson_id: string;
+  student_id: string;
+  finished_at: string;
 }
 
 type Documents = {
