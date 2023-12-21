@@ -40,7 +40,7 @@ class TeachCourse {
       const { filterKeys, filterValues } = formatFilters(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM teach_courses WHERE ${filterKeys}`,
-        filterValues,
+        filterValues
       );
       return rows;
     } catch (err) {

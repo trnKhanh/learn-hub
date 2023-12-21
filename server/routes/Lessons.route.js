@@ -10,6 +10,7 @@ const {
   validateLessonChangePermission,
   getCourse,
   validateLessonDeletePermission,
+  validateLessonGetPermission,
 } = require("../middlewares/Lessons.middleware");
 const {
   createLessonScheme,
@@ -19,13 +20,15 @@ const Lesson = require("../models/Lessons.model");
 
 // ----------------------------------------
 // get all lesson
-router.get("/", [getCourse], LessonsController.getAllLessons);
+router.get("/", [getCourse], LessonsController.getAllPublishedLessons);
+
+router.get("/edit", [getCourse], LessonsController.getAllLessons);
 
 // get lesson by id
 router.get(
   "/:lesson_id",
-  [getCourse],
-  LessonsController.getLessonWithDocumentAndExam,
+  [validateToken, getCourse, validateLessonGetPermission],
+  LessonsController.getLessonWithDocumentAndExamById
 );
 
 // create lesson
@@ -37,7 +40,7 @@ router.post(
     validateLessonChangePermission,
     createLessonScheme,
   ],
-  LessonsController.create,
+  LessonsController.create
 );
 
 // update lesson
@@ -49,7 +52,7 @@ router.patch(
     validateLessonChangePermission,
     updateLessonScheme,
   ],
-  LessonsController.update,
+  LessonsController.update
 );
 
 // delete lesson
@@ -62,6 +65,6 @@ router.delete(
     validateLessonDeletePermission,
     updateLessonScheme,
   ],
-  LessonsController.delete,
+  LessonsController.delete
 );
 module.exports = router;

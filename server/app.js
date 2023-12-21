@@ -1,4 +1,5 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const express = require("express");
 const app = express();
@@ -12,6 +13,7 @@ app.use(
     }),
 );
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 // Use users router
 const authRouter = require("./routes/Auth.route");
@@ -41,5 +43,11 @@ app.use("/courses/:course_id/lessons", lessonsRouter);
 
 const categoriesRouter = require("./routes/Subjects.route");
 app.use("/subjects", categoriesRouter);
+
+const documentRouter = require("./routes/Documents.route");
+app.use("/courses/:course_id/lessons/:lesson_id/documents", documentRouter);
+
+const examsRouter = require("./routes/Exams.route");
+app.use("/courses/:course_id/lessons/:lesson_id/exams", examsRouter);
 
 module.exports = app;

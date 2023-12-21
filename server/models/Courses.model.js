@@ -23,13 +23,13 @@ class Course {
       const [res, _] = await con.query(`INSERT INTO courses SET ?`, newCourse);
       const [rows, fields] = await con.query(
         `SELECT ${Course.queryFields} FROM courses WHERE id=?`,
-        res.insertId,
+        res.insertId
       );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      console.log("Created course: ", { newCourse: rows[0], results: res });
+      // console.log("Created course: ", { newCourse: rows[0], results: res });
       return rows[0];
     } catch (err) {
       await con.rollback();
@@ -145,9 +145,9 @@ class Course {
 
   static getAll = async () => {
     const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses`,
+      `SELECT ${Course.queryFields} FROM courses`
     );
-    console.log("Get all courses: ", { results: rows });
+    // console.log("Get all courses: ", { results: rows });
     return rows;
   };
 
@@ -163,14 +163,14 @@ class Course {
       ]);
       const [rows, fields] = await con.query(
         `SELECT ${Course.queryFields} FROM courses WHERE id=?`,
-        [id],
+        [id]
       );
 
-      console.log("Updated courses", {
-        id: id,
-        columns: columns,
-        results: res,
-      });
+      // console.log("Updated courses", {
+      //   id: id,
+      //   columns: columns,
+      //   results: res,
+      // });
 
       con.commit();
       sql.releaseConnection(con);
@@ -193,15 +193,15 @@ class Course {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Course.queryFields} FROM courses WHERE id=?`,
-        [id],
+        [id]
       );
 
       const [res, _] = await con.query(`DELETE FROM courses WHERE id=?`, [id]);
 
-      console.log("Deleted courses", {
-        id: id,
-        results: res,
-      });
+      // console.log("Deleted courses", {
+      //   id: id,
+      //   results: res,
+      // });
 
       con.commit();
       sql.releaseConnection(con);
@@ -217,20 +217,20 @@ class Course {
   };
 
   static isPaid = async (student_id, id) => {
-    const [res, _] = await sql.query(
+    const [res, _] = await con.query(
       `SELECT * FROM payments JOIN payments_courses ON id=payment_id
       WHERE student_id=? AND course_id=?`,
-      [student_id, id],
+      [student_id, id]
     );
-    console.log("Check is paid status", {
-      results: res,
-    });
+    // console.log("Check is paid status", {
+    //   results: res,
+    // });
     if (!res.length) return 0;
     else return 1;
   };
 
   static register = async (student_id, id) => {
-    const [res, _] = await sql.query(`INSERT INTO learn_courses SET ?`, {
+    const [res, _] = await con.query(`INSERT INTO learn_courses SET ?`, {
       student_id: student_id,
       course_id: id,
     });
@@ -242,7 +242,7 @@ class Course {
       await con.beginTransaction();
       let [rows, _] = await con.query(
         `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
-        [student_id, id],
+        [student_id, id]
       );
 
       if (rows.length && !rows[0].finished_at) {
@@ -262,12 +262,12 @@ class Course {
             `UPDATE learn_courses 
             SET finished_at=CURRENT_TIMESTAMP
             WHERE course_id=? AND student_id=?`,
-            [id, student_id],
+            [id, student_id]
           );
         }
         [rows, _] = await con.query(
           `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
-          [student_id, id],
+          [student_id, id]
         );
       }
 
