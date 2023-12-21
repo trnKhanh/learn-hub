@@ -7,16 +7,6 @@ export const LanguagesFilter = () => {
   const { setLanguages } = useContext(SearchContext);
   const [languageList, setLanguageList] = useState<Language[]>([]);
   useEffect(() => {
-    setLanguageList([
-      {
-        id: "1",
-        name: "English",
-      },
-      {
-        id: "2",
-        name: "Vietnamese",
-      },
-    ]);
     getAllLanguages().then((res) => {
       if (res && res.status == 200) {
         setLanguageList(res.data.languages);
@@ -34,7 +24,7 @@ export const LanguagesFilter = () => {
   return (
     <div className="flex flex-col p-2 border-2 rounded-sm border-slate-300">
       <p className="font-bold mb-2">Languages Filter</p>
-      {languageList.length &&
+      {languageList.length > 0 &&
         languageList.map((language) => (
           <div key={language.id} className="flex items-center ">
             <Checkbox

@@ -7,26 +7,13 @@ export const SubjectsFilter = () => {
   const { setSubjects } = useContext(SearchContext);
   const [subjectList, setSubjectList] = useState<Subject[]>([]);
   useEffect(() => {
-    setSubjectList([
-      {
-        id: "1",
-        name: "Math",
-      },
-      {
-        id: "2",
-        name: "Physics",
-      },
-      {
-        id: "3",
-        name: "Computer Science",
-      },
-    ]);
     getAllSubjects().then((res) => {
       if (res && res.status == 200) {
         setSubjectList(res.data.subjects);
       }
     });
   }, []);
+  console.log(subjectList);
   const deselectSubject = (selected_id: string) => {
     setSubjects((ids) => ids.filter((id) => id != selected_id));
   };
@@ -38,7 +25,7 @@ export const SubjectsFilter = () => {
   return (
     <div className="flex flex-col p-2 space-y-2 border-2 rounded-sm border-slate-300">
       <p className="font-bold">Subjects Filter</p>
-      {subjectList.length &&
+      {subjectList.length > 0 &&
         subjectList.map((subject) => (
           <div key={subject.id} className="flex items-center space-x-2">
             <Checkbox

@@ -22,7 +22,7 @@ const createPayment = async (req, res) => {
     // end execute
     const payment = await Payment.create(req.user.id, data);
     if (!payment) {
-      res.status(400).json({
+      res.status(422).json({
         message: "No course in cart",
       });
     } else {

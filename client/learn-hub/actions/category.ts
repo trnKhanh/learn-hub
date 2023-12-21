@@ -1,15 +1,12 @@
-export const getAllCategories = async() => {
-    try {
-        const response = await fetch('http://localhost:3001/subjects');
+export const getSubjects = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/subjects");
 
-        if (!response.ok) {
-            throw new Error(response.statusText);
-        }
+    const data: { message: string; subjects: Subject[] } =
+      await response.json();
 
-        const data: { message: string; subjects: Subject[] } = await response.json();
-
-        return data.subjects;
-    } catch (error) {
-        return [];
-    }
-}
+    return { status: response.status, data };
+  } catch (error) {
+    console.error(error);
+  }
+};

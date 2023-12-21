@@ -183,14 +183,14 @@ const registerStudent = async (req, res) => {
   try {
     await Course.register(req.user.id, req.params.course_id);
     res.status(200).json({
-      message: "Course register successfully",
+      message: "Student has been registered for course",
     });
   } catch (err) {
     console.log(err);
 
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
-        message: "User already registerd",
+        message: "User already registered",
       });
       return;
     }

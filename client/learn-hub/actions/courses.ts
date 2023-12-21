@@ -319,3 +319,17 @@ export const removeCart = async (id: string) => {
     console.error(err);
   }
 };
+
+export const createPayment = async () => {
+  try {
+    const res = await fetch(`http://localhost:3001/users/payments/`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const data: { message: string } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
