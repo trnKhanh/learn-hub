@@ -77,12 +77,12 @@ class LessonsController {
 
     try {
       // const lessons = await lessonManager.findAll({
-      //   is_published: true,
+      //   isPublished: true,
       // });
       const lessons = await new Lesson({
         course_id: req.course.id,
       }).findAll({
-        is_published: true,
+        isPublished: true,
       });
       res.status(200).json({
         message: "Retrieve lessons' information successfully",

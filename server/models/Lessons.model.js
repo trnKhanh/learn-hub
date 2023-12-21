@@ -7,10 +7,10 @@ class Lesson {
     this.id = lesson.id || null;
     this.name = lesson.name || null;
     this.course_id = lesson.course_id || null;
-    this.is_free =
-      lesson.is_free == true || lesson.is_free == "true" ? true : false;
-    this.is_published =
-      lesson.is_published == true || lesson.is_published == "true"
+    this.isFree =
+      lesson.isFree == true || lesson.isFree == "true" ? true : false;
+    this.isPublished =
+      lesson.isPublished == true || lesson.isPublished == "true"
         ? true
         : false;
 
@@ -25,17 +25,12 @@ class Lesson {
   }
 
   async findAll(filters = {}) {
-    try {
-      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
-      const [rows, fields] = await sql.query(
-        `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues
-      );
-      return rows;
-    } catch (err) {
-      // console.log(err);
-      throw err;
-    }
+    const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
+    const [rows, fields] = await sql.query(
+      `SELECT * FROM lessons WHERE ${filterKeys}`,
+      filterValues,
+    );
+    return rows;
   }
 
   async getId() {
@@ -46,7 +41,7 @@ class Lesson {
     // find the max id in table
     const [rows, fields] = await sql.query(
       `SELECT MAX(id) max_id FROM lessons WHERE ${filterKeys}`,
-      filterValues
+      filterValues,
     );
 
     if (!rows[0].max_id) rows[0].max_id = 0;
@@ -72,7 +67,7 @@ class Lesson {
 
       const [rows, fields] = await con.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();
@@ -122,7 +117,7 @@ class Lesson {
       const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       if (rows.length) return rows[0];
@@ -145,11 +140,11 @@ class Lesson {
 
       const [res, _] = await con.query(
         `UPDATE lessons SET ? WHERE ${filterKeys}`,
-        [newData, ...filterValues]
+        [newData, ...filterValues],
       );
       const [rows, fields] = await con.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();
@@ -178,12 +173,12 @@ class Lesson {
 
       const [rows, fields] = await con.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       const [res, _] = await con.query(
         `DELETE FROM lessons WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();

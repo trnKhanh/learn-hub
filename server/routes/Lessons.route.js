@@ -28,7 +28,7 @@ router.get("/edit", [getCourse], LessonsController.getAllLessons);
 router.get(
   "/:lesson_id",
   [validateToken, getCourse, validateLessonGetPermission],
-  LessonsController.getLessonWithDocumentAndExamById
+  LessonsController.getLessonWithDocumentAndExamById,
 );
 
 // create lesson
@@ -40,7 +40,7 @@ router.post(
     validateLessonChangePermission,
     createLessonScheme,
   ],
-  LessonsController.create
+  LessonsController.create,
 );
 
 // update lesson
@@ -52,7 +52,7 @@ router.patch(
     validateLessonChangePermission,
     updateLessonScheme,
   ],
-  LessonsController.update
+  LessonsController.update,
 );
 
 // delete lesson
@@ -65,6 +65,13 @@ router.delete(
     validateLessonDeletePermission,
     updateLessonScheme,
   ],
-  LessonsController.delete
+  LessonsController.delete,
 );
+
+const documentsRouter = require("./Documents.route");
+router.use("/:lesson_id/documents/", documentsRouter);
+
+const examsRouter = require("./Exams.route");
+router.use("/:lesson_id/exams/", examsRouter);
+
 module.exports = router;

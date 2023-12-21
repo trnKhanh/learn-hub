@@ -28,11 +28,7 @@ router.get("/", coursesController.getAllCourses);
 router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 router.get("/:course_id", coursesController.getCourse);
 
-
-router.get(
-  "/:course_id/documents",
-  documentsController.getAllDocumentsOfCourse,
-);
+router.get("/:course_id/documents", documentsController.getAllDocuments);
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
 
@@ -81,5 +77,8 @@ router.use("/:course_id/financialAids/", financialAidsRouter);
 
 const teachCoursesRouter = require("./TeachCourses.route");
 router.use("/:course_id/tutors/", teachCoursesRouter);
+
+const lessonsRouter = require("./Lessons.route");
+router.use("/:course_id/lessons/", lessonsRouter);
 
 module.exports = router;

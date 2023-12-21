@@ -15,7 +15,7 @@ type Course = {
 };
 
 type Lesson = {
-  lesson_id: string;
+  id: string;
   course_id: string;
   name: string;
   isPublished: boolean;
@@ -25,7 +25,7 @@ type Lesson = {
 };
 
 type CourseDocument = {
-  document_id: number;
+  id: number;
   course_id: string;
   lesson_id: string;
   name: string;

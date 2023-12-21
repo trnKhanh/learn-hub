@@ -1,13 +1,13 @@
 import { CheckCircle, Clock } from "lucide-react";
 import { InfoCard } from "./_component/info-card";
 
-import {getCourses} from "@/actions/course";
+import {getAllCourses} from "@/actions/courses";
 
 import { CoursesList } from "@/components/courses-list";
 
 export default async function MyCourses() {
 
-    const courses = await getCourses();
+    const courses = await getAllCourses();
 
     return (
         <div className="p-6 space-y-4">

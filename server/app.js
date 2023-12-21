@@ -38,16 +38,7 @@ app.use("/supporters", supportersRouter);
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
-const lessonsRouter = require("./routes/Lessons.route");
-app.use("/courses/:course_id/lessons", lessonsRouter);
-
 const categoriesRouter = require("./routes/Subjects.route");
 app.use("/subjects", categoriesRouter);
-
-const documentRouter = require("./routes/Documents.route");
-app.use("/courses/:course_id/lessons/:lesson_id/documents", documentRouter);
-
-const examsRouter = require("./routes/Exams.route");
-app.use("/courses/:course_id/lessons/:lesson_id/exams", examsRouter);
 
 module.exports = app;

@@ -20,7 +20,7 @@ export const LessonItem = ({
 
   console.log("Lesson: ", lesson)
   useEffect(() => {
-    getDocuments(lesson.course_id, lesson.lesson_id).then((res) => {
+    getDocuments(lesson.course_id, lesson.id).then((res) => {
       if (res) {
         if (res.status == 200) {
           setDocuments(res.data.documents);
@@ -39,7 +39,7 @@ export const LessonItem = ({
       <AccordionContent>
         <div className="flex flex-col space-y-2">
           {documents.map((doc) => (
-            <div key={doc.document_id} className="flex flex-row items-center space-x-2">
+            <div key={doc.id} className="flex flex-row items-center space-x-2">
               <FileText className="h-5 w-5" />
               <div className="text-sm text-gray-500">{doc.name}</div>
             </div>
@@ -48,7 +48,7 @@ export const LessonItem = ({
           <div className="flex flex-row items-center space-x-2">
             <Video className="h-5 w-5" />
             <div className="text-sm text-gray-500">
-              Video Lecture {lesson.name}
+              {lesson.name}
             </div>
           </div>
         </div>

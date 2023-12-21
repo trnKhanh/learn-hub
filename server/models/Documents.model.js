@@ -101,7 +101,7 @@ class Documents {
   //       document.lesson_id
   //     );
   //     let documents = await lessonManager.findAllWithDocument({
-  //       "l.is_published": true,
+  //       "l.isPublished": true,
   //     });
   //     return documents;
   //   } catch (errors) {
