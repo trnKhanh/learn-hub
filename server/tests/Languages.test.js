@@ -168,7 +168,7 @@ describe("PATCH /languages/:id", () => {
         expect(res.body.language[0].language_name).toBe("Vietnamese");
     });
 
-    it("Update language (not found language)", async () => {
+    it("Update language (not found language id)", async () => {
         let res = await admin_agent
             .patch(`/languages/${language_id+1}`)
             .send({

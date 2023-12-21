@@ -42,4 +42,7 @@ app.use("/languages" , languageRouter);
 const notificationsRouter = require("./routes/Notifications.route");
 app.use("/notifications" , notificationsRouter);
 
+const subjectsRouter = require("./routes/Subjects.route");
+app.use("/subjects" , subjectsRouter);
+
 module.exports = app;
