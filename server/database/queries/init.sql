@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS support_sessions (
   supporter_id INT NOT NULL,
   issue_description TEXT NOT NULL,
   started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (supporter_id) REFERENCES supporters(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS learn_courses (
   course_id INT NOT NULL,
   student_id INT NOT NULL,
   registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (course_id, student_id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS do_exams (
   student_id INT NOT NULL,
   score DOUBLE CHECK (score >= 0),
   deadline DATETIME NOT NULL,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (course_id, lesson_id, exam_id,  student_id),
   FOREIGN KEY (course_id, lesson_id, exam_id) REFERENCES exams(course_id, lesson_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE

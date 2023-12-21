@@ -23,7 +23,7 @@ class Admin {
         `SELECT ${Admin.queryFields} 
          FROM admins NATURAL JOIN users 
          WHERE id=?`,
-        [newAdmin.id],
+        [newAdmin.id]
       );
 
       await con.commit();
@@ -46,7 +46,7 @@ class Admin {
       `SELECT ${Admin.queryFields} 
        FROM admins NATURAL JOIN users 
        WHERE ${filterKeys}`,
-      filterValues,
+      filterValues
     );
     if (rows.length) {
       console.log("Found admin: ", { filters: filters, results: rows[0] });
@@ -64,7 +64,7 @@ class Admin {
       `SELECT ${Admin.queryFields} 
        FROM admins NATURAL JOIN users  
        WHERE ${filterKeys}`,
-      filterValues,
+      filterValues
     );
     console.log("Found admins: ", { filters: filters, results: rows });
     return rows;
@@ -73,7 +73,7 @@ class Admin {
   static getAll = async () => {
     const [rows, fields] = await sql.query(
       `SELECT ${Admin.queryFields} 
-       FROM admins NATURAL JOIN users`,
+       FROM admins NATURAL JOIN users`
     );
     console.log("Get all admins: ", { results: rows });
     return rows;
@@ -88,13 +88,13 @@ class Admin {
       const [res, _] = await con.query(
         `UPDATE admins SET ?
         WHERE id=?`,
-        [columns, id],
+        [columns, id]
       );
       const [rows, fields] = await con.query(
         `SELECT ${Admin.queryFields} 
          FROM admins NATURAL JOIN users
          WHERE id=?`,
-        [id],
+        [id]
       );
 
       console.log("Updated admins by Id", {
@@ -125,13 +125,13 @@ class Admin {
         `SELECT ${Admin.queryFields} 
          FROM admins NATURAL JOIN users
          WHERE id=?`,
-        [id],
+        [id]
       );
 
       const [res, _] = await con.query(
         `DELETE FROM admins
         WHERE id=?`,
-        [id],
+        [id]
       );
 
       console.log("Deleted admins by id", {

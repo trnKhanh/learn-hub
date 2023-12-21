@@ -1,4 +1,5 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const express = require("express");
 const app = express();
@@ -12,6 +13,10 @@ app.use(
     }),
 );
 app.use(cookieParser());
+
+// Config Request Body
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use users router
 const authRouter = require("./routes/Auth.route");

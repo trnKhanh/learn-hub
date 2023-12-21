@@ -19,13 +19,13 @@ const Lesson = require("../models/Lessons.model");
 
 // ----------------------------------------
 // get all lesson
-router.get("/", /*[getCourse],*/ LessonsController.getAllLessons);
+router.get("/", [getCourse], LessonsController.getAllLessons);
 
 // get lesson by id
 router.get(
   "/:lesson_id",
   [getCourse],
-  LessonsController.getLessonWithDocumentAndExam,
+  LessonsController.getLessonWithDocumentAndExam
 );
 
 // create lesson
@@ -37,7 +37,7 @@ router.post(
     validateLessonChangePermission,
     createLessonScheme,
   ],
-  LessonsController.create,
+  LessonsController.create
 );
 
 // update lesson
@@ -49,7 +49,7 @@ router.patch(
     validateLessonChangePermission,
     updateLessonScheme,
   ],
-  LessonsController.update,
+  LessonsController.update
 );
 
 // delete lesson
@@ -62,6 +62,6 @@ router.delete(
     validateLessonDeletePermission,
     updateLessonScheme,
   ],
-  LessonsController.delete,
+  LessonsController.delete
 );
 module.exports = router;
