@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS lessons (
   name VARCHAR(255) NOT NULL,
   isPublished BOOL DEFAULT FALSE,
   isFree BOOL DEFAULT FALSE,
-  assetId VARCHAR(255) NOT NULL,
-  playbackId VARCHAR(255) NOT NULL,
+  assetId VARCHAR(255),
+  playbackId VARCHAR(255),
   PRIMARY KEY (course_id, id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

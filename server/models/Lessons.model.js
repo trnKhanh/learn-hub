@@ -1,17 +1,40 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
-const { LessonManager } = require("./LessonManager.model");
+const LessonManager = require("./LessonManager.model");
 class Lesson {
   constructor(lesson) {
     this.id = lesson.id || null;
     this.name = lesson.name || null;
     this.course_id = lesson.course_id || null;
-    this.is_free =
-      lesson.is_free == true || lesson.is_free == "true" ? true : false;
-    this.is_published =
-      lesson.is_published == true || lesson.is_published == "true"
+    this.isFree =
+      lesson.isFree == true || lesson.isFree == "true" ? true : false;
+    this.isPublished =
+      lesson.isPublished == true || lesson.isPublished == "true"
         ? true
         : false;
+    this.basic_filters = {
+      course_id: this.course_id,
+    };
+  }
+
+  getFiltersAfterFormat(filters = {}) {
+    filters = { ...this.basic_filters, ...filters };
+    return formatFilters(filters);
+  }
+
+  async findAll(filters = {}) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
+      const [rows] = await sql.query(
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues,
+      );
+      return rows;
+    } catch (err) {
+      // console.log(err);
+      throw err;
+    }
   }
 
   async getId() {

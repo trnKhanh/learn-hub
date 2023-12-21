@@ -30,10 +30,10 @@ router.get("/:course_id", coursesController.getCourse);
 
 //router.get("/:course_id/lessons", lessonsController.getAllLessons);
 
-router.get(
+/*router.get(
   "/:course_id/documents",
   documentsController.getAllDocumentsOfCourse,
-);
+);*/
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
 

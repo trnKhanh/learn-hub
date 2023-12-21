@@ -26,7 +26,7 @@ router.get("/edit", [getCourse], LessonsController.getAllLessons);
 
 // get lesson by id
 router.get(
-  "/:lesson_id",
+  "/:lesson_id",    
   [validateToken, getCourse, validateLessonGetPermission],
   LessonsController.getLessonWithDocumentAndExamById
 );
