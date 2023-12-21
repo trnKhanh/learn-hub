@@ -48,6 +48,7 @@ const getCourse = async (req, res, next) => {
   let course_id = req.params.course_id;
   try {
     const course = await Course.findOne({ id: course_id });
+    // console.log(">>> getCourse: ", { course: course });
     if (!course) {
       res.status(404).json({
         message: "Not found course",
@@ -126,14 +127,12 @@ const validateLessonGetPermission = async (req, res, next) => {
     });
 
     const is_free_promise = new Lesson({
-      id: lesson_id,
       course_id: course_id,
-    }).findOne({ is_free: 1 });
+    }).findOne({ is_free: 1, id: lesson_id });
 
     const is_published_promise = new Lesson({
-      id: lesson_id,
       course_id: course_id,
-    }).findOne({ is_published: 1 });
+    }).findOne({ is_published: 1, id: lesson_id });
 
     const [admin, creator, tutor, learner, is_free, is_published] =
       await Promise.all([
@@ -145,17 +144,18 @@ const validateLessonGetPermission = async (req, res, next) => {
         is_published_promise,
       ]);
 
-    // console.log(">>> validateLessonGetPermission: ", {
-    //   admin: admin,
-    //   creator: creator,
-    //   tutor: tutor,
-    //   learner: learner,
-    //   is_free: is_free,
-    //   is_published: is_published,
-    // });
+    console.log(">>> validateLessonGetPermission: ", {
+      admin: admin,
+      creator: creator,
+      tutor: tutor,
+      learner: learner,
+      is_free: is_free,
+      is_published: is_published,
+    });
 
     if (admin || creator || tutor) {
       next();
+      req.validPublish = true;
     } else if (is_published && (learner || is_free)) {
       next();
     } else {

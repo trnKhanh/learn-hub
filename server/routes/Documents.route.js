@@ -41,7 +41,11 @@ router.post(
 );
 
 // get
-router.get("/", [getCourse, getLesson], DocumentsController.getAllDocuments);
+router.get(
+  "/",
+  [validateToken, getCourse, getLesson, validateLessonGetPermission],
+  DocumentsController.getAllDocuments
+);
 
 router.get(
   "/:document_id",

@@ -22,12 +22,12 @@ const Lesson = require("../models/Lessons.model");
 // get all lesson
 router.get("/", [getCourse], LessonsController.getAllPublishedLessons);
 
+router.get("/edit", [getCourse], LessonsController.getAllLessons);
+
 // get lesson by id
 router.get(
   "/:lesson_id",
-  validateToken,
-  [getCourse],
-  validateLessonGetPermission,
+  [validateToken, getCourse, validateLessonGetPermission],
   LessonsController.getLessonWithDocumentAndExamById
 );
 
