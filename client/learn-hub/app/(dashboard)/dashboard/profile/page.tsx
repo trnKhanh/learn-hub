@@ -26,223 +26,230 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, UserCog } from "lucide-react";
 import Link from "next/link";
 import { useFieldArray, useForm } from "react-hook-form";
 import { format } from "date-fns";
 
 import * as z from "zod";
 import { Calendar } from "@/components/ui/calendar";
+import { getMineUser, updateUser } from "@/actions/users";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import {
+  DashboardSection,
+  DashboardSectionContent,
+  DashboardSectionHeader,
+} from "../_components/dashboard-section";
 
 const profileFormSchema = z.object({
-  username: z
-    .string()
-    .min(2, {
-      message: "Username must be at least 2 characters.",
+  full_name: z.string().optional(),
+  phone_number: z.string().min(8).max(15).optional(),
+  institute: z.string().optional(),
+  area_of_study: z.string().optional(),
+  biography: z.string().max(160).min(4).optional(),
+  date_of_birth: z
+    .date({
+      required_error: "A date of birth is required.",
     })
-    .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: "Please enter a valid URL." }),
-      }),
-    )
     .optional(),
-  dob: z.date({
-    required_error: "A date of birth is required.",
-  }),
-  // language: z.string({
-  //   required_error: "Please select a language.",
-  // }),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: "I own a computer.",
-  urls: [
-    { value: "https://nguyentienthanh.com" },
-    { value: "http://twitter.com/thanhtiennguyen" },
-  ],
-};
+const defaultValues: Partial<ProfileFormValues> = {};
 
 const Profile = () => {
+  const [user, setUser] = useState<User>();
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   });
 
-  const { fields, append } = useFieldArray({
-    name: "urls",
-    control: form.control,
-  });
+  useEffect(() => {
+    getMineUser().then((res) => {
+      if (res) {
+        if (res.status == 200) {
+          setUser(res.data.user);
+          if (res.data.user.full_name) {
+            form.setValue("full_name", res.data.user.full_name);
+          }
+
+          if (res.data.user.phone_number) {
+            form.setValue("phone_number", res.data.user.phone_number);
+          }
+          if (res.data.user.date_of_birth) {
+            form.setValue(
+              "date_of_birth",
+              new Date(res.data.user.date_of_birth),
+            );
+          }
+          if (res.data.user.institute) {
+            form.setValue("institute", res.data.user.institute);
+          }
+          if (res.data.user.area_of_study) {
+            form.setValue("area_of_study", res.data.user.area_of_study);
+          }
+          if (res.data.user.biography) {
+            form.setValue("biography", res.data.user.biography);
+          }
+        }
+      }
+    });
+  }, []);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = async (data: ProfileFormValues) => {
-    console.log(123);
-    console.log(data);
+    const res = await updateUser(data);
+    if (res) {
+      if (res.status == 200) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    }
   };
 
   return (
-    <div className="p-6 space-y-4">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This is your public display name. It can be your real name or
-                  a pseudonym. You can only change this once every 30 days.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a verified email to display" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="m@example.com">m@example.com</SelectItem>
-                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                    <SelectItem value="m@support.com">m@support.com</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  You can manage verified email addresses in your{" "}
-                  <Link href="/examples/forms">email settings</Link>.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dob"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Date of birth</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormDescription>
-                  Your date of birth is used to calculate your age.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="bio"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bio</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Tell us a little bit about yourself"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  You can <span>@mention</span> other users and organizations to
-                  link to them.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div>
-            {fields.map((field, index) => (
+    <DashboardSection>
+      <DashboardSectionHeader icon={UserCog}>Profile</DashboardSectionHeader>
+      <DashboardSectionContent>
+        <div className="p-6 space-y-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                key={field.id}
-                name={`urls.${index}.value`}
+                name="full_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={cn(index !== 0 && "sr-only")}>
-                      URLs
-                    </FormLabel>
-                    <FormDescription className={cn(index !== 0 && "sr-only")}>
-                      Add links to your website, blog, or social media profiles.
-                    </FormDescription>
+                    <FormLabel>Full name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        placeholder="Enter your fullname here"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => append({ value: "" })}
-            >
-              Add URL
-            </Button>
-          </div>
-          <Button type="submit">Update profile</Button>
-        </form>
-      </Form>
-    </div>
+              <FormField
+                control={form.control}
+                name="date_of_birth"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date of birth</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone number</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your phone number here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="institute"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Institute</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your institute here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="area_of_study"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Area of study</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your area of study here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="biography"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Biography</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        rows={2}
+                        placeholder="Enter your biography here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Update profile</Button>
+            </form>
+          </Form>
+        </div>
+      </DashboardSectionContent>
+    </DashboardSection>
   );
 };
 

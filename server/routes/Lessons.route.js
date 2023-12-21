@@ -7,13 +7,13 @@ const LessonsController = require("../controllers/Lessons.controller");
 // Middle ware
 const { validateToken } = require("../middlewares/Auth.middleware");
 const {
-    validateLessonChangePermission,
-    getCourse,
-    validateLessonDeletePermission,
+  validateLessonChangePermission,
+  getCourse,
+  validateLessonDeletePermission,
 } = require("../middlewares/Lessons.middleware");
 const {
-    createLessonScheme,
-    updateLessonScheme,
+  createLessonScheme,
+  updateLessonScheme,
 } = require("../middlewares/validators/Lessons.validator");
 const Lesson = require("../models/Lessons.model");
 
@@ -23,45 +23,45 @@ router.get("/", /*[getCourse],*/ LessonsController.getAllLessons);
 
 // get lesson by id
 router.get(
-    "/:lesson_id",
-    [getCourse],
-    LessonsController.getLessonWithDocumentAndExam
+  "/:lesson_id",
+  [getCourse],
+  LessonsController.getLessonWithDocumentAndExam,
 );
 
 // create lesson
 router.post(
-    "/",
-    [
-        validateToken,
-        getCourse,
-        validateLessonChangePermission,
-        createLessonScheme,
-    ],
-    LessonsController.create
+  "/",
+  [
+    validateToken,
+    getCourse,
+    validateLessonChangePermission,
+    createLessonScheme,
+  ],
+  LessonsController.create,
 );
 
 // update lesson
 router.patch(
-    "/:lesson_id",
-    [
-        validateToken,
-        getCourse,
-        validateLessonChangePermission,
-        updateLessonScheme,
-    ],
-    LessonsController.update
+  "/:lesson_id",
+  [
+    validateToken,
+    getCourse,
+    validateLessonChangePermission,
+    updateLessonScheme,
+  ],
+  LessonsController.update,
 );
 
 // delete lesson
 // only creator or admin can delete lesson
 router.delete(
-    "/:lesson_id",
-    [
-        validateToken,
-        getCourse,
-        validateLessonDeletePermission,
-        updateLessonScheme,
-    ],
-    LessonsController.delete
+  "/:lesson_id",
+  [
+    validateToken,
+    getCourse,
+    validateLessonDeletePermission,
+    updateLessonScheme,
+  ],
+  LessonsController.delete,
 );
 module.exports = router;

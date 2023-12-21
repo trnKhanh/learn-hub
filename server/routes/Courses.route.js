@@ -25,15 +25,17 @@ const upload = multer({
 
 router.get("/", coursesController.getAllCourses);
 
+router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 router.get("/:course_id", coursesController.getCourse);
 
 //router.get("/:course_id/lessons", lessonsController.getAllLessons);
 
-router.get("/:course_id/documents", documentsController.getAllDocumentsOfCourse);
+router.get(
+  "/:course_id/documents",
+  documentsController.getAllDocumentsOfCourse,
+);
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
-
-router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 
 router.post(
   "/",
@@ -77,5 +79,8 @@ router.get(
 
 const financialAidsRouter = require("./FinancialAids.route");
 router.use("/:course_id/financialAids/", financialAidsRouter);
+
+const teachCoursesRouter = require("./TeachCourses.route");
+router.use("/:course_id/tutors/", teachCoursesRouter);
 
 module.exports = router;

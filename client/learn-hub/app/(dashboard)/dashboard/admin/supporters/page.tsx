@@ -17,10 +17,12 @@ import { SupporterDeleteDialog } from "./_components/supporter-delete-dialog";
 import { notFound } from "next/navigation";
 import { toast } from "react-toastify";
 import { SupporterInfoDialog } from "./_components/supporter-info-dialog";
+import { CreateSupporterDialog } from "./_components/create-supporter-dialog";
 
 export default function Supporters() {
-  const [supporters, setSupporters] = useState<Supporter[]>();
+  const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -36,7 +38,7 @@ export default function Supporters() {
         }
       }
     });
-  }, [isDeleting]);
+  }, [isDeleting, isCreating]);
 
   if (isLoading)
     return (
@@ -44,19 +46,21 @@ export default function Supporters() {
         <p className="text-2xl text mx-auto">Loading...</p>
       </div>
     );
-
-  if (supporters && !supporters.length) {
+  if (isCreating)
     return (
       <div className="flex p-6">
-        <p className="text-2xl text mx-auto">Found no supporters</p>
+        <p className="text-2xl text mx-auto">Creating...</p>
       </div>
     );
-  }
 
   return (
     <DashboardSection>
       <DashboardSectionHeader icon={UserCog}>Supporters</DashboardSectionHeader>
 
+      <CreateSupporterDialog
+        isCreating={isCreating}
+        setIsCreating={setIsCreating}
+      />
       <DashboardSectionContent>
         {supporters &&
           supporters.map((supporter) => (

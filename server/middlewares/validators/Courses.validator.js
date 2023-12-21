@@ -89,6 +89,7 @@ const searchCourseScheme = [
   query("difficulties").optional(),
 ];
 
+
 module.exports = {
   createCourseScheme,
   updateCourseScheme,

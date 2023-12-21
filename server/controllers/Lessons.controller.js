@@ -13,7 +13,6 @@ class LessonsController {
         }
 
         const data = matchedData(req);
-        // console.log(">>> LessonsController >> creatLess >> data: ", data);
 
         try {
         // create Lesson Object by Class Lesson

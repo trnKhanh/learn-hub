@@ -35,9 +35,9 @@ const putFinancialAid = async (req, res) => {
           req.user.id,
           newFinancialAid,
         );
-        res.status(201).json({
+        res.status(200).json({
           message: "Financial aid has been updated",
-          financialAid: financialAid,
+          financialAid: financialAid[0],
         });
       } catch (err) {
         console.log(err);

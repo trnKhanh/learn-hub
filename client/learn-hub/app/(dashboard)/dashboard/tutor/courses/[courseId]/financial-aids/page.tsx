@@ -1,6 +1,10 @@
 "use client";
 
-import { deleteFinancialAid, getAllFinancialAids, getAllFinancialAidsForTutor } from "@/actions/courses";
+import {
+  deleteFinancialAid,
+  getAllFinancialAids,
+  getAllFinancialAidsForTutor,
+} from "@/actions/courses";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -37,7 +41,8 @@ export default function FinancialAids({
           setIsLoading(false);
         } else {
           toast.error(res.data.message);
-          router.push(`/dashboard/tutor/courses`); }
+          router.push(`/dashboard/tutor/courses`);
+        }
       }
     });
   }, [isDeleting]);

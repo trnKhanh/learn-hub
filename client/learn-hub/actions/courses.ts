@@ -47,17 +47,56 @@ export const getCourse = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}`);
     const data: { message: string; course: Course } = await res.json();
-    
-    return { status : res.status, data : data};
+
+    return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
-    return null;
+  }
+};
+
+export const getTutorList = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/tutors`);
+    const data: {
+      message: string;
+      tutor_list: { tutor_id: string; profit_rate: number }[];
+    } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
   }
 };
 
 export const getAllLessonsByCourseId = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
+    const data: { message: string; lessons: Lesson[] } = await res.json();
+
+    return { status : res.status, data : data};
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export const getCategoriesOfCourseId = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
+    const data: { message: string; subjects: Subject[] } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getLessons = async (course_id: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3001/courses/${course_id}/lessons`,
+    );
     const data: { message: string; lessons: Lesson[] } = await res.json();
 
     return { status: res.status, data: data };
@@ -67,26 +106,40 @@ export const getAllLessonsByCourseId = async (id: string) => {
   }
 };
 
-export const getAllDocumentsByCourseId = async (id: string) => {
+export const getDocuments = async (course_id: string, lesson_id: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/courses/${id}/documents`);
-    const data: { message: string; documents: Documents[] } = await res.json();
+    const res = await fetch(
+      `http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/documents`,
+    );
+    const data: { message: string; documents: CourseDocument[] } =
+      await res.json();
 
-    return data.documents;
+    return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
-    return [];
   }
-}
+};
 
-export const updateCourse = async (id : string, attribute : unknown) => {
+export const getVideo = async (course_id: string, lesson_id: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/videos`,
+    );
+    const data: { message: string; video: VideoData } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const updateCourse = async (id: string, attribute: any) => {
   console.log(id);
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}`, {
       credentials: "include",
       method: "PATCH",
-      body: JSON.stringify(
-        attribute),
+      body: JSON.stringify(attribute),
       headers: new Headers({
         "content-type": "application/json",
       }),
@@ -97,7 +150,7 @@ export const updateCourse = async (id : string, attribute : unknown) => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 export const deleteCourse = async (id: string) => {
   try {
@@ -238,6 +291,23 @@ export const updateFinancialAid = async (
 export const getCart = async () => {
   try {
     const res = await fetch("http://localhost:3001/users/cart", {
+      credentials: "include",
+    });
+    const data: {
+      message: string;
+      course_ids: { course_id: string }[];
+      total_money: number;
+    } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+export const addCart = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/users/cart/${id}`, {
+      method: "POST",
       credentials: "include",
     });
     const data: { message: string; course_ids: { course_id: string }[] } =

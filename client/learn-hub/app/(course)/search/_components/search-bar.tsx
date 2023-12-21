@@ -4,8 +4,8 @@ import { useContext, useState } from "react";
 import { Search } from "lucide-react";
 
 export const SearchBar = () => {
-  const { setCourseName } = useContext(SearchContext);
-  const [query, setQuery] = useState("");
+  const { courseName, setCourseName } = useContext(SearchContext);
+  const [query, setQuery] = useState(courseName || "");
   return (
     <div className="ml-72 relative">
       <Search className="h-4 w-4 absolute top-3 left-3 text-slate-600" />

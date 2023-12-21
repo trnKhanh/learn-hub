@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 
 interface DocumentFormProps {
     //initialData: Course & { attachments: Attachment[] };
-    documents: Documents[];
+    documents: CourseDocument[];
     courseId: string;
-};
+}
 
 const formSchema = z.object({
     url: z.string().min(1),
@@ -84,21 +84,21 @@ export const AttachmentForm = ({
                 <div className="space-y-2">
                 {documents.map((document) => (
                     <div
-                    key={document.id}
+                    key={document.document_id}
                     className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
                     >
                     <File className="h-4 w-4 mr-2 flex-shrink-0" />
                     <p className="text-xs line-clamp-1">
                         {document.name}
                     </p>
-                    {deletingId === document.id.toString() && (
+                    {deletingId === document.document_id && (
                         <div>
                         <Loader2 className="h-4 w-4 animate-spin" />
                         </div>
                     )}
-                    {deletingId !== document.id.toString() && (
+                    {deletingId !== document.document_id && (
                         <Button
-                        onClick={() => onDelete(document.id.toString())}
+                        onClick={() => onDelete(document.document_id)}
                         className="ml-auto hover:opacity-75 transition"
                         >
                         <X className="h-4 w-4" />

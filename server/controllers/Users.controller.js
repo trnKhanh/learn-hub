@@ -3,7 +3,7 @@ const { validationResult, matchedData } = require("express-validator");
 
 const getUser = async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.params.id });
+    const user = await User.findOne({ id: req.params.id || req.user.id });
     if (!user) {
       res.status(404).json({
         message: "Not found user",

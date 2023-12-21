@@ -14,6 +14,8 @@ import {
   UserCog,
   Shield,
   FolderPlus,
+  Cog,
+  Cross,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -51,6 +53,11 @@ const guestRoutes = [
     icon: UserRoundCog,
     label: "Profile",
     href: "/dashboard/profile",
+  },
+  {
+    icon: Cross,
+    label: "Support",
+    href: "/dashboard/support",
   },
 ];
 
@@ -146,8 +153,8 @@ export const SidebarRoutes = ({ role }: { role?: string }) => {
         <SidebarItem
           key={"/dashboard/tutor"}
           icon={BookUser}
-          label={"Tutor"}
-          href={"/dashboard/tutor"}
+          label={"Tutor Verification"}
+          href={"/dashboard/tutor/verification"}
         />
       )}
     </div>

@@ -1,8 +1,8 @@
 const app = require("../app");
 const request = require("supertest");
-const { getAccessToken, createAdmin } = require("../utils/test.utils");
-const { randomUUID } = require("crypto");
+const { getAccessToken, createAdmin } = require("../utils/test.utils"); const { randomUUID } = require("crypto");
 const sql = require("../database/db");
+const { count } = require("console");
 
 let tutor_id;
 let u_tutor_id;
@@ -268,6 +268,9 @@ describe("GET /courses/:id", () => {
     expect(res.body.course.owner_id).toBe(tutor_id);
     expect(res.body.course.price).toBe(200);
     expect(res.body.course.discount).toBe(null);
+    expect(res.body.course.number_of_students).toBe(0);
+    expect(res.body.course.languages).toBeInstanceOf(Array);
+    expect(res.body.course.subjects).toBeInstanceOf(Array);
   });
   it("Get course by unknown id", async () => {
     let res = await request(app).get(`/courses/12312321`);
@@ -325,16 +328,152 @@ describe("PATCH /courses/:id", () => {
   });
 });
 
+describe("POST /courses/:course_id/tutors/:tutor_id", () => {
+  it("Add tutor to course (invalid profit)", async () => {
+    const res = await tutor_agent
+      .post(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 1.1,
+      });
+
+    expect(res.statusCode).toBe(422);
+  });
+  it("Add tutor to course with no permission", async () => {
+    const res = await u_tutor_agent
+      .post(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 0.1,
+      });
+
+    expect(res.statusCode).toBe(401);
+  });
+  it("Add tutor to course by owner", async () => {
+    const res = await tutor_agent
+      .post(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 0.1,
+      });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.course_id).toBe(course_id);
+    expect(res.body.teach_course.tutor_id).toBe(u_tutor_id);
+    expect(res.body.teach_course.profit_rate).toBe(0.1);
+  });
+  it("Add tutor to course (duplicate)", async () => {
+    const res = await tutor_agent
+      .post(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 0.1,
+      });
+
+    expect(res.statusCode).toBe(409);
+  });
+  it("Add tutor to course by course admin", async () => {
+    const res = await course_admin_agent
+      .post(`/courses/${course_id}/tutors/${tutor_id}`)
+      .send({
+        profit_rate: 0.9,
+      });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.course_id).toBe(course_id);
+    expect(res.body.teach_course.tutor_id).toBe(tutor_id);
+    expect(res.body.teach_course.profit_rate).toBe(0.9);
+  });
+});
+describe("GET /courses/:course_id/tutors", () => {
+  it("Get tutor list of course", async () => {
+    const res = await request(app).get(`/courses/${course_id}/tutors/`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.tutor_list).toBeInstanceOf(Array);
+    expect(res.body.tutor_list.length).toBe(2);
+  });
+});
+describe("PATCH /courses/:course_id/tutors/:tutor_id", () => {
+  it("Update tutor profit rate by owner", async () => {
+    const res = await tutor_agent
+      .patch(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 0.2,
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.profit_rate).toBe(0.2);
+  });
+  it("Update tutor invalid profit rate by owner", async () => {
+    const res = await tutor_agent
+      .patch(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 1.2,
+      });
+
+    expect(res.statusCode).toBe(422);
+  });
+  it("Update tutor invalid profit rate by course admin", async () => {
+    const res = await course_admin_agent
+      .patch(`/courses/${course_id}/tutors/${u_tutor_id}`)
+      .send({
+        profit_rate: 0.9,
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.profit_rate).toBe(0.9);
+  });
+});
+
+describe("DELETE /courses/:course_id/tutors/:tutor_id", () => {
+  it("Delete tutor from course with no permission", async () => {
+    const res = await u_tutor_agent.delete(
+      `/courses/${course_id}/tutors/${tutor_id}`,
+    );
+
+    expect(res.statusCode).toBe(401);
+  });
+  it("Delete tutor from course by owner", async () => {
+    const res = await tutor_agent.delete(
+      `/courses/${course_id}/tutors/${u_tutor_id}`,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.course_id).toBe(course_id);
+    expect(res.body.teach_course.tutor_id).toBe(u_tutor_id);
+
+    const course_res = await request(app).get(`/courses/${course_id}/tutors`);
+    expect(course_res.body.tutor_list.length).toBe(1);
+  });
+  it("Delete tutor from course by course admin", async () => {
+    const res = await course_admin_agent.delete(
+      `/courses/${course_id}/tutors/${tutor_id}`,
+    );
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.teach_course).toBeDefined();
+    expect(res.body.teach_course.course_id).toBe(course_id);
+    expect(res.body.teach_course.tutor_id).toBe(tutor_id);
+  });
+  it("Delete unknown tutor from course", async () => {
+    const res = await course_admin_agent.delete(
+      `/courses/${course_id}/tutors/${tutor_id}`,
+    );
+
+    expect(res.statusCode).toBe(404);
+  });
+});
+
 describe("DELETE /courses/:id", () => {
   it("Delete course not by owner", async () => {
-    let res = await u_tutor_agent
-      .delete(`/courses/${course_id}`);
+    let res = await u_tutor_agent.delete(`/courses/${course_id}`);
 
     expect(res.statusCode).toBe(401);
   });
   it("Delete course by id", async () => {
-    let res = await tutor_agent
-      .delete(`/courses/${course_id}`);
+    let res = await tutor_agent.delete(`/courses/${course_id}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.courses[0].name).toBe("tutor_course");
@@ -346,8 +485,7 @@ describe("DELETE /courses/:id", () => {
     expect(res.body.courses[0].discount).toBe(0.2);
   });
   it("Delete course by unknown id", async () => {
-    let res = await course_admin_agent
-      .delete(`/courses/${tutor_id}`);
+    let res = await course_admin_agent.delete(`/courses/${tutor_id}`);
 
     expect(res.statusCode).toBe(404);
   });

@@ -92,6 +92,8 @@ const updateCourse = async (req, res) => {
   const data = matchedData(req);
   //if (req.file) data.profile_picture = req.file.path;
   
+  if (req.file) data.profile_picture = req.file.path;
+
   console.log(data);
 
   if (!Object.keys(data).length) {
@@ -207,8 +209,7 @@ const searchCourse = async (req, res) => {
     return;
   }
   const data = matchedData(req);
-  console.log(data)
-  console.log(req.params)
+
   try {
     const courses = await Course.search(data);
 
