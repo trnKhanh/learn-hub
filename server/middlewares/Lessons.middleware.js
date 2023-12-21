@@ -8,11 +8,6 @@ const validateLessonChangePermission = async (req, res, next) => {
   let course_id = req.course.id;
   let user_id = req.user.id;
 
-  console.log(">>> validateLessonChangePermission: ", {
-    course_id: course_id,
-    user_id: user_id,
-  });
-
   try {
     const teachCoursePromise = TeachCourse.findOne({
       tutor_id: user_id,
@@ -154,8 +149,8 @@ const validateLessonGetPermission = async (req, res, next) => {
     });
 
     if (admin || creator || tutor) {
-      next();
       req.validPublish = true;
+      next();
     } else if (isPublished && (learner || isFree)) {
       next();
     } else {

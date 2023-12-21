@@ -16,15 +16,48 @@ const {
   createLessonScheme,
   updateLessonScheme,
 } = require("../middlewares/validators/Lessons.validator");
-const Lesson = require("../models/Lessons.model");
+
+const path = require("path");
+const multer = require("multer");
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(
+      null,
+      `./uploads/courses/${req.params.course_id}/lessons/${req.params.lesson_id}/`,
+    );
+  },
+  filename: function (req, file, cb) {
+    cb(null, "video.mp4"); //Appending .jpg
+  },
+});
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if (ext !== ".mp4") {
+      callback(null, false);
+    } else {
+      callback(null, true);
+    }
+  },
+});
 
 // ----------------------------------------
 // get all lesson
 router.get("/", [getCourse], LessonsController.getAllPublishedLessons);
 
-router.get("/edit", [getCourse], LessonsController.getAllLessons);
+router.get(
+  "/edit",
+  [validateToken, getCourse, validateLessonChangePermission],
+  LessonsController.getAllLessons,
+);
 
 // get lesson by id
+router.get(
+  "/:lesson_id/video",
+  [validateToken, getCourse, validateLessonGetPermission],
+  LessonsController.streamVideo,
+);
 router.get(
   "/:lesson_id",
   [validateToken, getCourse, validateLessonGetPermission],
@@ -39,6 +72,7 @@ router.post(
     getCourse,
     validateLessonChangePermission,
     createLessonScheme,
+    upload.single("video"),
   ],
   LessonsController.create,
 );
@@ -51,6 +85,7 @@ router.patch(
     getCourse,
     validateLessonChangePermission,
     updateLessonScheme,
+    upload.single("video"),
   ],
   LessonsController.update,
 );

@@ -5,6 +5,8 @@ const Document = require("../models/Documents.model");
 const Lesson = require("../models/Lessons.model");
 // const LessonManager = require("../models/LessonManager.model");
 const Exam = require("../models/Exams.model");
+const fs = require("fs");
+const CHUNK_SIZE = 1024 * 1024;
 
 class LessonsController {
   static async create(req, res) {
@@ -16,6 +18,14 @@ class LessonsController {
 
     const data = matchedData(req);
     data.course_id = req.course.id;
+    if (req.file) {
+      data.videoUrl = req.file.path;
+    } else {
+      res.status(400).json({
+        message: "Must provide video of lesson",
+      });
+      return;
+    }
 
     try {
       // create Lesson Object by Class Lesson
@@ -140,12 +150,14 @@ class LessonsController {
     }
 
     const data = matchedData(req);
-
     if (!Object.keys(data).length) {
       res.status(400).json({
         message: "Must provide valid fields",
       });
       return;
+    }
+    if (req.file) {
+      data.videoUrl = req.file.path;
     }
 
     const lesson_id = req.params.lesson_id;
@@ -157,15 +169,6 @@ class LessonsController {
     try {
       // create Lesson Object by Class Lesson
       const lesson = new Lesson(data);
-
-      // console.log(`>>> LessonsController >> update >> lesson: `, lesson);
-
-      // if (await lesson.isExist()) {
-      //   res.status(409).json({
-      //     message: "Data is in use, Change another",
-      //   });
-      //   return;
-      // }
 
       // Update to Database
       const updated_lesson = await lesson.updateById(data);
@@ -224,6 +227,54 @@ class LessonsController {
       });
     }
   }
+
+  static streamVideo = async (req, res) => {
+    const range = req.headers.range;
+    if (!range) {
+      res.status(400).json({
+        message: "Stream video require range headers",
+      });
+      return;
+    }
+    if (!range.startsWith("bytes=")) {
+      res.status(400).json({
+        message: "Invalid range headers",
+      });
+      return;
+    }
+    try {
+      const videoPath = `./uploads/courses/${req.params.course_id}/lessons/${req.params.lesson_id}/video.mp4`;
+      const parts = range.substring("bytes=".length).split("-");
+      const start = parseInt(parts[0]);
+      const end = parts[1].length > 1 ? parseInt(parts[1]) : start + CHUNK_SIZE;
+      const contentLength = end - start + 1;
+      console.log(parts);
+
+      const videoSize = fs.statSync(videoPath).size;
+
+      const headers = {
+        "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": contentLength,
+        "Content-Type": "video/mp4",
+      };
+
+      res.writeHead(206, headers);
+      const videoStream = fs.createReadStream(videoPath, {
+        start,
+        end,
+      });
+
+      videoStream.pipe(res);
+    } catch (err) {
+      console.log(err);
+      if (err.code == "ENOENT") {
+        res.status(404).json({
+          message: "No file found with provided path",
+        });
+      }
+    }
+  };
 }
 
 module.exports = LessonsController;
