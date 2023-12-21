@@ -14,7 +14,7 @@ export const getAllCategories = async() => {
     }
 }
 
-export const getCategoriesOfCourseId = async (id: string) => {
+export const getCategoriesOfCourseId = async (id: string | undefined) => {
     try {
         const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
         const data: { message: string; subjects: Subject[] } = await res.json();

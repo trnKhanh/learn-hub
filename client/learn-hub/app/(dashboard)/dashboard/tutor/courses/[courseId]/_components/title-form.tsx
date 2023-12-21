@@ -50,12 +50,12 @@ export const TitleForm = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         //console.log(values);
-        const res = await updateCourse(course.id.toString(), values);
+        const res = await updateCourse(course?.id, values);
         if (res && res.status === 200) {
             setCourse(res.data.courses[0]);
             toast.success(res.data.message);
         } else {
-            toast.error(res.data.message);
+            toast.error("Something went wrong");
         }
         toggleEdit();
     }

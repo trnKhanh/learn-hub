@@ -4,8 +4,8 @@ import { getCourse } from "@/actions/courses";
 import { Dispatch, SetStateAction, createContext, useEffect, useState } from "react";
 
 interface EditContextProps {
-    course: Course,
-    setCourse: Dispatch<SetStateAction<Course>>,
+    course: Course | undefined,
+    setCourse: Dispatch<SetStateAction<Course | undefined>>,
 }
 
 export const EditContext = createContext<EditContextProps>({

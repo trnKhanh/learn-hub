@@ -26,7 +26,7 @@ export const ImageForm = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
-        const res = await updateCourse(course.id.toString(), values);
+        const res = await updateCourse(course?.id, values);
         if (res && res.status === 200) {
             setCourse(res.data.courses[0]);
             toast.success(res.data.message);
@@ -44,13 +44,13 @@ export const ImageForm = () => {
             {isEditing && (
                 <>Cancel</>
             )}
-            {!isEditing && !course.profile_picture && (
+            {!isEditing && !course?.profile_picture && (
                 <>
                 <PlusCircle className="h-4 w-4 mr-2" />
                 Add an image
                 </>
             )}
-            {!isEditing && course.profile_picture && (
+            {!isEditing && course?.profile_picture && (
                 <>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit image
@@ -59,7 +59,7 @@ export const ImageForm = () => {
             </Button>
         </div>
         {!isEditing && (
-            !course.profile_picture ? (
+            !course?.profile_picture ? (
             <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
                 <ImageIcon className="h-10 w-10 text-slate-500" />
             </div>

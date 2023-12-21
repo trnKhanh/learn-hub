@@ -20,6 +20,9 @@ type Lesson = {
   name: string;
   isPublished: boolean;
   isFree: boolean;
+  videoUrl: string;
+  assetId: string;
+  playbackId: string;
 }
 
 type LearnLesson = {
@@ -29,10 +32,10 @@ type LearnLesson = {
   finished_at: string;
 }
 
-type VideoData = {
-  assetId: string;
-  playbackId: string;
-};
+// type VideoData = {
+//   assetId: string;
+//   playbackId: string;
+// };
 
 type CourseDocument = {
   document_id: string;

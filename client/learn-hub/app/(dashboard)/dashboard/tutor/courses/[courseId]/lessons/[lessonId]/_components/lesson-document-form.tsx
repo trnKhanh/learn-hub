@@ -1,44 +1,40 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { Pencil, PlusCircle, ImageIcon, File, Loader2, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-//import { FileUpload } from "@/components/file-upload";
-
-interface DocumentFormProps {
-    //initialData: Course & { attachments: Attachment[] };
-    documents: CourseDocument[];
-    courseId: string;
-}
+import { FileUpload } from "@/components/file-upload";
+import { LessonEditContext } from "../lesson-provider";
+import { createDocument, deleteDocument } from "@/actions/documents";
 
 const formSchema = z.object({
     url: z.string().min(1),
 });
 
-export const AttachmentForm = ({
-    //initialData,
-    documents,
-    courseId
-}: DocumentFormProps) => {
+export const LessonDocumentForm = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
     const router = useRouter();
+    const {documents, setDocuments} = useContext(LessonEditContext)
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-        //await axios.post(`/api/courses/${courseId}/attachments`, values);
-            toast.success("Course updated");
-            toggleEdit();
-            router.refresh();
+            if (documents !== undefined) {
+                const res = await createDocument(documents[0].course_id, documents[0].lesson_id, values);
+                if (res && res.status == 200) {
+                    const newDocuments = documents;
+                    newDocuments.push(res.data.document);
+                    setDocuments(newDocuments);
+                    toast.success(res.data.message);
+                }
+            }
         } catch {
             toast.error("Something went wrong");
         }
@@ -47,9 +43,14 @@ export const AttachmentForm = ({
     const onDelete = async (id: string) => {
         try {
             setDeletingId(id);
-            //await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
-            toast.success("Attachment deleted");
-            router.refresh();
+            if (documents !== undefined) {
+                const res = await deleteDocument(documents[+id].course_id, documents[+id].lesson_id, documents[+id].document_id);
+                if (res && res.status == 200) {
+                    const newDocuments = documents.filter((document) => document.document_id !== id);
+                    setDocuments(newDocuments);
+                    toast.success("updated documents!");
+                }
+            }
         } catch {
             toast.error("Something went wrong");
         } finally {
@@ -75,12 +76,12 @@ export const AttachmentForm = ({
         </div>
         {!isEditing && (
             <>
-            {documents.length === 0 && (
+            {documents?.length === 0 && (
                 <p className="text-sm mt-2 text-slate-500 italic">
                 No attachments yet
                 </p>
             )}
-            {documents.length > 0 && (
+            {documents?.length !== undefined && documents.length > 0 && (
                 <div className="space-y-2">
                 {documents.map((document) => (
                     <div
@@ -112,14 +113,14 @@ export const AttachmentForm = ({
         )}
         {isEditing && (
             <div>
-            {/*<FileUpload
-                endpoint="courseAttachment"
-                onChange={(url) => {
-                if (url) {
-                    onSubmit({ url: url });
-                }
-                }}
-            />*/}
+                <FileUpload
+                    endpoint="courseAttachment"
+                    onChange={(url) => {
+                        if (url) {
+                            onSubmit({ url: url });
+                        }
+                    }}
+                />
             <div className="text-xs text-muted-foreground mt-4">
                 Add anything your students might need to complete the course.
             </div>

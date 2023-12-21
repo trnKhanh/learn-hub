@@ -5,7 +5,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -18,45 +18,40 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LessonEditContext } from "../lesson-provider";
+import { updateLesson } from "@/actions/lessons";
 
-interface ChapterTitleFormProps {
-    initialData: {
-        title: string;
-    };
-    courseId: string;
-    chapterId: string;
-}
 
 const formSchema = z.object({
     title: z.string().min(1),
 });
 
-export const ChapterTitleForm = ({
-    initialData,
-    courseId,
-    chapterId,
-}: ChapterTitleFormProps) => {
+export const LessonTitleForm = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
+    const {lesson, setLesson} = useContext(LessonEditContext);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData,
+        defaultValues: {
+            title: lesson?.name
+        },
     });
 
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
-        toast.success("Chapter updated");
-        toggleEdit();
-        router.refresh();
+            const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, values);
+            if (res && res.status == 200) {
+                setLesson(res.data.lesson);
+                toast.success(res.data.message);
+            }
+            toggleEdit();
         } catch {
-        toast.error("Something went wrong");
+            toast.error("Something went wrong");
         }
     }
 
@@ -77,7 +72,7 @@ export const ChapterTitleForm = ({
         </div>
         {!isEditing && (
             <p className="text-sm mt-2">
-            {initialData.title}
+            {lesson?.name}
             </p>
         )}
         {isEditing && (

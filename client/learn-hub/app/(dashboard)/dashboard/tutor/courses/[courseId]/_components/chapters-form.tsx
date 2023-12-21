@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
 import { EditContext } from "../edit-provider";
-import { getAllLessonsByCourseId } from "@/actions/courses";
+import { getAllLessonsOfCourseId } from "@/actions/lessons";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /*interface ChaptersFormProps {
@@ -54,7 +54,7 @@ export const ChaptersForm = () => {
 
     const [lessons, setLessons] = useState<Lesson[]>();
     useEffect(() => {
-        getAllLessonsByCourseId(course.id).then((res) => {
+        getAllLessonsOfCourseId(course?.id).then((res) => {
             if (res && res.status === 200) {
                 console.log(res.data.lessons);
                 setLessons(res.data.lessons);
@@ -62,7 +62,7 @@ export const ChaptersForm = () => {
     })}, [])
 
     if (!lessons) return (
-        <div className="items-center">
+        <div className="flex flex-row items-center justify-between">
             <Skeleton className="w-[100px] h-[20px] rounded-full" />
         </div>
     )
@@ -89,7 +89,7 @@ export const ChaptersForm = () => {
     }
 
     const onEdit = (id: string) => {
-        router.push(`/dashboard/teacher/my-courses/${course.id}/chapters/${id}`);
+        router.push(`/dashboard/tutor/courses/${course?.id}/lessons/${id}`);
     }
 
     return (

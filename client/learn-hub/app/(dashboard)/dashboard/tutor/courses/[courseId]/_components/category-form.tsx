@@ -41,7 +41,7 @@ export const CategoryForm = ({
     }]);
 
     useEffect(() => {
-        getCategoriesOfCourseId(course.id).then((res) => {
+        getCategoriesOfCourseId(course?.id).then((res) => {
             if (res && res.status === 200) {
                 setCategories(res.data.subjects);
             }
