@@ -1,73 +1,151 @@
+// models
+const LessonManager = require("./LessonManager.model");
 const sql = require("../database/db");
-const { formatFilters } = require("../utils/query.utils");
 
-class Document {
+class Documents {
   constructor(document) {
-    this.id = document.id;
-    this.name = document.name;
-    this.course_id = document.course_id;
-    this.lesson_id = document.lesson_id;
-    this.file_path = document.file_path;
+    this.course_id = document.course_id || null;
+    this.lesson_id = document.lesson_id || null;
+    this.name = document.name || null;
+    this.file_path = document.file_path || null;
+    this.id = document.id || null;
   }
 
-  static queryFields = `id, name, course_id, lesson_id, file_path`;
-
-  static getAll = async (course_id) => {
-    const [rows, fields] = await sql.query(
-      `SELECT ${Document.queryFields} FROM documents WHERE course_id=?`,
-      [course_id],
-    );
-    return rows;
-  };
-
-  static create = async (newDocument) => {
+  async create() {
     const con = await sql.getConnection();
+
     try {
       await con.beginTransaction();
-      const [res, _] = await con.query(
-        `INSERT INTO documents SET ?`,
-        newDocument,
-      );
-      const [rows, fields] = await con.query(
-        `SELECT ${Document.queryFields} FROM documents WHERE id=?`,
-        res.insertId,
+
+      this.getId();
+      const [res, _] = await sql.query(`INSERT INTO documents SET ?`, this);
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM documents WHERE id=?`,
+        [this.id]
       );
 
       await con.commit();
       sql.releaseConnection(con);
 
-      //console.log("Created lesson: ", { newLesson: rows[0], results: res });
+      if (res.affectedRows == 0) return null;
       return rows[0];
-    } catch (err) {
+    } catch (errors) {
       await con.rollback();
       sql.releaseConnection(con);
-      throw err;
-    }
-  };
 
-  static findOne = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Document.queryFields} FROM documents WHERE ${filterKeys}`,
-      filterValues,
-    );
-    if (rows.length) {
-      console.log("Found lesson: ", { filters: filters, results: rows[0] });
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  async getId() {
+    if (this.id) return this;
+
+    try {
+      const [rows, fields] = await sql.query(
+        `SELECT MAX(id) max_id FROM documents WHERE course_id=${this.course_id} AND lesson_id=${this.lesson_id}`
+      );
+
+      this.id = rows[0].max_id + 1;
+      return this;
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  static async getAll(document) {
+    try {
+      let lessonManager = new LessonManager(
+        document.course_id,
+        document.lesson_id
+      );
+      let documents = await lessonManager.findAllWithDocument();
+      return documents;
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  static async findOne(document) {
+    try {
+      let lessonManager = new LessonManager(
+        document.course_id,
+        document.lesson_id
+      );
+      let documents = await lessonManager.findAllWithDocument({
+        id: document.id,
+      });
+
+      if (!documents.length) {
+        return null;
+      }
+      return documents[0];
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  async updateById() {
+    const con = await sql.getConnection();
+
+    try {
+      await con.beginTransaction();
+
+      const [res, _] = await sql.query(`UPDATE documents SET ? WHERE id=?`, [
+        this,
+        this.id,
+      ]);
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM documents WHERE id=?`,
+        [this.id]
+      );
+
+      await con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
       return rows[0];
-    } else {
-      console.log("Found no lesson: ", { filters: filters });
-      return null;
-    }
-  };
+    } catch (errors) {
+      await con.rollback();
+      sql.releaseConnection(con);
 
-  static findAll = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Document.queryFields} FROM documents WHERE ${filterKeys}`,
-      filterValues,
-    );
-    return rows;
-  };
+      console.log(errors);
+      throw errors;
+    }
+  }
+
+  async deleteById() {
+    const con = await sql.getConnection();
+
+    console.log(">>> Documents.model > deleteById > this: ", this.id);
+    try {
+      await con.beginTransaction();
+
+      const [rows, fields] = await sql.query(
+        `SELECT * FROM documents WHERE id=?`,
+        [this.id]
+      );
+
+      const [res, _] = await sql.query(`DELETE FROM documents WHERE id=?`, [
+        this.id,
+      ]);
+
+      await con.commit();
+      sql.releaseConnection(con);
+
+      if (res.affectedRows == 0) return null;
+      return rows[0];
+    } catch (errors) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      console.log(errors);
+      throw errors;
+    }
+  }
 }
 
-module.exports = Document;
+module.exports = Documents;

@@ -10,6 +10,7 @@ const {
   validateLessonChangePermission,
   getCourse,
   validateLessonDeletePermission,
+  validateLessonGetPermission,
 } = require("../middlewares/Lessons.middleware");
 const {
   createLessonScheme,
@@ -19,13 +20,15 @@ const Lesson = require("../models/Lessons.model");
 
 // ----------------------------------------
 // get all lesson
-router.get("/", [getCourse], LessonsController.getAllLessons);
+router.get("/", [getCourse], LessonsController.getAllPublishedLessons);
 
 // get lesson by id
 router.get(
   "/:lesson_id",
+  validateToken,
   [getCourse],
-  LessonsController.getLessonWithDocumentAndExam
+  validateLessonGetPermission,
+  LessonsController.getLessonWithDocumentAndExamById
 );
 
 // create lesson

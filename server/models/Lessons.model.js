@@ -1,13 +1,17 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
-
+const { LessonManager } = require("./LessonManager.model");
 class Lesson {
   constructor(lesson) {
-    this.name = lesson.name;
-    this.id = lesson.id;
-    this.course_id = lesson.course_id;
-    this.isPublished = lesson.isPublished;
-    this.isFree = lesson.isFree;
+    this.id = lesson.id || null;
+    this.name = lesson.name || null;
+    this.course_id = lesson.course_id || null;
+    this.is_free =
+      lesson.is_free == true || lesson.is_free == "true" ? true : false;
+    this.is_published =
+      lesson.is_published == true || lesson.is_published == "true"
+        ? true
+        : false;
   }
 
   async getId() {
@@ -18,7 +22,7 @@ class Lesson {
       `SELECT MAX(id) max_id FROM lessons`,
     );
 
-    console.log("Found max id: ", { results: rows[0] });
+    // console.log("Found max id: ", { results: rows[0] });
 
     this.id = rows[0].max_id + 1;
 
@@ -26,15 +30,6 @@ class Lesson {
   }
 
   async create() {
-    // try {
-    //   const lessonManager = new LessonManager(this.course_id);
-    //   const lesson = lessonManager.create(this);
-    //   return lesson;
-    // } catch (err) {
-    //   console.log(err);
-    //   throw err;
-    // }
-
     const con = await sql.getConnection();
     try {
       await con.beginTransaction();
@@ -85,6 +80,15 @@ class Lesson {
         // console.log("Found no lesson: ", { lesson: this });
         return false;
       }
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+
+  async findOne(filters) {
+    try {
+      return await new LessonManager(this.course_id, this.id).findOne(filters);
     } catch (err) {
       console.log(err);
       throw err;

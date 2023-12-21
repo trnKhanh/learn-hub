@@ -65,18 +65,28 @@ class LessonManager {
 
     filters = { ...this.basic_filter, ...filters };
 
-    const { filterKeys, filterValues } = formatFilters(filters);
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
 
-    const [rows, fields] = await sql.query(
-      `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables}  WHERE ${filterKeys} ORDER BY ${LessonManager.LessonOrder}`,
-      filterValues,
-    );
+      const [rows, fields] = await sql.query(
+        `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables}  WHERE ${filterKeys} ORDER BY ${LessonManager.LessonOrder}`,
+        filterValues
+      );
 
-    return rows;
+      return rows;
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
   }
 
   async getAll() {
-    return await this.findAll({});
+    try {
+      return await this.findAll({});
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
+    }
   }
 
   async findOne(filters) {
@@ -84,46 +94,54 @@ class LessonManager {
 
     filters = { ...this.basic_filter, ...filters };
 
-    const { filterKeys, filterValues } = formatFilters(filters);
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
 
-    const [rows, fields] = await sql.query(
-      `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables} WHERE ${filterKeys} ${LessonManager.LessonOrder} LIMIT 1`,
-      filterValues,
-    );
+      const [rows, fields] = await sql.query(
+        `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables} WHERE ${filterKeys} ORDER BY ${LessonManager.LessonOrder} LIMIT 1`,
+        filterValues
+      );
 
-    if (rows.length) {
-      // console.log("Found lesson: ", { filters: filters, results: rows[0] });
-      return rows[0];
-    } else {
-      // console.log("Found no lesson: ", { filters: filters });
-      return null;
+      if (rows.length) {
+        // console.log("Found lesson: ", { filters: filters, results: rows[0] });
+        return rows[0];
+      } else {
+        // console.log("Found no lesson: ", { filters: filters });
+        return null;
+      }
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
     }
   }
 
   async findAllWithDocument(filters) {
     if (filters === null) filters = {};
+    let newFilters = {};
+    for (let key in filters) {
+      newFilters[`d.${key}`] = filters[key];
+    }
 
-    filters = { ...this.basic_filter, ...filters };
+    filters = { ...this.basic_filter, ...newFilters };
 
-    const { filterKeys, filterValues } = formatFilters(filters);
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
 
-    const Fields = `${LessonManager.LessonFields}, ${LessonManager.DocumentFields}`;
+      const Fields = `${LessonManager.LessonFields}, ${LessonManager.DocumentFields}`;
 
-    const Tables = `${LessonManager.LessonTables} LEFT JOIN ${LessonManager.DocumentTables} ON l.id = d.lesson_id and l.course_id = d.course_id`;
+      const Tables = `${LessonManager.LessonTables} LEFT JOIN ${LessonManager.DocumentTables} ON l.id = d.lesson_id and l.course_id = d.course_id`;
 
-    const Order = `${LessonManager.LessonOrder}, ${LessonManager.DocumentOrder}`;
+      const Order = `${LessonManager.LessonOrder}, ${LessonManager.DocumentOrder}`;
 
-    const [rows, fields] = await sql.query(
-      `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
-      filterValues,
-    );
+      const [rows, fields] = await sql.query(
+        `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
+        filterValues
+      );
 
-    if (rows.length) {
-      // console.log("Found lesson: ", { filters: filters, results: rows });
       return rows;
-    } else {
-      // console.log("Found no lesson: ", { filters: filters });
-      return null;
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
     }
   }
 
@@ -132,25 +150,30 @@ class LessonManager {
 
     filters = { ...this.basic_filter, ...filters };
 
-    const { filterKeys, filterValues } = formatFilters(filters);
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
 
-    const Fields = `${LessonManager.LessonFields}, ${LessonManager.ExamFields}`;
+      const Fields = `${LessonManager.LessonFields}, ${LessonManager.ExamFields}`;
 
-    const Tables = `${LessonManager.LessonTables} LEFT JOIN ${LessonManager.ExamTables} ON l.id = e.lesson_id and l.course_id = e.course_id`;
+      const Tables = `${LessonManager.LessonTables} LEFT JOIN ${LessonManager.ExamTables} ON l.id = e.lesson_id and l.course_id = e.course_id`;
 
-    const Order = `${LessonManager.LessonOrder}, ${LessonManager.ExamOrder}`;
+      const Order = `${LessonManager.LessonOrder}, ${LessonManager.ExamOrder}`;
 
-    const [rows, fields] = await sql.query(
-      `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
-      filterValues,
-    );
+      const [rows, fields] = await sql.query(
+        `SELECT ${Fields} FROM ${Tables} WHERE ${filterKeys} ORDER BY ${Order}`,
+        filterValues
+      );
 
-    if (rows.length) {
-      // console.log("Found lesson: ", { filters: filters, results: rows });
-      return rows;
-    } else {
-      // console.log("Found no lesson: ", { filters: filters });
-      return null;
+      if (rows.length) {
+        // console.log("Found lesson: ", { filters: filters, results: rows });
+        return rows;
+      } else {
+        // console.log("Found no lesson: ", { filters: filters });
+        return [];
+      }
+    } catch (errors) {
+      console.log(errors);
+      throw errors;
     }
   }
 }

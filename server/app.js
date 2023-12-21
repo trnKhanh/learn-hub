@@ -47,4 +47,7 @@ app.use("/courses/:course_id/lessons", lessonsRouter);
 const categoriesRouter = require("./routes/Subjects.route");
 app.use("/subjects", categoriesRouter);
 
+const documentRouter = require("./routes/Documents.route");
+app.use("/courses/:course_id/lessons/:lesson_id/documents", documentRouter);
+
 module.exports = app;
