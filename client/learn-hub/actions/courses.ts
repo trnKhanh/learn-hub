@@ -96,6 +96,7 @@ export const getLessons = async (course_id: string) => {
   try {
     const res = await fetch(
       `http://localhost:3001/courses/${course_id}/lessons`,
+      { credentials: "include" },
     );
     const data: { message: string; lessons: Lesson[] } = await res.json();
 
@@ -110,6 +111,7 @@ export const getDocuments = async (course_id: string, lesson_id: string) => {
   try {
     const res = await fetch(
       `http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/documents`,
+      { credentials: "include" },
     );
     const data: { message: string; documents: CourseDocument[] } =
       await res.json();

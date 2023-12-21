@@ -1,6 +1,7 @@
-const sql = require("../database/db");
-const { formatFilters } = require("../utils/query.utils");
-const LessonManager = require("./LessonManager.model");
+const sql = require("../database/db.js");
+const LessonManager = require("./LessonManager.model.js");
+const { formatFilters } = require("../utils/query.utils.js");
+
 class Lesson {
   constructor(lesson) {
     this.id = lesson.id || null;
@@ -23,30 +24,26 @@ class Lesson {
   }
 
   async findAll(filters = {}) {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
-      const [rows] = await sql.query(
-        `SELECT * FROM lessons WHERE ${filterKeys}`,
-        filterValues,
-      );
-      return rows;
-    } catch (err) {
-      // console.log(err);
-      throw err;
-    }
+    const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
+    const [rows, fields] = await sql.query(
+      `SELECT * FROM lessons WHERE ${filterKeys}`,
+      filterValues,
+    );
+    return rows;
   }
 
   async getId() {
     if (this.id) return this;
 
+    const { filterKeys, filterValues } = formatFilters(this.basic_filters);
+
     // find the max id in table
     const [rows, fields] = await sql.query(
-      `SELECT MAX(id) max_id FROM lessons`,
+      `SELECT MAX(id) max_id FROM lessons WHERE ${filterKeys}`,
+      filterValues,
     );
 
-    // console.log("Found max id: ", { results: rows[0] });
-
+    if (!rows[0].max_id) rows[0].max_id = 0;
     this.id = rows[0].max_id + 1;
 
     return this;
@@ -59,18 +56,24 @@ class Lesson {
 
       await this.getId();
 
-      console.log(">>> LessonManager >> create >> newLesson: ", this);
+      // console.log(">>> LessonManager >> create >> newLesson: ", this);
 
-      const [res, _] = await sql.query(`INSERT INTO lessons SET ?`, this);
-      const [rows, fields] = await sql.query(
-        `SELECT * FROM lessons WHERE id=?`,
-        [this.id],
+      const [res, _] = await con.query(`INSERT INTO lessons SET ?`, this);
+
+      const filter = this.basic_filters;
+      filter.id = this.id;
+      const { filterKeys, filterValues } = formatFilters(filter);
+
+      const [rows, fields] = await con.query(
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues,
       );
 
       await con.commit();
       sql.releaseConnection(con);
 
       if (res.affectedRows == 0) return null;
+      console.log("Created lesson: ", { newLesson: rows[0], results: res });
       return rows[0];
     } catch (err) {
       await con.rollback();
@@ -80,56 +83,67 @@ class Lesson {
       throw err;
     }
   }
+  // async isExist() {
+  //   const filters = {
+  //     name: this.name,
+  //     course_id: this.course_id,
+  //   };
 
-  async isExist() {
-    const filters = {
-      name: this.name,
-      course_id: this.course_id,
-    };
+  //   try {
+  //     const { filterKeys, filterValues } = formatFilters(filters);
+  //     const [rows, fields] = await sql.query(
+  //       `SELECT * FROM lessons WHERE ${filterKeys}`,
+  //       filterValues
+  //     );
 
+  //     if (rows.length) {
+  //       console.log(" >>> Lessons.models > isExist > Found lesson: ", {
+  //         lesson: this,
+  //       });
+  //       return true;
+  //     } else {
+  //       // console.log("Found no lesson: ", { lesson: this });
+  //       return false;
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     throw err;
+  //   }
+  // }
+
+  async findOne(filters) {
     try {
-      const { filterKeys, filterValues } = formatFilters(filters);
+      const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM lessons WHERE ${filterKeys}`,
         filterValues,
       );
 
-      if (rows.length) {
-        console.log(" >>> Lessons.models > isExist > Found lesson: ", {
-          lesson: this,
-        });
-        return true;
-      } else {
-        // console.log("Found no lesson: ", { lesson: this });
-        return false;
-      }
+      if (rows.length) return rows[0];
+      else return null;
     } catch (err) {
       console.log(err);
       throw err;
     }
   }
 
-  async findOne(filters) {
-    try {
-      return await new LessonManager(this.course_id, this.id).findOne(filters);
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  }
-
-  async update() {
+  async updateById(newData) {
     const con = await sql.getConnection();
     try {
       await con.beginTransaction();
 
-      const [res, _] = await sql.query(`UPDATE lessons SET ? WHERE id=?`, [
-        this,
-        this.id,
-      ]);
-      const [rows, fields] = await sql.query(
-        `SELECT * FROM lessons WHERE id=?`,
-        [this.id],
+      const filters = this.basic_filters;
+      filters.id = this.id;
+
+      const { filterKeys, filterValues } = formatFilters(filters);
+
+      const [res, _] = await con.query(
+        `UPDATE lessons SET ? WHERE ${filterKeys}`,
+        [newData, ...filterValues],
+      );
+      const [rows, fields] = await con.query(
+        `SELECT * FROM lessons WHERE ${filterKeys}`,
+        filterValues,
       );
 
       await con.commit();
@@ -147,8 +161,10 @@ class Lesson {
     }
   }
 
-  static async deleteById(filter) {
-    const { filterKeys, filterValues } = formatFilters(filter);
+  async deleteById() {
+    const filters = this.basic_filters;
+    filters.id = this.id;
+    const { filterKeys, filterValues } = formatFilters(filters);
 
     const con = await sql.getConnection();
     try {

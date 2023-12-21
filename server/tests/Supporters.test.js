@@ -4,7 +4,7 @@ const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
-let user_id;
+let user_id, username;
 let admin_id;
 let supporter_admin_id;
 
@@ -25,6 +25,7 @@ beforeAll(async () => {
       .set("Accept", "application/json");
     expect(res.body.user_id).toBeDefined();
     user_id = res.body.user_id;
+    username = "test";
   } catch (err) {
     console.log(err);
   }
@@ -95,7 +96,7 @@ describe("POST /supporters", () => {
     let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "ABC",
       })
       .set("Content-Type", "application/json")
@@ -107,7 +108,7 @@ describe("POST /supporters", () => {
     let res = await admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
@@ -119,7 +120,7 @@ describe("POST /supporters", () => {
     let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
@@ -132,7 +133,7 @@ describe("POST /supporters", () => {
     let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
@@ -154,8 +155,7 @@ describe("GET /supporters/:id", () => {
     expect(res.statusCode).toBe(404);
   });
   it("Get supporter by id", async () => {
-    let res = await supporter_admin_agent
-      .get(`/supporters/${user_id}`);
+    let res = await supporter_admin_agent.get(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.supporter.role).toBe("SOCIAL");
@@ -178,39 +178,31 @@ describe("GET /supporters", () => {
 
 describe("PATCH /supporters/:id", () => {
   it("Update supporter by id", async () => {
-    let res = await supporter_admin_agent
-      .patch(`/supporters/${user_id}`)
-      .send({
-        role: "TECHNICAL",
-      })
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      role: "TECHNICAL",
+    });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.supporters[0].role).toBe("TECHNICAL");
   });
   it("Update supporter with invalid fields", async () => {
-    let res = await supporter_admin_agent
-      .patch(`/supporters/${user_id}`)
-      .send({
-        abc: 0,
-      })
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      abc: 0,
+    });
 
     expect(res.statusCode).toBe(400);
   });
   it("Update supporter by unknown id", async () => {
-    let res = await supporter_admin_agent
-      .patch(`/supporters/11111123`)
-      .send({
-        role: "TECHNICAL",
-      })
+    let res = await supporter_admin_agent.patch(`/supporters/11111123`).send({
+      role: "TECHNICAL",
+    });
 
     expect(res.statusCode).toBe(404);
   });
   it("Update supporter to unknown role", async () => {
-    let res = await supporter_admin_agent
-      .patch(`/supporters/${user_id}`)
-      .send({
-        role: "FREE",
-      })
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      role: "FREE",
+    });
 
     expect(res.statusCode).toBe(422);
   });
@@ -218,20 +210,17 @@ describe("PATCH /supporters/:id", () => {
 
 describe("DELETE /supporters/:id", () => {
   it("Delete supporter not by supporter_admin", async () => {
-    let res = await user_agent
-      .delete(`/supporters/${user_id}`)
+    let res = await user_agent.delete(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(401);
   });
   it("Delete supporter by id", async () => {
-    let res = await supporter_admin_agent
-      .delete(`/supporters/${user_id}`)
+    let res = await supporter_admin_agent.delete(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(200);
   });
   it("Delete supporter by unknown id", async () => {
-    let res = await supporter_admin_agent
-      .delete(`/supporters/${user_id}`)
+    let res = await supporter_admin_agent.delete(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(404);
   });

@@ -83,4 +83,7 @@ router.use("/:course_id/financialAids/", financialAidsRouter);
 const teachCoursesRouter = require("./TeachCourses.route");
 router.use("/:course_id/tutors/", teachCoursesRouter);
 
+const lessonsRouter = require("./Lessons.route");
+router.use("/:course_id/lessons/", lessonsRouter);
+
 module.exports = router;

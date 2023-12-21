@@ -133,7 +133,7 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
               if (res) {
                 if (res.status == 201) {
                   toast.success(res.data.message);
-                } 
+                }
                 router.push("/courses/payment");
               }
             }}

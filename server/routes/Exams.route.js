@@ -30,19 +30,19 @@ router.post(
     validateLessonChangePermission,
     createExamsScheme,
   ],
-  ExamsController.create
+  ExamsController.create,
 );
 
 router.get(
   "/",
   [validateToken, getCourse, getLesson, validateLessonGetPermission],
-  ExamsController.getAll
+  ExamsController.getAll,
 );
 
 router.get(
   "/:exam_id",
   [validateToken, getCourse, getLesson, validateLessonGetPermission],
-  ExamsController.getExamById
+  ExamsController.getExamById,
 );
 
 router.patch(
@@ -54,11 +54,13 @@ router.patch(
     validateLessonChangePermission,
     updateExamsScheme,
   ],
-  ExamsController.update
+  ExamsController.update,
 );
 
 router.delete(
   "/:exam_id",
   [validateToken, getCourse, getLesson, validateLessonDeletePermission],
-  ExamsController.delete
+  ExamsController.delete,
 );
+
+module.exports = router;

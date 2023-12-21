@@ -43,7 +43,7 @@ class Documents {
 
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        { filterValues }
+        { filterValues },
       );
 
       await con.commit();
@@ -67,7 +67,7 @@ class Documents {
       const { filterKeys, filterValues } = this.getFiltersAfterFormat({});
       const [rows, fields] = await sql.query(
         `SELECT MAX(id) max_id FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       if (!rows[0].max_id) rows[0].max_id = 0;
@@ -85,7 +85,7 @@ class Documents {
       const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
       return rows;
     } catch (errors) {
@@ -101,7 +101,7 @@ class Documents {
   //       document.lesson_id
   //     );
   //     let documents = await lessonManager.findAllWithDocument({
-  //       "l.is_published": true,
+  //       "l.isPublished": true,
   //     });
   //     return documents;
   //   } catch (errors) {
@@ -131,7 +131,7 @@ class Documents {
 
       const [rows, fields] = await sql.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       if (!rows.length) return null;
@@ -154,11 +154,11 @@ class Documents {
 
       const [res, _] = await con.query(
         `UPDATE documents SET ? WHERE ${filterKeys}`,
-        [newData, ...filterValues]
+        [newData, ...filterValues],
       );
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();
@@ -188,12 +188,12 @@ class Documents {
 
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       const [res, _] = await con.query(
         `DELETE FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();

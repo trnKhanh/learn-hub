@@ -96,12 +96,6 @@ export function CourseSection({ course, review }: CourseSectionProps) {
                       <div className="text-sm text-gray-500">
                         {lessons.length} lessons
                       </div>
-                      <div className="flex flex-row items-center space-x-1">
-                        <Video className="h-5 w-5" />
-                        <div className="text-sm text-gray-500">
-                          {lessons.length} documents
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -112,7 +106,7 @@ export function CourseSection({ course, review }: CourseSectionProps) {
               <Accordion type="single" collapsible className="w-full">
                 {lessons.map((lesson, index) => (
                   <LessonItem
-                    key={lesson.lesson_id}
+                    key={lesson.id}
                     lesson={lesson}
                     index={index}
                   />

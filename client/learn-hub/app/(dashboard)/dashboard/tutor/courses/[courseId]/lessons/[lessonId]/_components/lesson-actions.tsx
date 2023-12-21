@@ -21,7 +21,7 @@ export const LessonActions = ({disabled}: {disabled : boolean}) => {
             setIsLoading(true);
 
             if (lesson?.isPublished) {
-                const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, {isPublished: false});
+                const res = await updateLesson(lesson?.course_id, lesson?.id, {isPublished: false});
                 if (res && res.status === 200) {
                     toast.success(res.data.message);
                     const newLesson = lesson;
@@ -34,7 +34,7 @@ export const LessonActions = ({disabled}: {disabled : boolean}) => {
                     toast.error("Something went wrong");
                 }
             } else {
-                const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, {isPublished: true});
+                const res = await updateLesson(lesson?.course_id, lesson?.id, {isPublished: true});
                 if (res && res.status === 200) {
                     toast.success(res.data.message);
                     const newLesson = lesson;
@@ -58,7 +58,7 @@ export const LessonActions = ({disabled}: {disabled : boolean}) => {
         try {
             setIsLoading(true);
 
-            const res = await deleteLesson(lesson?.course_id, lesson?.lesson_id);
+            const res = await deleteLesson(lesson?.course_id, lesson?.id);
             if (res && res.status === 200) {
                 toast.success(res.data.message);
             } else {

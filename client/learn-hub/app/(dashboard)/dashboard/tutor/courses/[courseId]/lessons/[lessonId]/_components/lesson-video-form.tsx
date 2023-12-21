@@ -26,7 +26,7 @@ export const LessonVideoForm = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             if (lesson !== undefined) {
-                const res = await uploadVideo(values.videoUrl, lesson?.course_id, lesson?.lesson_id, lesson?.assetId);
+                const res = await uploadVideo(values.videoUrl, lesson?.course_id, lesson?.id, lesson?.assetId);
                 if (res && res.status) {
                     toast.success(res.data.message);
                     setLesson(res.data.lesson);

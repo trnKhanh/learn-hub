@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useState, useContext } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 import {
     Form,
@@ -45,7 +44,7 @@ export const LessonDescriptionForm = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, values);
+            const res = await updateLesson(lesson?.course_id, lesson?.id, values);
             if (res && res.status === 200) {
                 setLesson(res.data.lesson);
                 toast.success("Chapter updated");

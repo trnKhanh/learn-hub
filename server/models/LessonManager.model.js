@@ -4,10 +4,10 @@ const { formatFilters } = require("../utils/query.utils");
 
 class LessonManager {
   /**
-     * LessonManager sẽ có 2 chức năng
-        1. basic: Cho Course_id => Tìm tất cả các lesson của course đó
-        2. advance: Cho Course_id và Lesson_id => Tìm document, exam của lesson đó
-    */
+   * LessonManager sẽ có 2 chức năng
+      1. basic: Cho Course_id => Tìm tất cả các lesson của course đó
+      2. advance: Cho Course_id và Lesson_id => Tìm document, exam của lesson đó
+   */
 
   constructor(course_id, lesson_id) {
     this.course_id = course_id || null;
@@ -42,7 +42,7 @@ class LessonManager {
       const [res, _] = await con.query(`INSERT INTO lessons SET ?`, newLesson);
       const [rows, fields] = await con.query(
         `SELECT ${LessonManager.LessonFields} FROM ${LessonManager.LessonTables} WHERE id=?`,
-        [newLesson.id],
+        [newLesson.id]
       );
 
       await con.commit();

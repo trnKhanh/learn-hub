@@ -9,12 +9,12 @@ const createLessonScheme = [
     .notEmpty()
     .withMessage("Name must be not empty"),
 
-  body("is_free").optional().isBoolean().withMessage("is_free must be boolean"),
+  body("isFree").optional().isBoolean().withMessage("isFree must be boolean"),
 
-  body("is_published")
+  body("isPublished")
     .optional()
     .isBoolean()
-    .withMessage("is_published must be boolean"),
+    .withMessage("isPublished must be boolean"),
 ];
 
 const updateLessonScheme = [
@@ -24,11 +24,11 @@ const updateLessonScheme = [
     .notEmpty()
     .withMessage("Name must be not empty"),
 
-  body("is_free").optional().isBoolean().withMessage("is_free must be boolean"),
+  body("isFree").optional().isBoolean().withMessage("isFree must be boolean"),
 
-  body("is_published")
+  body("isPublished")
     .optional()
     .isBoolean()
-    .withMessage("is_published must be boolean"),
+    .withMessage("isPublished must be boolean"),
 ];
 module.exports = { createLessonScheme, updateLessonScheme };

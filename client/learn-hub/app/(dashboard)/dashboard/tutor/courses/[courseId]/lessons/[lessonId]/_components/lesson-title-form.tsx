@@ -1,13 +1,11 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useState, useContext } from "react";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 import {
     Form,
@@ -23,7 +21,7 @@ import { updateLesson } from "@/actions/lessons";
 
 
 const formSchema = z.object({
-    title: z.string().min(1),
+    name: z.string().min(1),
 });
 
 export const LessonTitleForm = () => {
@@ -36,7 +34,7 @@ export const LessonTitleForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: lesson?.name
+            name: lesson?.name
         },
     });
 
@@ -44,10 +42,15 @@ export const LessonTitleForm = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, values);
-            if (res && res.status == 200) {
+            console.log("hello edit title lesson");
+            const res = await updateLesson(lesson?.course_id, lesson?.id, values);
+            if (res) {
+                if (res.status === 200) {
                 setLesson(res.data.lesson);
                 toast.success(res.data.message);
+                } else {
+                    toast.error(res.data.message);
+                }
             }
             toggleEdit();
         } catch {
@@ -83,7 +86,7 @@ export const LessonTitleForm = () => {
             >
                 <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                     <FormItem>
                     <FormControl>

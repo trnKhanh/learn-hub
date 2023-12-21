@@ -40,7 +40,7 @@ class TeachCourse {
       const { filterKeys, filterValues } = formatFilters(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM teach_courses WHERE ${filterKeys}`,
-        filterValues,
+        filterValues
       );
       return rows;
     } catch (err) {
@@ -99,7 +99,7 @@ class TeachCourse {
   }
 
   static async updateAll(filters, columns) {
-    const { filterKeys, filterValues } = formatFilters(filters);
+    const [filterKeys, filterValues] = formatFilters(filters);
 
     let con = await sql.getConnection();
     try {
@@ -160,7 +160,7 @@ class TeachCourse {
   }
 
   static async deleteAll(filters) {
-    const { filterKeys, filterValues } = formatFilters(filters);
+    const [filterKeys, filterValues] = formatFilters(filters);
 
     let con = await sql.getConnection();
     try {

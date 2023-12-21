@@ -126,22 +126,22 @@ const validateLessonGetPermission = async (req, res, next) => {
       course_id: course_id,
     });
 
-    const is_free_promise = new Lesson({
+    const isFree_promise = new Lesson({
       course_id: course_id,
-    }).findOne({ is_free: 1, id: lesson_id });
+    }).findOne({ isFree: 1, id: lesson_id });
 
-    const is_published_promise = new Lesson({
+    const isPublished_promise = new Lesson({
       course_id: course_id,
-    }).findOne({ is_published: 1, id: lesson_id });
+    }).findOne({ isPublished: 1, id: lesson_id });
 
-    const [admin, creator, tutor, learner, is_free, is_published] =
+    const [admin, creator, tutor, learner, isFree, isPublished] =
       await Promise.all([
         admin_promise,
         creator_promise,
         tutor_promise,
         learner_promise,
-        is_free_promise,
-        is_published_promise,
+        isFree_promise,
+        isPublished_promise,
       ]);
 
     console.log(">>> validateLessonGetPermission: ", {
@@ -149,14 +149,14 @@ const validateLessonGetPermission = async (req, res, next) => {
       creator: creator,
       tutor: tutor,
       learner: learner,
-      is_free: is_free,
-      is_published: is_published,
+      isFree: isFree,
+      isPublished: isPublished,
     });
 
     if (admin || creator || tutor) {
       next();
       req.validPublish = true;
-    } else if (is_published && (learner || is_free)) {
+    } else if (isPublished && (learner || isFree)) {
       next();
     } else {
       res.status(403).json({

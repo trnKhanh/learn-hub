@@ -3,9 +3,6 @@ const Lesson = require("../models/Lessons.model");
 
 const getLesson = async (req, res, next) => {
   const lesson_id = req.params.lesson_id;
-  console.log(" >>> Documents.middleware > getLesson > lesson_id: ", {
-    lesson_id,
-  });
   const course_id = req.params.course_id;
 
   try {

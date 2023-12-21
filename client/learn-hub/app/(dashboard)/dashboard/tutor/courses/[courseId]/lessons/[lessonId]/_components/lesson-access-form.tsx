@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { useState, useContext } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import {
@@ -44,7 +44,7 @@ export const LessonAccessForm = () => {
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        const res = await updateLesson(lesson?.course_id, lesson?.lesson_id, values);
+        const res = await updateLesson(lesson?.course_id, lesson?.id, values);
         if (res && res.status === 200) {
             toast.success(res.data.message);
             setLesson(res.data.lesson)

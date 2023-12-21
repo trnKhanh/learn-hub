@@ -27,6 +27,7 @@ export const getOneLessonOfCourseId = async (course_id: string | undefined, less
 }
 
 export const updateLesson = async (course_id: string | undefined, lesson_id: string | undefined, attribute: any) => {
+    console.log(attribute);
     try {
         const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons/${lesson_id}`, {
             credentials: "include",

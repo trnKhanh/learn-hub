@@ -70,7 +70,7 @@ class ExamsController {
       const exams = await new Exam({
         course_id: course_id,
         lesson_id: lesson_id,
-      }).findAll(!validPublished ? { "l.is_published": 1 } : {});
+      }).findAll(!validPublished ? { "l.isPublished": 1 } : {});
       res.status(200).json({
         message: "Retrieve all exams' information successfully",
         exams: exams,
