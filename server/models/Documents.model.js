@@ -43,50 +43,12 @@ class Documents {
 
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        { filterValues }
->>>>>>> origin/Phatt/exam
+        { filterValues },
       );
 
       await con.commit();
       sql.releaseConnection(con);
 
-<<<<<<< HEAD
-      //console.log("Created lesson: ", { newLesson: rows[0], results: res });
-      return rows[0];
-    } catch (err) {
-      await con.rollback();
-      sql.releaseConnection(con);
-      throw err;
-    }
-  };
-
-  static findOne = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Document.queryFields} FROM documents WHERE ${filterKeys}`,
-      filterValues,
-    );
-    if (rows.length) {
-      console.log("Found lesson: ", { filters: filters, results: rows[0] });
-      return rows[0];
-    } else {
-      console.log("Found no lesson: ", { filters: filters });
-      return null;
-    }
-  };
-
-  static findAll = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Document.queryFields} FROM documents WHERE ${filterKeys}`,
-      filterValues,
-    );
-    return rows;
-  };
-}
-
-module.exports = Document;
-=======
       if (res.affectedRows == 0) return null;
       return rows[0];
     } catch (errors) {
@@ -105,7 +67,7 @@ module.exports = Document;
       const { filterKeys, filterValues } = this.getFiltersAfterFormat({});
       const [rows, fields] = await sql.query(
         `SELECT MAX(id) max_id FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       if (!rows[0].max_id) rows[0].max_id = 0;
@@ -123,7 +85,7 @@ module.exports = Document;
       const { filterKeys, filterValues } = this.getFiltersAfterFormat(filters);
       const [rows, fields] = await sql.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
       return rows;
     } catch (errors) {
@@ -169,7 +131,7 @@ module.exports = Document;
 
       const [rows, fields] = await sql.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       if (!rows.length) return null;
@@ -192,11 +154,11 @@ module.exports = Document;
 
       const [res, _] = await con.query(
         `UPDATE documents SET ? WHERE ${filterKeys}`,
-        [newData, ...filterValues]
+        [newData, ...filterValues],
       );
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();
@@ -226,12 +188,12 @@ module.exports = Document;
 
       const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       const [res, _] = await con.query(
         `DELETE FROM documents WHERE ${filterKeys}`,
-        filterValues
+        filterValues,
       );
 
       await con.commit();
