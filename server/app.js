@@ -45,4 +45,7 @@ app.use("/notifications" , notificationsRouter);
 const subjectsRouter = require("./routes/Subjects.route");
 app.use("/subjects" , subjectsRouter);
 
+const notesRouter = require("./routes/Notes.route");
+app.use("/notes" , notesRouter);
+
 module.exports = app;

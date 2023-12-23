@@ -49,7 +49,7 @@ beforeAll(async () => {
     expect(admin_id).toBeDefined();
 });
   
-  afterAll(async () => {
+afterAll(async () => {
     try {
         await sql.query("DELETE FROM users WHERE username=?", ["hmduc"]);
     }

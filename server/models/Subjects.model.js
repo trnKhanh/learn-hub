@@ -113,7 +113,7 @@ class Subject {
                 results: res,
             });
 
-            con.commit();
+            await con.commit();
             sql.releaseConnection(con);
             if(res.affectedRows == 0) return null;
             else return rows;
@@ -162,6 +162,6 @@ class Subject {
             throw err;
         }
     };
-}
+};
 
 module.exports = Subject;

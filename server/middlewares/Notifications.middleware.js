@@ -17,6 +17,6 @@ const validateNotificationAccessPermission = async (req, res, next) => {
       message: "Errors occur when validating update notification permission",
     });
   }
-}
+};
 
 module.exports = { validateNotificationAccessPermission };
