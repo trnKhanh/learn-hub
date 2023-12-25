@@ -22,6 +22,7 @@ router.use("/payments", paymentsRouter);
 
 router.get("/", usersController.getAllUsers);
 
+router.get("/mine", [validateToken],usersController.getUser);
 router.get("/:id", usersController.getUser);
 
 router.patch(

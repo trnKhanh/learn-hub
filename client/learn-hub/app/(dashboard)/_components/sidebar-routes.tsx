@@ -1,16 +1,34 @@
 "use client";
 
-import { BarChart, CalendarCheck, Layout, List, Heart, FolderOpenDot, ShoppingCart, UserRoundCog } from "lucide-react";
+import {
+  BarChart,
+  CalendarCheck,
+  Layout,
+  List,
+  Heart,
+  FolderOpenDot,
+  ShoppingCart,
+  UserRoundCog,
+  BookUser,
+  User,
+  UserCog,
+  Shield,
+  FolderPlus,
+  Cog,
+  Cross,
+} from "lucide-react";
+
 import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
+import { useEffect, useState } from "react";
 
 const guestRoutes = [
-  {
-    icon: Layout,
-    label: "Dashboard",
-    href: "/dashboard",
-  },
+  // {
+  //   icon: Layout,
+  //   label: "Dashboard",
+  //   href: "/dashboard",
+  // },
   {
     icon: FolderOpenDot,
     label: "My Courses",
@@ -19,44 +37,99 @@ const guestRoutes = [
   {
     icon: Heart,
     label: "Favorites",
-    href: "/search",
+    href: "/dashboard/favorites",
   },
   {
     icon: ShoppingCart,
     label: "Cart",
-    href: "/search",
+    href: "/dashboard/shopping-cart",
   },
   {
     icon: CalendarCheck,
     label: "Schedule",
-    href: "/search",
+    href: "/dashboard/schedule",
   },
   {
     icon: UserRoundCog,
-    label: "Edit Profile",
-    href: "/dashboard/edit-profile",
-  }
+    label: "Profile",
+    href: "/dashboard/profile",
+  },
+  {
+    icon: Cross,
+    label: "Support",
+    href: "/dashboard/support",
+  },
 ];
 
 const teacherRoutes = [
   {
-    icon: List,
-    label: "Courses",
-    href: "/teacher/courses",
+    icon: Layout,
+    label: "Dashboard",
+    href: "/dashboard",
   },
   {
-    icon: BarChart,
-    label: "Analytics",
-    href: "/teacher/analytics",
+    icon: FolderPlus,
+    label: "Create new course",
+    href: "/dashboard/teacher/create-course",
   },
-]
+  {
+    icon: FolderOpenDot,
+    label: "My Courses",
+    href: "/dashboard/teacher/my-courses",
+  },
+];
 
-export const SidebarRoutes = () => {
+const adminRoutes = [
+  {
+    icon: List,
+    label: "Courses",
+    href: "/dashboard/admin/courses",
+  },
+  {
+    icon: BookUser,
+    label: "Tutors",
+    href: "/dashboard/admin/tutors",
+  },
+  {
+    icon: User,
+    label: "Students",
+    href: "/dashboard/admin/students",
+  },
+  {
+    icon: UserCog,
+    label: "Supporters",
+    href: "/dashboard/admin/supporters",
+  },
+  {
+    icon: Shield,
+    label: "Admins",
+    href: "/dashboard/admin/admins",
+  },
+];
+
+export const SidebarRoutes = ({ role }: { role?: string }) => {
+  const [routes, setRoutes] = useState(guestRoutes);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isTutor, setIsTutor] = useState(false);
   const pathname = usePathname();
 
-  const isTeacherPage = pathname?.includes("/teacher");
+  useEffect(() => {
+    console.log(role);
+    if (role === undefined) {
+      const isAdmin = localStorage.getItem("is_admin");
+      if (isAdmin == "1") {
+        setIsAdmin(true);
+      }
+      const isTutor = localStorage.getItem("is_tutor");
+      if (isTutor == "1") {
+        setIsTutor(true);
+      }
+    }
 
-  const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+    if (role == "admin") {
+      setRoutes(adminRoutes);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -68,6 +141,22 @@ export const SidebarRoutes = () => {
           href={route.href}
         />
       ))}
+      {isAdmin && (
+        <SidebarItem
+          key={"/dashboard/admin"}
+          icon={Shield}
+          label={"Admin"}
+          href={"/dashboard/admin"}
+        />
+      )}
+      {isTutor && (
+        <SidebarItem
+          key={"/dashboard/tutor"}
+          icon={BookUser}
+          label={"Tutor Verification"}
+          href={"/dashboard/tutor/verification"}
+        />
+      )}
     </div>
-  )
-}
+  );
+};

@@ -4,16 +4,17 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class Course {
   constructor(course) {
-    this.name = course.name || null;
-    this.description = course.description || null;
-    this.difficulty = course.difficulty || null;
-    this.duration = course.duration || null;
-    this.owner_id = course.owner_id || null;
-    this.price = course.price || null;
-    this.profile_picture = course.profile_picture || null;
-    this.discount = course.discount || null;
+    this.name = course.name;
+    this.description = course.description;
+    this.difficulty = course.difficulty;
+    this.duration = course.duration;
+    this.owner_id = course.owner_id;
+    this.price = course.price;
+    this.profile_picture = course.profile_picture;
+    this.discount = course.discount;
+    this.isPublished = course.isPublished || 0;
   }
-  static queryFields = `id, name, description, difficulty, duration, owner_id, price, profile_picture, discount`;
+  static queryFields = `id, name, description, difficulty, duration, owner_id, price, profile_picture, discount, isPublished`;
 
   // Create new Course
   static create = async (newCourse) => {
@@ -41,29 +42,106 @@ class Course {
 
   // Find one course by filter
   static findOne = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses WHERE ${filterKeys}`,
-      filterValues,
-    );
-    if (rows.length) {
-      console.log("Found course: ", { filters: filters, results: rows[0] });
-      return rows[0];
-    } else {
-      console.log("Found no course: ", { filters: filters });
-      return null;
+    const con = await sql.getConnection();
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
+      const [rows, fields] = await con.query(
+        `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+        FROM courses LEFT JOIN learn_courses ON id=course_id
+        WHERE ${filterKeys}
+        GROUP BY ${Course.queryFields}`,
+        filterValues,
+      );
+      let course;
+
+      if (rows.length) {
+        course = rows[0];
+      } else {
+        await con.rollback();
+        sql.releaseConnection(con);
+        console.log("Found no course: ", { filters: filters });
+        return null;
+      }
+
+      let [languages, languages_fields] = await con.query(
+        `SELECT language_name 
+          FROM languages JOIN courses_languages ON languages.id=language_id
+          WHERE course_id=?`,
+        [course.id],
+      );
+      let [subjects, subjects_fields] = await con.query(
+        `SELECT subjects.name 
+          FROM subjects JOIN courses_subjects ON subjects.id=subject_id
+          WHERE course_id=?`,
+        [course.id],
+      );
+      languages = languages.map((row) => row.language_name);
+      subjects = subjects.map((row) => row.name);
+
+      course = {
+        languages: languages,
+        subjects: subjects,
+        ...course,
+      };
+
+      await con.commit();
+      sql.releaseConnection(con);
+      console.log("Found course: ", { filters: filters, course: course });
+
+      return course;
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
     }
   };
 
   // Find all courses by filter
   static findAll = async (filters) => {
-    const { filterKeys, filterValues } = formatFilters(filters);
-    const [rows, fields] = await sql.query(
-      `SELECT ${Course.queryFields} FROM courses WHERE ${filterKeys}`,
-      filterValues,
-    );
-    console.log("Found courses: ", { filters: filters, results: rows });
-    return rows;
+    const con = await sql.getConnection();
+    try {
+      const { filterKeys, filterValues } = formatFilters(filters);
+      let [rows, fields] = await con.query(
+        `SELECT ${Course.queryFields}, COUNT(student_id) AS number_of_students
+        FROM courses LEFT JOIN learn_courses ON id=course_id
+        WHERE ${filterKeys}
+        GROUP BY ${Course.queryFields}`,
+        filterValues,
+      );
+      rows = rows.map(async (course) => {
+        const [languages, languages_fields] = await con.query(
+          `SELECT language_name 
+          FROM languages JOIN courses_languages ON languages.id=language_id
+          WHERE course_id=?`,
+          [course.id],
+        );
+        const [subjects, subjects_fields] = await con.query(
+          `SELECT subjects.name 
+          FROM subjects JOIN courses_subjects ON subjects.id=subject_id
+          WHERE course_id=?`,
+          [course.id],
+        );
+        languages.map((row) => row.language_name);
+        subjects.map((row) => row.name);
+
+        return {
+          languages: languages,
+          subjects: subjects,
+          ...course,
+        };
+      });
+
+      await con.commit();
+      sql.releaseConnection(con);
+      console.log("Found courses: ", { filters: filters, results: rows });
+      return rows;
+    } catch (err) {
+      await con.rollback();
+      sql.releaseConnection(con);
+
+      throw err;
+    }
   };
 
   static getAll = async () => {
@@ -173,10 +251,10 @@ class Course {
           `(SELECT id, lesson_id 
             FROM exams
             WHERE course_id=?)
-           EXCEPT
-           (SELECT exam_id, lesson_id
-            FROM do_exams
-            WHERE course_id=? AND student_id=? AND score>=5)`,
+            EXCEPT
+            (SELECT exam_id, lesson_id
+              FROM do_exams
+              WHERE course_id=? AND student_id=? AND score>=5)`,
           [id, id, student_id],
         );
 
@@ -206,6 +284,45 @@ class Course {
       sql.releaseConnection(con);
       throw err;
     }
+  };
+
+  static search = async (filters) => {
+    let conditions = [];
+    let values = [];
+    if (filters.priceMin != undefined) {
+      conditions.push(`courses.price>=?`);
+      values.push(filters.priceMin);
+    }
+    if (filters.priceMax != undefined) {
+      conditions.push(`courses.price<=?`);
+      values.push(filters.priceMax);
+    }
+    if (filters.name) {
+      conditions.push(`courses.name LIKE ?`);
+      values.push("%" + filters.name + "%");
+    }
+    if (filters.difficulties) {
+      conditions.push(`courses.difficulty IN (?)`);
+      values.push(filters.difficulties);
+    }
+    if (filters.subjects) {
+      conditions.push(`subject_id IN (?)`);
+      values.push(filters.subjects);
+    }
+    if (filters.languages) {
+      conditions.push(`language_id IN (?)`);
+      values.push(filters.languages);
+    }
+    const sqlCondition = conditions.join(" AND ");
+    const [rows, fields] = await sql.query(
+      `SELECT DISTINCT ${Course.queryFields} 
+      FROM ((courses LEFT JOIN courses_subjects ON courses.id=courses_subjects.course_id)
+            LEFT JOIN courses_languages ON courses.id=courses_languages.course_id)
+      ${sqlCondition.length ? "WHERE" : ""} ${sqlCondition}`,
+      values,
+    );
+    console.log("Found courses: ", { filters: filters, results: rows });
+    return rows;
   };
 }
 module.exports = Course;

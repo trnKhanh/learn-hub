@@ -1,9 +1,9 @@
 const { body } = require("express-validator");
 
 const createSupporterScheme = [
-  body("id")
+  body("username")
     .exists()
-    .withMessage("Must provide user id of supporter"),
+    .withMessage("Must provide username of supporter"),
   body("role")
     .exists()
     .withMessage("Must provide supporter's role")

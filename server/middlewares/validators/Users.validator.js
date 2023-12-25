@@ -10,7 +10,8 @@ const updateUserScheme = [
     .optional()
     .trim()
     .isISO8601()
-    .withMessage("Date format must be yyyy-mm-dd"),
+    .withMessage("Date format must be yyyy-mm-dd")
+    .toDate(),
   body("phone_number")
     .optional()
     .trim()

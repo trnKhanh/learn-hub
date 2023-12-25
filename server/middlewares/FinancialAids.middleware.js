@@ -46,8 +46,8 @@ const validateUpdateFinancialAidPermission = async (req, res, next) => {
     }
 
     res.status(401).json({
-      message: "No permission to update this financial aid status"
-    })
+      message: "No permission to update this financial aid status",
+    });
   } catch (err) {
     console.log(err);
 

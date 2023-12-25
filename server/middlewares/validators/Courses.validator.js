@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const createCourseScheme = [
   body("name")
@@ -71,7 +71,27 @@ const updateCourseScheme = [
     .withMessage("Course's price must be float in [0,1]"),
 ];
 
+const searchCourseScheme = [
+  query("name")
+    .optional()
+    .isString()
+    .withMessage("Course name must be a string"),
+  query("priceMin")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Price must be a positive float"),
+  query("priceMax")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Price must be a positive float"),
+  query("subjects").optional(),
+  query("languages").optional(),
+  query("difficulties").optional(),
+];
+
+
 module.exports = {
   createCourseScheme,
   updateCourseScheme,
+  searchCourseScheme,
 };

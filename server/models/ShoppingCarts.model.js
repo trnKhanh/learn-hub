@@ -4,8 +4,8 @@ const { formatFilters } = require("../utils/query.utils");
 // Constructor
 class ShoppingCart {
   constructor(shoppingCart) {
-    this.student_id = shoppingCart.student_id || null;
-    this.course_id = shoppingCart.course_id || null;
+    this.student_id = shoppingCart.student_id;
+    this.course_id = shoppingCart.course_id;
   }
   static queryFields = `course_id`;
 
@@ -148,6 +148,19 @@ class ShoppingCart {
 
       throw err;
     }
+  };
+  static getTotalMoney = async (student_id) => {
+    const [rows, fields] = await sql.query(
+      `SELECT SUM(price * (1-IFNULL(discount,0))) AS total_money
+      FROM courses JOIN shopping_carts ON id=course_id
+      WHERE student_id=?`,
+      [student_id],
+    );
+    console.log("Found total money: ", {
+      student_id: student_id,
+      total_money: rows[0].total_money,
+    });
+    return rows[0].total_money;
   };
 }
 module.exports = ShoppingCart;

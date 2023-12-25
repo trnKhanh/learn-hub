@@ -17,15 +17,15 @@ const {
   updateStatusFinancialAidScheme,
 } = require("../middlewares/validators/FinancialAids.validator");
 
-router.post(
+router.put(
   "/",
   [validateToken, validateStudent, createFinancialAidScheme],
-  financialAidsController.createFinancialAid,
+  financialAidsController.putFinancialAid,
 );
 
 router.get(
-  "/:student_id",
-  [validateToken, validateCourseAccessPermission],
+  "/mine",
+  [validateToken, validateStudent],
   financialAidsController.getFinancialAid,
 );
 router.get(
@@ -33,10 +33,25 @@ router.get(
   [validateToken, validateCourseAccessPermission],
   financialAidsController.getAllFinancialAidsByCourseId,
 );
+router.get(
+  "/tutor",
+  [validateToken, validateCourseAccessPermission],
+  financialAidsController.getAllFinancialAidsByCourseIdForTutor,
+);
+
+router.get(
+  "/:student_id",
+  [validateToken, validateCourseAccessPermission],
+  financialAidsController.getFinancialAid,
+);
 
 router.patch(
   "/:student_id",
-  [validateToken, validateUpdateFinancialAidPermission, updateStatusFinancialAidScheme],
+  [
+    validateToken,
+    validateUpdateFinancialAidPermission,
+    updateStatusFinancialAidScheme,
+  ],
   financialAidsController.updateFinancialAidStatus,
 );
 router.delete(

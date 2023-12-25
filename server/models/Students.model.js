@@ -1,13 +1,14 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Student {
   constructor(student) {
-    this.id = student.id || null;
-    this.membership = student.membership || null;
+    this.id = student.id;
+    this.membership = student.membership;
   }
 
-  static queryFields = `id, membership`;
+  static queryFields = `${User.queryFields}, membership`;
 
   // Create new student
   static create = async (newStudent) => {
@@ -95,7 +96,7 @@ class Student {
       );
       const [rows, fields] = await con.query(
         `SELECT ${Student.queryFields} 
-         FROM students 
+         FROM students NATURAL JOIN users
          WHERE id=?`,
         [id],
       );
@@ -126,7 +127,7 @@ class Student {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Student.queryFields} 
-         FROM students  
+         FROM students NATURAL JOIN users
          WHERE id=?`,
         [id],
       );

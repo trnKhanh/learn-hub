@@ -4,13 +4,17 @@ const { getAccessToken, createAdmin } = require("../utils/test.utils");
 const { randomUUID } = require("crypto");
 const sql = require("../database/db");
 
-let user_id;
-let token;
+let user_id, username;
+let admin_id;
 let supporter_admin_id;
-let supporter_admin_token;
+
+const user_agent = request.agent(app);
+const admin_agent = request.agent(app);
+const supporter_admin_agent = request.agent(app);
+
 beforeAll(async () => {
   try {
-    let res = await request(app)
+    let res = await user_agent
       .post("/signup")
       .send({
         username: "test",
@@ -19,18 +23,32 @@ beforeAll(async () => {
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     user_id = res.body.user_id;
-    token = res.body.accessToken;
+    username = "test";
   } catch (err) {
     console.log(err);
   }
+
   try {
-    await createAdmin();
+    let res = await admin_agent
+      .post("/signup")
+      .send({
+        username: "admin",
+        password: "Learnhub123!",
+        email: "admin@gmail.com",
+      })
+      .set("Content-Type", "application/json")
+      .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
+    admin_id = res.body.user_id;
+    await sql.query("INSERT INTO admins SET id=?", [admin_id]);
   } catch (err) {
     console.log(err);
   }
+
   try {
-    let res = await request(app)
+    let res = await supporter_admin_agent
       .post("/signup")
       .send({
         username: "supporter_admin",
@@ -39,9 +57,8 @@ beforeAll(async () => {
       })
       .set("Content-Type", "application/json")
       .set("Accept", "application/json");
+    expect(res.body.user_id).toBeDefined();
     supporter_admin_id = res.body.user_id;
-    supporter_admin_token = res.body.accessToken;
-
     await sql.query(
       "INSERT INTO admins SET id=?, courses_access=0, tutors_access=0, students_access=0, supporters_access=1",
       [supporter_admin_id],
@@ -49,16 +66,20 @@ beforeAll(async () => {
   } catch (err) {
     console.log(err);
   }
+
+  expect(user_id).toBeDefined();
+  expect(admin_id).toBeDefined();
+  expect(supporter_admin_id).toBeDefined();
 });
 
 afterAll(async () => {
   try {
-    await sql.query("DELETE FROM users WHERE username=?", ["admin"]);
+    await sql.query("DELETE FROM users WHERE username=?", ["test"]);
   } catch (err) {
     console.log(err);
   }
   try {
-    await sql.query("DELETE FROM users WHERE username=?", ["test"]);
+    await sql.query("DELETE FROM users WHERE username=?", ["admin"]);
   } catch (err) {
     console.log(err);
   }
@@ -72,105 +93,83 @@ afterAll(async () => {
 
 describe("POST /supporters", () => {
   it("Create supporter to unknown role", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "ABC",
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(422);
   });
-});
-
-describe("POST /supporters", () => {
   it("Create supporter not by supporter_admin", async () => {
-    const accessToken = await getAccessToken("admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(401);
   });
-});
-
-describe("POST /supporters", () => {
   it("Create supporter by supporter_admin", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(201);
     expect(res.body.supporter.role).toBe("SOCIAL");
   });
-});
-
-describe("POST /supporters", () => {
   it("Create supporter by supporter_admin (duplicate)", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
+    let res = await supporter_admin_agent
       .post("/supporters")
       .send({
-        id: user_id,
+        username: username,
         role: "SOCIAL",
       })
       .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
-      .set("accessToken", accessToken);
+      .set("Accept", "application/json");
 
     expect(res.statusCode).toBe(409);
   });
 });
+
 describe("GET /supporters/:id", () => {
-  it("Get supporter by id", async () => {
+  it("Get supporter by id not by supporter_admin", async () => {
     let res = await request(app).get(`/supporters/${user_id}`);
 
+    expect(res.statusCode).toBe(401);
+  });
+  it("Get supporter by unknown id", async () => {
+    let res = await supporter_admin_agent.get(`/supporters/111111111`);
+
+    expect(res.statusCode).toBe(404);
+  });
+  it("Get supporter by id", async () => {
+    let res = await supporter_admin_agent.get(`/supporters/${user_id}`);
+
     expect(res.statusCode).toBe(200);
-    expect(res.body.supporter.id).toBe(user_id);
     expect(res.body.supporter.role).toBe("SOCIAL");
   });
 });
 
-describe("GET /supporters/:id", () => {
-  it("Get supporter by unknown id", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .get(`/supporters/111111111`)
-      .set("accessToken", accessToken);
-
-    expect(res.statusCode).toBe(404);
-  });
-});
-
 describe("GET /supporters", () => {
-  it("Get all supporters", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
+  it("Get all supporters not by supporter_admin", async () => {
+    let res = await request(app).get(`/supporters`);
 
-    let res = await request(app)
-      .get(`/supporters`)
-      .set("accessToken", accessToken);
+    expect(res.statusCode).toBe(401);
+  });
+  it("Get all supporters", async () => {
+    let res = await supporter_admin_agent.get(`/supporters`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.supporters).toBeInstanceOf(Array);
@@ -179,82 +178,49 @@ describe("GET /supporters", () => {
 
 describe("PATCH /supporters/:id", () => {
   it("Update supporter by id", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .patch(`/supporters/${user_id}`)
-      .send({
-        role: "TECHNICAL",
-      })
-      .set("accessToken", accessToken);
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      role: "TECHNICAL",
+    });
 
     expect(res.statusCode).toBe(200);
     expect(res.body.supporters[0].role).toBe("TECHNICAL");
   });
-});
-
-describe("PATCH /supporters/:id", () => {
   it("Update supporter with invalid fields", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .patch(`/supporters/${user_id}`)
-      .send({
-        abc: 0,
-      })
-      .set("accessToken", accessToken);
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      abc: 0,
+    });
 
     expect(res.statusCode).toBe(400);
   });
-});
-describe("PATCH /supporters/:id", () => {
   it("Update supporter by unknown id", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .patch(`/supporters/11111123`)
-      .send({
-        role: "TECHNICAL",
-      })
-      .set("accessToken", accessToken);
+    let res = await supporter_admin_agent.patch(`/supporters/11111123`).send({
+      role: "TECHNICAL",
+    });
 
     expect(res.statusCode).toBe(404);
   });
-});
-describe("PATCH /supporters/:id", () => {
   it("Update supporter to unknown role", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .patch(`/supporters/${user_id}`)
-      .send({
-        role: "FREE",
-      })
-      .set("accessToken", accessToken);
+    let res = await supporter_admin_agent.patch(`/supporters/${user_id}`).send({
+      role: "FREE",
+    });
 
     expect(res.statusCode).toBe(422);
   });
 });
 
 describe("DELETE /supporters/:id", () => {
-  it("Delete supporter by id", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
+  it("Delete supporter not by supporter_admin", async () => {
+    let res = await user_agent.delete(`/supporters/${user_id}`);
 
-    let res = await request(app)
-      .delete(`/supporters/${user_id}`)
-      .set("accessToken", accessToken);
+    expect(res.statusCode).toBe(401);
+  });
+  it("Delete supporter by id", async () => {
+    let res = await supporter_admin_agent.delete(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(200);
   });
-});
-
-describe("DELETE /supporters/:id", () => {
   it("Delete supporter by unknown id", async () => {
-    const accessToken = await getAccessToken("supporter_admin", "Learnhub123!");
-
-    let res = await request(app)
-      .delete(`/supporters/${user_id}`)
-      .set("accessToken", accessToken);
+    let res = await supporter_admin_agent.delete(`/supporters/${user_id}`);
 
     expect(res.statusCode).toBe(404);
   });

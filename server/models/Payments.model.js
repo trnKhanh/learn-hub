@@ -1,11 +1,12 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const Course = require("./Courses.model");
 
 // Constructor
 class Payment {
   constructor(payment) {
-    this.student_id = payment.student_id || null;
-    this.discounted = payment.discounted || null;
+    this.student_id = payment.student_id;
+    this.discounted = payment.discounted;
   }
   static queryFields = `id, student_id, paid_at, discounted`;
 
@@ -40,6 +41,10 @@ class Payment {
           course_id: course_id,
           price: courses_info[0].price,
           discounted: courses_info[0].discount,
+        });
+        await con.query(`INSERT INTO learn_courses SET ?`, {
+          student_id: student_id,
+          course_id: course_id,
         });
       }
 

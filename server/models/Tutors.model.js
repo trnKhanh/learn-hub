@@ -1,15 +1,16 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
+const User = require("../models/Users.model");
 // Constructor
 class Tutor {
   constructor(tutor) {
-    this.id = tutor.id || null;
-    this.admin_id = tutor.admin_id || null;
+    this.id = tutor.id;
+    this.admin_id = tutor.admin_id;
     this.verified = tutor.verified || 0;
     this.profit = tutor.profit || 0;
   }
 
-  static queryFields = `id, admin_id, verified, profit`;
+  static queryFields = `${User.queryFields}, admin_id, verified, profit`;
 
   // Create new tutor
   static create = async (newTutor) => {
@@ -22,7 +23,7 @@ class Tutor {
         `SELECT ${Tutor.queryFields} 
          FROM tutors NATURAL JOIN users 
          WHERE id=?`,
-        [newTutor.id],
+        [newTutor.id]
       );
 
       await con.commit();
@@ -45,7 +46,7 @@ class Tutor {
       `SELECT ${Tutor.queryFields} 
        FROM tutors NATURAL JOIN users 
        WHERE ${filterKeys}`,
-      filterValues,
+      filterValues
     );
     if (rows.length) {
       console.log("Found tutor: ", { filters: filters, results: rows[0] });
@@ -63,7 +64,7 @@ class Tutor {
       `SELECT ${Tutor.queryFields} 
        FROM tutors NATURAL JOIN users  
        WHERE ${filterKeys}`,
-      filterValues,
+      filterValues
     );
     console.log("Found tutors: ", { filters: filters, results: rows });
     return rows;
@@ -72,7 +73,7 @@ class Tutor {
   static getAll = async () => {
     const [rows, fields] = await sql.query(
       `SELECT ${Tutor.queryFields} 
-       FROM tutors NATURAL JOIN users`,
+       FROM tutors NATURAL JOIN users`
     );
     console.log("Get all tutors: ", { results: rows });
     return rows;
@@ -87,13 +88,13 @@ class Tutor {
       const [res, _] = await con.query(
         `UPDATE tutors SET ?
         WHERE id=?`,
-        [columns, id],
+        [columns, id]
       );
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors 
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
-        [id],
+        [id]
       );
 
       console.log("Updated tutors by Id", {
@@ -122,15 +123,15 @@ class Tutor {
       await con.beginTransaction();
       const [rows, fields] = await con.query(
         `SELECT ${Tutor.queryFields} 
-         FROM tutors  
+         FROM tutors NATURAL JOIN users
          WHERE id=?`,
-        [id],
+        [id]
       );
 
       const [res, _] = await con.query(
         `DELETE FROM tutors 
         WHERE id=?`,
-        [id],
+        [id]
       );
 
       console.log("Deleted tutors by id", {

@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS courses (
   price DOUBLE NOT NULL CHECK(price >= 0),
   discount DOUBLE CHECK (discount >= 0 AND discount <= 1),
   profile_picture VARCHAR(255),
+  isPublished BOOL DEFAULT FALSE,
   PRIMARY KEY (id),
   FOREIGN KEY (owner_id) REFERENCES tutors(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -80,6 +81,11 @@ CREATE TABLE IF NOT EXISTS lessons (
   course_id INT NOT NULL,
   id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
+  isPublished BOOL DEFAULT FALSE,
+  isFree BOOL DEFAULT FALSE,
+  assetId VARCHAR(255) NOT NULL,
+  playbackId VARCHAR(255) NOT NULL,
+  videoUrl VARCHAR(255) NOT NULL,
   PRIMARY KEY (course_id, id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -88,7 +94,7 @@ CREATE TABLE IF NOT EXISTS documents (
   course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   file_path VARCHAR(255) NOT NULL,
   PRIMARY KEY (course_id, lesson_id, id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -98,7 +104,7 @@ CREATE TABLE IF NOT EXISTS exams (
   course_id INT NOT NULL,
   lesson_id INT NOT NULL,
   id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL UNIQUE,
   percentage DOUBLE NOT NULL CHECK(percentage >= 0 AND percentage <= 1),
   PRIMARY KEY (course_id, lesson_id, id),
   FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -139,7 +145,6 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
-  
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),
@@ -153,7 +158,7 @@ CREATE TABLE IF NOT EXISTS support_sessions (
   supporter_id INT NOT NULL,
   issue_description TEXT NOT NULL,
   started_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (supporter_id) REFERENCES supporters(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -177,11 +182,12 @@ CREATE TABLE IF NOT EXISTS notes (
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT,
   user_id INT NOT NULL,
   notified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   content TEXT NOT NULL,
   status ENUM("SEEN", "NOT SEEN") NOT NULL,
-  PRIMARY KEY (user_id, notified_at),
+  PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -233,7 +239,7 @@ CREATE TABLE IF NOT EXISTS learn_courses (
   course_id INT NOT NULL,
   student_id INT NOT NULL,
   registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (course_id, student_id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -256,7 +262,7 @@ CREATE TABLE IF NOT EXISTS do_exams (
   student_id INT NOT NULL,
   score DOUBLE CHECK (score >= 0),
   deadline DATETIME NOT NULL,
-  finished_at TIMESTAMP,
+  finished_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (course_id, lesson_id, exam_id,  student_id),
   FOREIGN KEY (course_id, lesson_id, exam_id) REFERENCES exams(course_id, lesson_id, id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -282,7 +288,16 @@ CREATE TABLE IF NOT EXISTS payments_courses (
   PRIMARY KEY (payment_id, course_id),
   FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
-
 );
+
+CREATE TABLE IF NOT EXISTS video_lesson (
+  course_id INT NOT NULL,
+  lesson_id INT NOT NULL,
+  asset_id VARCHAR(255),
+  playback_id VARCHAR(255),
+  PRIMARY KEY (course_id, lesson_id),
+  FOREIGN KEY (course_id, lesson_id) REFERENCES lessons(course_id, id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 

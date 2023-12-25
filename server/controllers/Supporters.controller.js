@@ -1,5 +1,6 @@
 const Supporter = require("../models/Supporters.model");
 const { validationResult, matchedData } = require("express-validator");
+const User = require("../models/Users.model");
 
 const createSupporter = async (req, res) => {
   const errors = validationResult(req);
@@ -10,7 +11,14 @@ const createSupporter = async (req, res) => {
   const data = matchedData(req);
 
   try {
-    const newSupporter = new Supporter(data);
+    const user = await User.findOne({ username: data.username });
+    if (!user) {
+      res.status(404).json({
+        message: "Username does not exist",
+      });
+      return;
+    }
+    const newSupporter = new Supporter({ id: user.id, ...data });
     const supporter = await Supporter.create(newSupporter);
 
     res.status(201).json({

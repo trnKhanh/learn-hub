@@ -83,6 +83,7 @@ const getAllCourses = async (req, res) => {
 
 // Update course information
 const updateCourse = async (req, res) => {
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).send(errors);
@@ -90,6 +91,8 @@ const updateCourse = async (req, res) => {
   }
   const data = matchedData(req);
   if (req.file) data.profile_picture = req.file.path;
+
+  console.log(data);
 
   if (!Object.keys(data).length) {
     res.status(400).json({
@@ -180,19 +183,43 @@ const registerStudent = async (req, res) => {
   try {
     await Course.register(req.user.id, req.params.course_id);
     res.status(200).json({
-      message: "Course register successfully",
+      message: "Student has been registered for course",
     });
   } catch (err) {
     console.log(err);
 
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
-        message: "User already registerd",
+        message: "User already registered",
       });
       return;
     }
     res.status(500).json({
       message: "Errors occur when retrieving course progress",
+    });
+  }
+};
+
+const searchCourse = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+
+  try {
+    const courses = await Course.search(data);
+
+    res.status(200).json({
+      message: "Search courses' information successfully",
+      courses: courses,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Errors occur when searching courses",
     });
   }
 };
@@ -205,4 +232,5 @@ module.exports = {
   deleteCourse,
   registerStudent,
   getCourseProgress,
+  searchCourse,
 };
