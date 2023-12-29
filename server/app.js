@@ -38,7 +38,16 @@ app.use("/supporters", supportersRouter);
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
-const categoriesRouter = require("./routes/Subjects.route");
-app.use("/subjects", categoriesRouter);
+const languageRouter = require("./routes/Language.route");
+app.use("/languages" , languageRouter);
+
+const notificationsRouter = require("./routes/Notifications.route");
+app.use("/notifications" , notificationsRouter);
+
+const subjectsRouter = require("./routes/Subjects.route");
+app.use("/subjects" , subjectsRouter);
+
+const notesRouter = require("./routes/Notes.route");
+app.use("/notes" , notesRouter);
 
 module.exports = app;
