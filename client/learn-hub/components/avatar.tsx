@@ -35,7 +35,7 @@ import { cookies } from "next/headers";
 import { logout } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
-import { AuthContext } from "@/app/auth-provider";
+import { AppContext } from "@/app/auth-provider";
 import { toast } from "react-toastify";
 
 const handleAvatarClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -43,7 +43,7 @@ const handleAvatarClick = (e: React.MouseEvent<HTMLDivElement>) => {
 };
 
 const CustomizedAvatar = () => {
-  const { isAuth, setAuth } = useContext(AuthContext);
+  const { isAuth, setAuth } = useContext(AppContext);
   const router = useRouter();
   return (
     <DropdownMenu>

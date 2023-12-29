@@ -17,6 +17,11 @@ router.get(
   adminsController.getAllAdmins,
 );
 router.get(
+  "/mine",
+  [validateToken],
+  adminsController.getAdmin,
+);
+router.get(
   "/:id",
   [validateToken, validateAccessAdminPermission],
   adminsController.getAdmin,

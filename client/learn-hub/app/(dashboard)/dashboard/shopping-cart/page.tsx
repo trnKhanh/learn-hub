@@ -25,7 +25,6 @@ const Cart = () => {
     });
   }, [isUpdating]);
 
-  console.log(isUpdating);
   return (
     <DashboardSection>
       <DashboardSectionHeader icon={ShoppingCart}>
