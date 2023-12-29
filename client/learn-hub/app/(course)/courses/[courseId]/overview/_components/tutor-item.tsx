@@ -1,6 +1,7 @@
 "use client";
 
 import { getTutor } from "@/actions/tutors";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -19,9 +20,11 @@ export const TutorItem = ({ tutor_id }: { tutor_id: string }) => {
       }
     });
   }, []);
+
   if (!tutor) {
-    return <div>Loading...</div>;
+    return <Skeleton/>;
   }
+
   return (
     <Link href={`/tutors/${tutor_id}`}>
       <div className="flex flex-row">

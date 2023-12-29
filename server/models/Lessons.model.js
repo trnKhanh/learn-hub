@@ -10,12 +10,12 @@ class Lesson {
     this.isFree =
       lesson.isFree == true || lesson.isFree == "true" ? true : false;
     this.isPublished =
-      lesson.isPublished == true || lesson.isPublished == "true"
-        ? true
-        : false;
+      lesson.isPublished == true || lesson.isPublished == "true" ? true : false;
+
     this.basic_filters = {
       course_id: this.course_id,
     };
+    this.videoUrl = lesson.videoUrl;
   }
 
   getFiltersAfterFormat(filters = {}) {
@@ -29,6 +29,7 @@ class Lesson {
       `SELECT * FROM lessons WHERE ${filterKeys}`,
       filterValues,
     );
+    console.log(rows);
     return rows;
   }
 
@@ -193,6 +194,24 @@ class Lesson {
       throw error;
     }
   }
+  // static canAccess = async (student_id, lesson_id) => {
+  //   const [res, _] = await sql.query(
+  //     `SELECT *
+  //     FROM (learn_courses JOIN lessons ON learn_courses.course_id=lessons.course_id) 
+  //     WHERE learn_courses.student_id=? AND lessons.id=?
+  //       AND(lessons.isFree=1 OR EXISTS(
+  //         SELECT * 
+  //         FROM payments
+  //         WHERE payments.student_id=learn_courses.student_id
+  //           AND payments.course_id=learn_courses.course_id))`,
+  //     [student_id, lesson_id],
+  //   );
+  //   if (res.length) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 }
 
 module.exports = Lesson;

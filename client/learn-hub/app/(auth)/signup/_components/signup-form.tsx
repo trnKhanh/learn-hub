@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "@/app/auth-provider";
 import { CustomizedInput } from "@/components/ui/input";

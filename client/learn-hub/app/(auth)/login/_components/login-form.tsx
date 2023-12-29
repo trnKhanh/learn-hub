@@ -7,12 +7,12 @@ import { useForm } from "react-hook-form";
 
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "@/app/auth-provider";
 import { CustomizedInput } from "@/components/ui/input";
 import { login } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const signinFormSchema = z.object({
   username: z
@@ -71,14 +71,16 @@ export const LoginForm = () => {
     <div className="bg-white flex flex-col justify-center items-center px-16 py-0 max-md:px-5">
       <div className="items-start shadow-2xl bg-white flex w-[470px] max-w-full flex-col mt-20 mb-20 px-5 py-5 rounded-3xl max-md:my-20">
         <div className="text-black text-3xl font-medium self-stretch whitespace-nowrap max-md:max-w-full">
-          Sign up
+          Sign In
         </div>
         <div className="text-black text-base self-stretch whitespace-nowrap mt-8 max-md:max-w-full">
-          If you already have an account register
+          Do not have an account?
         </div>
         <div className="text-sky-500 text-base self-stretch mt-3.5 max-md:max-w-full">
           <span className=" text-black">You can </span>
-          <button className="font-semibold text-sky-500">Login here !</button>
+          <Link href="/signup">
+            <button className="font-semibold text-sky-500">Sign up here !</button>
+          </Link>
         </div>
         <div className="flex w-[470px] max-w-full flex-col rounded-3xl max-md:my-10">
           <Form {...form}>
@@ -143,7 +145,7 @@ export const LoginForm = () => {
                 }
                 className="mt-5 w-full"
               >
-                Sign up
+                Sign in
               </Button>
             </form>
           </Form>

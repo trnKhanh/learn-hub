@@ -83,8 +83,9 @@ CREATE TABLE IF NOT EXISTS lessons (
   name VARCHAR(255) NOT NULL,
   isPublished BOOL DEFAULT FALSE,
   isFree BOOL DEFAULT FALSE,
-  assetId VARCHAR(255),
-  playbackId VARCHAR(255),
+  assetId VARCHAR(255) NOT NULL,
+  playbackId VARCHAR(255) NOT NULL,
+  videoUrl VARCHAR(255) NOT NULL,
   PRIMARY KEY (course_id, id),
   FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -144,7 +145,6 @@ CREATE TABLE IF NOT EXISTS shopping_carts (
 
 CREATE TABLE IF NOT EXISTS payments (
   id INT AUTO_INCREMENT,
-  
   student_id INT NOT NULL,
   paid_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   discounted DOUBLE CHECK (discounted >= 0 AND discounted <= 1),

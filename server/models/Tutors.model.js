@@ -1,6 +1,7 @@
 const sql = require("../database/db");
 const { formatFilters } = require("../utils/query.utils");
 const User = require("../models/Users.model");
+const Course = require("../models/Courses.model");
 // Constructor
 class Tutor {
   constructor(tutor) {
@@ -44,8 +45,8 @@ class Tutor {
     const { filterKeys, filterValues } = formatFilters(filters);
     const [rows, fields] = await sql.query(
       `SELECT ${Tutor.queryFields} 
-       FROM tutors NATURAL JOIN users 
-       WHERE ${filterKeys}`,
+      FROM tutors NATURAL JOIN users 
+      WHERE ${filterKeys}`,
       filterValues
     );
     if (rows.length) {
@@ -151,5 +152,16 @@ class Tutor {
       throw err;
     }
   };
+
+  static getCoursesOfTutor = async (id) => {
+    const [rows, fields] = await sql.query(
+      `SELECT c.id, c.name, c.description, c.difficulty, c.duration, c.owner_id, c.price, c.profile_picture, c.discount, c.isPublished
+        FROM tutors t, courses c
+        WHERE c.owner_id = t.id and c.isPublished = 1 and t.id=?`,
+      [id]
+    );
+    console.log("Get all tutors: ", { results: rows });
+    return rows;
+  }
 }
 module.exports = Tutor;

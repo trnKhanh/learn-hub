@@ -8,7 +8,6 @@ import { Button } from "./ui/button";
 import UserNavbar from "./user-navbar";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/app/auth-provider";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 const Navbar = () => {
   const { isAuth, setAuth } = useContext(AuthContext);

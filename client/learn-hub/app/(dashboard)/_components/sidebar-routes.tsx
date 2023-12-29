@@ -149,14 +149,12 @@ export const SidebarRoutes = ({ role }: { role?: string }) => {
           href={"/dashboard/admin"}
         />
       )}
-      {isTutor && (
-        <SidebarItem
-          key={"/dashboard/tutor"}
-          icon={BookUser}
-          label={"Tutor Verification"}
-          href={"/dashboard/tutor/verification"}
-        />
-      )}
+      <SidebarItem
+        key={"/dashboard/tutor"}
+        icon={BookUser}
+        label={"Tutor Verification"}
+        href={"/dashboard/tutor/verification"}
+      />
     </div>
   );
 };

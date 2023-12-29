@@ -1,92 +1,30 @@
 "use client";
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileContext } from "../profile-provider";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CoursesList } from "./course-list";
+import { getCoursesOfTutor } from "@/actions/tutors";
+import { Skeleton } from "@mui/material";
 
-const dummyCourses = [
-    {
-        id: "1",
-        name: "Introduction to Programming",
-        description: "A beginner's guide to programming concepts.",
-        difficulty: "Beginner",
-        duration: 8,
-        owner_id: "user123",
-        price: 49.99,
-        discount: 10,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        name: "Data Structures and Algorithms",
-        description: "Learn about data structures and algorithmic techniques.",
-        difficulty: "Intermediate",
-        duration: 12,
-        owner_id: "user456",
-        price: 79.99,
-        discount: 15,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        name: "Data Structures and Algorithms",
-        description: "Learn about data structures and algorithmic techniques.",
-        difficulty: "Intermediate",
-        duration: 12,
-        owner_id: "user456",
-        price: 79.99,
-        discount: 15,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        name: "Data Structures and Algorithms",
-        description: "Learn about data structures and algorithmic techniques.",
-        difficulty: "Intermediate",
-        duration: 12,
-        owner_id: "user456",
-        price: 79.99,
-        discount: 15,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        name: "Data Structures and Algorithms",
-        description: "Learn about data structures and algorithmic techniques.",
-        difficulty: "Intermediate",
-        duration: 12,
-        owner_id: "user456",
-        price: 79.99,
-        discount: 15,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        name: "Data Structures and Algorithms",
-        description: "Learn about data structures and algorithmic techniques.",
-        difficulty: "Intermediate",
-        duration: 12,
-        owner_id: "user456",
-        price: 79.99,
-        discount: 15,
-        profile_picture: "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg",
-        isPublished: true,
-    },
-]  
+const CourseReviewSection = ({tutor_id} : {tutor_id: string}) => {
+    const [courses, setCourses] = useState<Course[]>();
 
-const CourseReviewSection = () => {
-    const {tutor} = useContext(ProfileContext);
-    const [courses, setCourses] = useState<Course[]>(dummyCourses);
     useEffect(() => {
-        
+        getCoursesOfTutor(tutor_id).then((res) => {
+            if (res) {
+                console.log("retrieve courses");
+                if (res.status === 200) {
+                    setCourses(res.data.courses);
+                }
+            }
+        })
     },[]);
+    
+    if (courses === undefined) {
+        return (
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+        )
+    }
     
     return ( 
         <div className="w-full">

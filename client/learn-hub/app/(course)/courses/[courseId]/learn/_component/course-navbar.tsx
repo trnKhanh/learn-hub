@@ -3,24 +3,25 @@
 import { CourseMobileSidebar } from "./course-mobile-sidebar";
 
 interface CourseNavbarProps {
-    course: Course & {
-        lessons: (Lesson & {
+    course: Course | undefined,
+    lessons: (Lesson & {
         studentProgress: LearnLesson | null;
-        })[];
-    };
-    progressCount: number;
+    })[] | undefined,
+    progressCount: number
 }
 
 export const CourseNavbar = ({
     course,
+    lessons,
     progressCount,
 }: CourseNavbarProps) => {
     return (
         <div className="p-4 border-b h-full flex items-center bg-white shadow-sm">
-        <CourseMobileSidebar
-            course={course}
-            progressCount={progressCount}
-        />
+            <CourseMobileSidebar
+                course={course}
+                lessons={lessons}
+                progressCount={progressCount}
+            />
         </div>
     )
 }

@@ -1,9 +1,11 @@
-const CourseIdLayout = () => {
-    return ( 
-        <div>
-            <h1>Course ID</h1>
-        </div>
-    );
+import { redirect } from "next/navigation";
+
+const CourseIdLayout = ({
+    params
+}: {
+    params: { courseId: string; }
+}) => {
+    return redirect(`/courses/${params.courseId}/overview`);
 }
 
 export default CourseIdLayout;

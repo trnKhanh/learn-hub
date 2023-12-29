@@ -41,18 +41,18 @@ export const VideoPlayer = ({
             });
 
             if (!nextChapterId) {
-            confetti.onOpen();
+                confetti.onOpen();
             }
 
             toast.success("Progress updated");
             router.refresh();
 
             if (nextChapterId) {
-            router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
+                router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
             }
         }
         } catch {
-        toast.error("Something went wrong");
+            toast.error("Something went wrong");
         }
     }
 

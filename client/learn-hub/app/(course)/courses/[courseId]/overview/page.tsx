@@ -1,29 +1,16 @@
 "use client";
-import { profile } from "console";
 import { CourseOverviewCard } from "./_components/overview-card";
 import { CourseSection } from "./_components/overview-section";
-import { useEffect, useState } from "react";
-import { getCourse, getTutorList } from "@/actions/courses";
+import { useContext } from "react";
+import { CourseContext } from "../course-provider";
 
-const profile_picture =
-  "https://cdn.pixabay.com/photo/2014/11/13/06/12/boy-529067_1280.jpg";
-
-const Overview = ({ params }: { params: { courseId: string } }) => {
-  const [course, setCourse] = useState<Course>();
-
-  useEffect(() => {
-    getCourse(params.courseId).then((res) => {
-      if (res) {
-        if (res.status == 200) {
-          setCourse(res.data.course);
-        }
-      }
-    });
-  }, []);
+const Overview = () => {
+  const {course} = useContext(CourseContext);
 
   if (!course) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className="flex items-start justify-between gap-5 mt-20 ml-20 mr-20 mb-20">
       <div className="flex flex-col w-full">

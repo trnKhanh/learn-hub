@@ -14,7 +14,7 @@ const {
 const multer = require("multer");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, __dirname + "/../uploads/tutors/cvs");
+    cb(null, "./uploads/tutors/cvs");
   },
   filename: function (req, file, cb) {
     cb(null, req.user.id + ".zip"); //Appending .jpg
@@ -37,6 +37,8 @@ router.get("/", tutorsController.getAllTutors);
 router.get("/mine", [validateToken, validateTutor], tutorsController.getTutor);
 
 router.get("/:id", tutorsController.getTutor);
+
+router.get("/:id/courses", tutorsController.getCoursesOfTutor);
 
 router.post(
   "/",

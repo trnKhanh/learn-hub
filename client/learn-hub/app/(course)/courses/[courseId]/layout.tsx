@@ -1,3 +1,5 @@
+import { CourseProvider } from "./course-provider";
+
 const CourseLayout = async ({
     children,
     params,
@@ -6,9 +8,9 @@ const CourseLayout = async ({
     params: {courseId: string};
 }) => {
     return ( 
-        <div>
+        <CourseProvider params={params}>
             {children}
-        </div>
+        </CourseProvider>
     );
 }
 

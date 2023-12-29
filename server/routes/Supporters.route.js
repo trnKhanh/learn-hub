@@ -10,17 +10,9 @@ const {
   updateSupporterScheme,
 } = require("../middlewares/validators/Supporters.validator");
 
-router.get(
-  "/",
-  [validateToken, validateSupporterAccessPermission],
-  supportersController.getAllSupporters,
-);
+router.get("/", supportersController.getAllSupporters);
 
-router.get(
-  "/:id",
-  [validateToken, validateSupporterAccessPermission],
-  supportersController.getSupporter,
-);
+router.get("/:id", supportersController.getSupporter);
 
 router.post(
   "/",

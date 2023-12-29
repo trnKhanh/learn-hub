@@ -6,13 +6,11 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
-  AlarmClock,
   Award,
   BarChart4,
   BookText,
@@ -31,6 +29,8 @@ import Link from "next/link";
 import { addCart } from "@/actions/courses";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { CourseContext } from "../../course-provider";
 
 const difficultyMap: { [key: string]: string } = {
   BEGINNER: "Beginner",
@@ -42,6 +42,9 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
   const newPrice = course.price - course.price * course.discount;
   const formatDiscount = course.discount * 100;
   const router = useRouter();
+
+  const { isPurchased } = useContext(CourseContext);
+  
   return (
     <Card className="w-[350px] shadow-lg">
       <CardHeader>
@@ -112,50 +115,60 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
         </div>
 
         <div className="flex flex-col space-y-2 mt-10">
-          <Button
-            onClick={async (e) => {
-              const res = await addCart(course.id);
-              if (res) {
-                if (res.status == 201) {
-                  toast.success(res.data.message);
-                } else {
-                  toast.error(res.data.message);
-                }
-              }
-            }}
-            className="w-full"
-          >
-            Add to cart
-          </Button>
-          <Button
-            onClick={async (e) => {
-              const res = await addCart(course.id);
-              if (res) {
-                if (res.status == 201) {
-                  toast.success(res.data.message);
-                }
-                router.push("/courses/payment");
-              }
-            }}
-            variant="attract"
-            className="w-full"
-          >
-            Buy now
-          </Button>
-          <div className="flex flex-row space-x-2">
-            <Button variant="outline" className="w-full">
-              Wishlist
-            </Button>
-
-            <Link href="financial-aid">
+          {isPurchased ? (
+            <Link href={`/courses/${course.id}/learn`}>
               <Button variant="outline" className="w-full">
-                Financial Aid
+                Learn Course
               </Button>
             </Link>
-          </div>
-          <div className="text-xs text-gray-500">
-            All courses have 30-days money-back guarantee
-          </div>
+          ) : (
+            <>
+            <Button
+              onClick={async (e) => {
+                const res = await addCart(course.id);
+                if (res) {
+                  if (res.status == 201) {
+                    toast.success(res.data.message);
+                  } else {
+                    toast.error(res.data.message);
+                  }
+                }
+              }}
+              className="w-full"
+            >
+              Add to cart
+            </Button>
+            <Button
+              onClick={async (e) => {
+                const res = await addCart(course.id);
+                if (res) {
+                  if (res.status == 201) {
+                    toast.success(res.data.message);
+                  }
+                  router.push("/courses/payment");
+                }
+              }}
+              variant="attract"
+              className="w-full"
+            >
+              Buy now
+            </Button>
+            <div className="flex flex-row space-x-2">
+              <Button variant="outline" className="w-full">
+                Wishlist
+              </Button>
+
+              <Link href="financial-aid">
+                <Button variant="outline" className="w-full">
+                  Financial Aid
+                </Button>
+              </Link>
+            </div>
+            <div className="text-xs text-gray-500">
+              All courses have 30-days money-back guarantee
+            </div>
+            </>
+          )}
         </div>
 
         <div className="flex flex-col space-y-2 mt-10">
