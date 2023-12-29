@@ -14,7 +14,7 @@ interface CourseCardProps {
     price: number;
     progress: number | null;
     category: string;
-};
+}
 
 export const CourseCard = ({
     id,

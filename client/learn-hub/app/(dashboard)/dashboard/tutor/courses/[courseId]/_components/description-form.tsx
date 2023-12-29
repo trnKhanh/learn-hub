@@ -1,12 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useContext } from "react";
 
 import {
     Form,
@@ -18,12 +16,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { EditContext } from "../edit-provider";
+import { updateCourse } from "@/actions/courses";
+import { toast } from "react-toastify";
 
 interface DescriptionFormProps {
     description: string;
-    courseId: string;
-};
+}
 
 const formSchema = z.object({
     description: z.string().min(1, {
@@ -33,14 +32,12 @@ const formSchema = z.object({
 
 export const DescriptionForm = ({
     description,
-    courseId
 }: DescriptionFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
-    const { toast } = useToast();
+    const {course, setCourse} = useContext(EditContext);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -52,17 +49,15 @@ export const DescriptionForm = ({
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            toast({
-                description: "Course Updated"
-            })
-            toggleEdit();
-            router.refresh();
-        } catch {
-            toast({
-                description: "Something went wrong"
-            })
+        console.log(values);
+        const res = await updateCourse(course?.id.toString(), values);
+        if (res && res.status === 200) {
+            setCourse(res.data.courses[0]);
+            toast.success(res.data.message);
+        } else {
+            toast.error("Something went wrong");
         }
+        toggleEdit();
     }
 
     return (

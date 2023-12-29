@@ -3,7 +3,7 @@ const { validationResult, matchedData } = require("express-validator");
 // models
 const Document = require("../models/Documents.model");
 const Lesson = require("../models/Lessons.model");
-// const LessonManager = require("../models/LessonManager.model");
+const LessonManager = require("../models/LessonManager.model");
 const Exam = require("../models/Exams.model");
 const fs = require("fs");
 const CHUNK_SIZE = 1024 * 1024;
@@ -61,7 +61,7 @@ class LessonsController {
   }
 
   static async getAllLessons(req, res) {
-    // let lessonManager = new LessonManager(req.course.id);
+    //let lessonManager = new LessonManager(req.course.id);
 
     try {
       // const lessons = await lessonManager.findAll();
@@ -111,7 +111,7 @@ class LessonsController {
     const lesson_id = req.params.lesson_id;
     const course_id = req.course.id;
     // let lessonManager = new LessonManager(course_id, lesson_id);
-
+    //console.log(req);
     try {
       const promises = [
         new Lesson({ course_id: course_id }).findOne({ id: lesson_id }),
@@ -143,6 +143,7 @@ class LessonsController {
   }
 
   static async update(req, res) {
+    console.log(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(422).send(errors);
@@ -161,7 +162,7 @@ class LessonsController {
     }
 
     const lesson_id = req.params.lesson_id;
-    const course_id = req.course.id;
+    const course_id = req.params.course_id;
 
     data.id = lesson_id;
     data.course_id = course_id;

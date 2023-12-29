@@ -1,13 +1,11 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 import {
     Form,
@@ -20,32 +18,25 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
+import { LessonEditContext } from "../lesson-provider";
+import { updateLesson } from "@/actions/lessons";
 
-interface ChapterDescriptionFormProps {
-    initialData: any;
-    courseId: string;
-    chapterId: string;
-};
 
 const formSchema = z.object({
     description: z.string().min(1),
 });
 
-export const ChapterDescriptionForm = ({
-    initialData,
-    courseId,
-    chapterId
-}: ChapterDescriptionFormProps) => {
+export const LessonDescriptionForm = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
+    const {lesson, setLesson} = useContext(LessonEditContext);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-        description: initialData?.description || ""
+            description: lesson?.name || ""
         },
     });
 
@@ -53,12 +44,15 @@ export const ChapterDescriptionForm = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
-        toast.success("Chapter updated");
-        toggleEdit();
-        router.refresh();
+            const res = await updateLesson(lesson?.course_id, lesson?.id, values);
+            if (res && res.status === 200) {
+                setLesson(res.data.lesson);
+                toast.success("Chapter updated");
+            }
+            toast.success("Chapter updated");
+            toggleEdit();
         } catch {
-        toast.error("Something went wrong");
+            toast.error("Something went wrong");
         }
     }
 
@@ -80,12 +74,12 @@ export const ChapterDescriptionForm = ({
         {!isEditing && (
             <div className={cn(
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+                !lesson?.name && "text-slate-500 italic"
             )}>
-            {!initialData.description && "No description"}
-            {initialData.description && (
+            {!lesson?.name && "No description"}
+            {lesson?.name && (
                 <Preview
-                value={initialData.description}
+                value={lesson?.name}
                 />
             )}
             </div>

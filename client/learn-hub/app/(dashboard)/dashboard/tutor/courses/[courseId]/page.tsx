@@ -11,13 +11,11 @@ import { DescriptionForm } from "./_components/description-form";
 import { ImageForm } from "./_components/image-form";
 import { CategoryForm } from "./_components/category-form";
 import { PriceForm } from "./_components/price-form";
-import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
-import { getAllCategories } from "@/actions/category";
-import { getAllLessonsByCourseId, getAllDocumentsByCourseId, getCategoriesOfCourseId, getCourse } from "@/actions/courses";
 import { useContext } from "react";
-import { EditContext, EditContextProvider } from "./edit-provider";
+import { EditContext } from "./edit-provider";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CourseIdPage =  ({
   params
@@ -26,26 +24,19 @@ const CourseIdPage =  ({
 }) => {
 
   const {course} = useContext(EditContext);
-  if (!course) return (<div>loading
-  </div>)
-  //console.log(course);
+  if (!course) return (
+    <div className="items-center">
+      <Skeleton className="w-[100px] h-[20px] rounded-full" />
+    </div>
+  )
 
-  //const categories = getAllCategories();
+  const categories = ["Programming", "UX/UI Design", "Marketing", "Photography", "Animation", "Video", "Business", "Finance"];
 
-  /*if (course === undefined) {
-    return Promise.reject(new Error("Course not found"));
-  }*/
-
-  /*const categoriesOfCourse = getCategoriesOfCourseId(params.courseId);
-
-  const lessons = getAllLessonsByCourseId(params.courseId);
-  const documents = getAllDocumentsByCourseId(params.courseId);*/
-  /*const requiredFields = [
+  const requiredFields = [
     course.name,
     course.description,
     course.profile_picture,
     course.price,
-    //categoriesOfCourse[0].id.toString(),
   ];
 
   const totalFields = requiredFields.length;
@@ -53,10 +44,7 @@ const CourseIdPage =  ({
 
   const completionText = `(${completedFields}/${totalFields})`;
 
-  const isComplete = requiredFields.every(Boolean);*/
-
-  const isComplete = false;
-  const completionText = "";
+  const isComplete = requiredFields.every(Boolean);
 
   return (
     <>
@@ -95,20 +83,14 @@ const CourseIdPage =  ({
             />
             <DescriptionForm
               description={course.description}
-              courseId={course.id.toString()}
             />
-            <ImageForm
-              initialData={course}
-              courseId={course.id.toString()}
-            />
-            {/*<CategoryForm
-              categoryId={categoriesOfCourse[0].id.toString()}
-              courseId={course.id.toString()}
-              options={categories.map((category) => ({
-                label: category.name,
-                value: category.id.toString(),
+            <ImageForm />
+            <CategoryForm
+              options={categories.map((category, index) => ({
+                label: category,
+                value: (index + 1).toString(),
               }))}
-            />*/}
+            />
           </div>
           <div className="space-y-6">
             <div>
@@ -118,10 +100,7 @@ const CourseIdPage =  ({
                   Course chapters
                 </h2>
               </div>
-              {/*<ChaptersForm
-                chapters={lessons}
-                courseId={course.id.toString()}
-          />*/}
+              <ChaptersForm />
             </div>
             <div>
               <div className="flex items-center gap-x-2">
@@ -142,10 +121,6 @@ const CourseIdPage =  ({
                   Resources & Attachments
                 </h2>
               </div>
-              {/*<AttachmentForm
-                documents={documents}
-                courseId={course.id.toString()}
-          />*/}
             </div>
           </div>
         </div>

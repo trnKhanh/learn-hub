@@ -26,7 +26,7 @@ export const CoursesList = ({ items, isHorizontal }: CoursesListProps) => {
                                 chaptersLength={1}
                                 price={item.price!}
                                 progress={item.progress}
-                                category={item?.category?.name!}
+                                category={item?.category?.name}
                             />
                         ))}
                     </div>
@@ -42,7 +42,7 @@ export const CoursesList = ({ items, isHorizontal }: CoursesListProps) => {
                                 chaptersLength={1}
                                 price={item.price!}
                                 progress={item.progress}
-                                category={item?.category?.name!}
+                                category={item?.category?.name}
                             />
                         ))}
                     </div>

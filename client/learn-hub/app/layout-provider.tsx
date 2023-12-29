@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/dashboard") === false) {
+  if (pathname.startsWith("/dashboard") === false && !pathname.match(/^\/courses\/[^/]+\/learn/)) {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />

@@ -28,7 +28,12 @@ router.get("/", coursesController.getAllCourses);
 router.get("/search", [searchCourseScheme], coursesController.searchCourse);
 router.get("/:course_id", coursesController.getCourse);
 
-router.get("/:course_id/documents", documentsController.getAllDocuments);
+//router.get("/:course_id/lessons", lessonsController.getAllLessons);
+
+/*router.get(
+  "/:course_id/documents",
+  documentsController.getAllDocumentsOfCourse,
+);*/
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
 
@@ -49,7 +54,7 @@ router.patch(
     validateToken,
     validateCourseAccessPermission,
     updateCourseScheme,
-    upload.single("profile_picture"),
+    //upload.single("profile_picture"),
   ],
   coursesController.updateCourse,
 );

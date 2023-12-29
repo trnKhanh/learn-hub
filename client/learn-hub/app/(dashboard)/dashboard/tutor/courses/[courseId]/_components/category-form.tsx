@@ -1,12 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useContext, useEffect } from "react";
 
 import {
     Form,
@@ -18,12 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
-import { useToast } from "@/components/ui/use-toast";
+import { getCategoriesOfCourseId } from "@/actions/category";
+import { EditContext } from "../edit-provider";
 
 interface CategoryFormProps {
-    categoryId: string;
-    courseId: string;
-    options: { label: string; value: string; }[];
+    options: { label: string; value: string; }[]
 };
 
 const formSchema = z.object({
@@ -31,46 +28,40 @@ const formSchema = z.object({
 });
 
 export const CategoryForm = ({
-    categoryId,
-    courseId,
-    options,
-}: CategoryFormProps) => {
+    options
+} : CategoryFormProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
-    const { toast } = useToast();
+    const {course} = useContext(EditContext);
+    const [categories, setCategories] = useState<Subject[]>([{
+        id: "1",
+        name: "Programming"
+    }]);
+
+    useEffect(() => {
+        getCategoriesOfCourseId(course?.id).then((res) => {
+            if (res && res.status === 200) {
+                setCategories(res.data.subjects);
+            }
+        }
+    )}, [])
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            categoryId: categoryId
+            categoryId: categories[0].id,
         },
     });
 
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            //await axios.patch(`/api/courses/${courseId}`, values);
-            toast(
-                {
-                    title:"Update course's category successfully"
-                }
-            )
-            toggleEdit();
-            router.refresh();
-        } catch {
-            toast(
-                {
-                    title:"Something went wrong updating course's category"
-                }
-            )
-        }
+        setCategories([{name: values.categoryId, id: values.categoryId}]);
     }
 
-    const selectedOption = options.find((option) => option.value === categoryId);
+    const selectedOption = options.find((option) => option.value === categories[0].id);
 
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -90,7 +81,7 @@ export const CategoryForm = ({
         {!isEditing && (
             <p className={cn(
             "text-sm mt-2",
-            !categoryId && "text-slate-500 italic"
+            !categories && "text-slate-500 italic"
             )}>
             {selectedOption?.label || "No category"}
             </p>
@@ -106,13 +97,13 @@ export const CategoryForm = ({
                 name="categoryId"
                 render={({ field }) => (
                     <FormItem>
-                    <FormControl>
-                        <Combobox
-                        options={...options}
-                        {...field}
-                        />
-                    </FormControl>
-                    <FormMessage />
+                        <FormControl>
+                            <Combobox
+                            options={...options}
+                            {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
                 )}
                 />
