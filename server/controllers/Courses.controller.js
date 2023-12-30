@@ -164,14 +164,14 @@ const getCourseProgress = async (req, res) => {
   try {
     const isPaid = await Course.isPaid(req.user.id, req.params.course_id);
     const progress = await Course.getProgess(req.user.id, req.params.course_id);
-    if (!progress) {
+    if (progress === null) {
       res.status(404).json({
         message: "Course has not registered",
       });
     } else {
       res.status(200).json({
         message: "Retrieve course progress successfully",
-        progress: { isPaid: isPaid, ...progress },
+        progress: { isPaid: isPaid, finished_percent: progress},
       });
     }
   } catch (err) {
