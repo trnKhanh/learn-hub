@@ -290,12 +290,27 @@ class Course {
           [id, student_id],
         );
       }
-      console.log("Found course's progress: ", {student_id: student_id, course_id: id, results: progress})
+
+      const [rows, lessons_field] = await con.query(
+        `SELECT lessons.*, finished_at
+        FROM lessons LEFT JOIN learn_lessons 
+          ON lessons.course_id=learn_lessons.course_id 
+            AND lessons.id=learn_lessons.lesson_id
+            AND lessons.course_id=? 
+            AND learn_lessons.student_id=?`,
+        [id, student_id],
+      );
+
+      console.log("Found course's progress: ", {
+        student_id: student_id,
+        course_id: id,
+        results: { progress: progress, lessons: rows },
+      });
 
       await con.commit();
       sql.releaseConnection(con);
 
-      return progress;
+      return { progress: progress, lessons: rows };
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);

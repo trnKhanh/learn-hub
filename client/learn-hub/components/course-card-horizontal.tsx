@@ -33,7 +33,7 @@ export const CourseCardHorizontal = ({ id }: { id: string }) => {
 
     getCourseProgress(id).then(res => {
       if (res && res.status == 200) {
-        setProgress(res.data.progress.finished_percent);
+        setProgress(res.data.progress.progress);
       }
     })
 

@@ -171,7 +171,7 @@ const getCourseProgress = async (req, res) => {
     } else {
       res.status(200).json({
         message: "Retrieve course progress successfully",
-        progress: { isPaid: isPaid, finished_percent: progress},
+        progress: { isPaid: isPaid, ...progress},
       });
     }
   } catch (err) {
