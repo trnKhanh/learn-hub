@@ -111,7 +111,7 @@ export const CreateSupporterDialog = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a verified email to display" />
+                        <SelectValue placeholder="Select supporter's role" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

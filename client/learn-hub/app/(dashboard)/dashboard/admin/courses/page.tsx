@@ -47,7 +47,13 @@ export default function Courses() {
       </div>
     );
 
-  if (courses && !courses.length) notFound();
+  if (courses && !courses.length) {
+    return (
+      <div className="flex p-6">
+        <p className="text-2xl text mx-auto">Found no courses</p>
+      </div>
+    );
+  }
 
   return (
     <DashboardSection>

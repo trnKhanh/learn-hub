@@ -2,10 +2,12 @@
 
 import { getCart } from "@/actions/courses";
 import { ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
+import { AppContext } from "@/app/auth-provider";
 
 const CustomizedShoppingCart = () => {
+  const { newCart, setNewCart } = useContext(AppContext);
   const [cart, setCart] = useState<{ course_id: string }[]>([]);
   useEffect(() => {
     getCart().then((res) => {
@@ -15,7 +17,7 @@ const CustomizedShoppingCart = () => {
         }
       }
     });
-  }, []);
+  }, [newCart]);
 
   return (
     <Link href="/dashboard/shopping-cart">

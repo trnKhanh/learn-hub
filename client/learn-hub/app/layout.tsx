@@ -6,7 +6,7 @@ import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { LayoutProvider } from "./layout-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./auth-provider";
+import { AppContextProvider } from "./auth-provider";
 import ToastProvider from "./toast-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,10 +32,10 @@ export default function RootLayout({
       <body>
         <ToastProvider>
           <div>
-            <AuthProvider>
+            <AppContextProvider>
               <LayoutProvider>{children}</LayoutProvider>
               <Toaster />
-            </AuthProvider>
+            </AppContextProvider>
           </div>
         </ToastProvider>
       </body>

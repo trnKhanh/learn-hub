@@ -14,10 +14,6 @@ class Exams {
       course_id: this.course_id,
       lesson_id: this.lesson_id,
     };
-
-    // console.log(
-    //   `>>> Exams.model > constructor: ${this.basic_filters.course_id} - ${this.basic_filters.lesson_id}`
-    // );
   }
 
   getFiltersAfterFormat(filters = {}) {

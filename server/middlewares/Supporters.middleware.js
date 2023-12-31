@@ -3,7 +3,7 @@ const Admin = require("../models/Admins.model");
 const validateSupporterAccessPermission = async (req, res, next) => {
   try {
     const admin = await Admin.findOne({
-      id: req.user.id,
+      id: req.user.id, 
       supporters_access: 1,
     });
     if (!admin) {

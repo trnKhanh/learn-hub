@@ -1,4 +1,5 @@
 const Student = require("../models/Students.model");
+const Course = require("../models/Courses.model");
 const { validationResult, matchedData } = require("express-validator");
 
 const createStudent = async (req, res) => {
@@ -119,10 +120,25 @@ const deleteStudentById = async (req, res) => {
     });
   }
 };
+const getCourses = async (req, res) => {
+  try {
+    const courses = await Course.getByStudentId(req.user.id);
+    res.status(200).json({
+      message: "Retrieve all courses registered by student successfully",
+      courses: courses,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when gettign user's courses",
+    });
+  }
+};
 module.exports = {
   getStudent,
   getAllStudents,
   createStudent,
   updateStudentById,
   deleteStudentById,
+  getCourses,
 };

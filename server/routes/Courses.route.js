@@ -26,11 +26,23 @@ const upload = multer({
 router.get("/", coursesController.getAllCourses);
 
 router.get("/search", [searchCourseScheme], coursesController.searchCourse);
-router.get("/:course_id", coursesController.getCourse);
-
-router.get("/:course_id/documents", documentsController.getAllDocuments);
 
 router.get("/:course_id/subjects", subjectsController.getSubjectsOfCourseId);
+
+router.get(
+  "/:course_id/progress",
+  [validateToken, validateStudent],
+  coursesController.getCourseProgress,
+);
+
+router.get("/:course_id", coursesController.getCourse);
+
+//router.get("/:course_id/lessons", lessonsController.getAllLessons);
+
+/*router.get(
+  "/:course_id/documents",
+  documentsController.getAllDocumentsOfCourse,
+);*/
 
 router.post(
   "/",
@@ -38,7 +50,6 @@ router.post(
     validateToken,
     validateCourseCreatePermission,
     createCourseScheme,
-    upload.single("profile_picture"),
   ],
   coursesController.createCourse,
 );
@@ -49,7 +60,6 @@ router.patch(
     validateToken,
     validateCourseAccessPermission,
     updateCourseScheme,
-    upload.single("profile_picture"),
   ],
   coursesController.updateCourse,
 );
@@ -64,12 +74,6 @@ router.post(
   "/:course_id/register",
   [validateToken, validateStudent],
   coursesController.registerStudent,
-);
-
-router.get(
-  "/:course_id/progress",
-  [validateToken, validateStudent],
-  coursesController.getCourseProgress,
 );
 
 const financialAidsRouter = require("./FinancialAids.route");

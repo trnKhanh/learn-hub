@@ -1,4 +1,5 @@
 const User = require("../models/Users.model");
+const Course = require("../models/Courses.model");
 const { validationResult, matchedData } = require("express-validator");
 
 const getUser = async (req, res) => {
@@ -63,13 +64,6 @@ const updateUserById = async (req, res) => {
 };
 
 const deleteUserById = async (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: "Invalid content",
-    });
-    return;
-  }
-
   try {
     const users = await User.deleteById(req.user.id);
     res.status(200).json({
@@ -83,6 +77,7 @@ const deleteUserById = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   getUser,
   getAllUsers,

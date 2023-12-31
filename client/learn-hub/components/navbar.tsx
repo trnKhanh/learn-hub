@@ -7,11 +7,11 @@ import SearchInput from "./search-input";
 import { Button } from "./ui/button";
 import UserNavbar from "./user-navbar";
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/app/auth-provider";
+import { AppContext } from "@/app/auth-provider";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 const Navbar = () => {
-  const { isAuth, setAuth } = useContext(AuthContext);
+  const { isAuth, setAuth } = useContext(AppContext);
   return (
     <nav className="w-full fixed z-40 bg-white">
       <div

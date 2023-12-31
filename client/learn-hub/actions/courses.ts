@@ -18,6 +18,7 @@ interface Filters {
   priceMax?: number;
   priceMin?: number;
 }
+
 export const searchCourses = async (filter: Filters) => {
   try {
     const res = await fetch(
@@ -52,6 +53,23 @@ export const getCourse = async (id: string) => {
     console.error(err);
   }
 };
+
+export const getCourseProgress = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/progress`, {
+      credentials: "include",
+    });
+    const data: {
+      message: string;
+      progress: { isPaid: boolean; progress: number; lessons: Lesson[] };
+    } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const getTutorList = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/tutors`);
@@ -66,6 +84,18 @@ export const getTutorList = async (id: string) => {
   }
 };
 
+export const getAllLessonsByCourseId = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
+    const data: { message: string; lessons: Lesson[] } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getCategoriesOfCourseId = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/subjects`);
@@ -74,6 +104,7 @@ export const getCategoriesOfCourseId = async (id: string) => {
     return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
+    return null;
   }
 };
 
@@ -88,6 +119,7 @@ export const getLessons = async (course_id: string) => {
     return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
+    return null;
   }
 };
 
@@ -112,14 +144,14 @@ export const getDocuments = async (course_id: string, lesson_id: string) => {
 //       `http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/videos`,
 //     );
 //     const data: { message: string; video: VideoData } = await res.json();
-//
+
 //     return { status: res.status, data: data };
 //   } catch (err) {
 //     console.error(err);
 //   }
 // };
 
-export const updateCourse = async (id: string, attribute: any) => {
+export const updateCourse = async (id: string | undefined, attribute: any) => {
   console.log(id);
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}`, {

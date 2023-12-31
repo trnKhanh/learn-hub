@@ -1,11 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2, PlusCircle } from "lucide-react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -21,22 +20,28 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
+import { EditContext } from "../edit-provider";
+import { getAllLessonsOfCourseId } from "@/actions/lessons";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface ChaptersFormProps {
+/*interface ChaptersFormProps {
     //initialData: Course & { chapters: Chapter[] };
-    chapters: Lesson[];
-    courseId: string;
-};
+    //chapters: Lesson[];
+    //courseId: string;
+}*/
 
 const formSchema = z.object({
     title: z.string().min(1),
 });
 
-export const ChaptersForm = ({
-    //initialData,
-    chapters,
-    courseId
-}: ChaptersFormProps) => {
+export const ChaptersForm = () => {
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: "",
+        },
+    });
+
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -45,34 +50,35 @@ export const ChaptersForm = ({
     }
 
     const router = useRouter();
+    const {course} = useContext(EditContext);
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-        },
-    });
+    const [lessons, setLessons] = useState<Lesson[]>();
+    useEffect(() => {
+        getAllLessonsOfCourseId(course?.id).then((res) => {
+            if (res && res.status === 200) {
+                console.log(res.data.lessons);
+                setLessons(res.data.lessons);
+            }
+    })}, [])
+
+    if (!lessons) return (
+        <div className="flex flex-row items-center justify-between">
+            <Skeleton className="w-[100px] h-[20px] rounded-full" />
+        </div>
+    )
 
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-        //await axios.post(`/api/courses/${courseId}/chapters`, values);
-            toast.success("Chapter created");
-            toggleCreating();
-            router.refresh();
-        } catch {
-            toast.error("Something went wrong");
-        }
+        
     }
 
     const onReorder = async (updateData: { id: string; position: number }[]) => {
         try {
             setIsUpdating(true);
+            
+            //write code to update order of the lessons
 
-            /*await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
-            list: updateData
-            });*/
             toast.success("Chapters reordered");
             router.refresh();
         } catch {
@@ -83,7 +89,7 @@ export const ChaptersForm = ({
     }
 
     const onEdit = (id: string) => {
-        router.push(`/dashboard/teacher/my-courses/${courseId}/chapters/${id}`);
+        router.push(`/dashboard/tutor/courses/${course?.id}/lessons/${id}`);
     }
 
     return (
@@ -140,13 +146,13 @@ export const ChaptersForm = ({
         {!isCreating && (
             <div className={cn(
             "text-sm mt-2",
-            !chapters.length && "text-slate-500 italic"
+            !lessons.length && "text-slate-500 italic"
             )}>
-            {!chapters.length && "No chapters"}
+            {!lessons.length && "No chapters"}
             <ChaptersList
                 onEdit={onEdit}
                 onReorder={onReorder}
-                items={chapters || []}
+                items={lessons || []}
             />
             </div>
         )}

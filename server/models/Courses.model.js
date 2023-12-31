@@ -152,6 +152,20 @@ class Course {
     return rows;
   };
 
+  static getByStudentId = async (student_id) => {
+    const [rows, fields] = await sql.query(
+      `SELECT ${Course.queryFields} FROM courses JOIN learn_courses 
+      ON id=course_id
+      WHERE student_id=?`,
+      [student_id],
+    );
+    console.log("Get all courses by student id: ", {
+      student_id: student_id,
+      results: rows,
+    });
+    return rows;
+  };
+
   // Update course by filters
   static updateById = async (id, columns) => {
     const con = await sql.getConnection();
@@ -241,44 +255,62 @@ class Course {
     const con = await sql.getConnection();
     try {
       await con.beginTransaction();
-      let [rows, _] = await con.query(
-        `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
-        [student_id, id],
+      const [isRegisted, _] = await con.query(
+        `SELECT *
+        FROM learn_courses
+        WHERE course_id=? AND student_id=?`,
+        [id, student_id],
       );
 
-      if (rows.length && !rows[0].finished_at) {
-        const [notDoneExams, fields] = await con.query(
-          `(SELECT id, lesson_id 
-            FROM exams
-            WHERE course_id=?)
-            EXCEPT
-            (SELECT exam_id, lesson_id
-              FROM do_exams
-              WHERE course_id=? AND student_id=? AND score>=5)`,
-          [id, id, student_id],
-        );
+      if (isRegisted.length == 0) {
+        await con.rollback();
+        sql.releaseConnection(con);
+        return null;
+      }
+      const [res, fields] = await con.query(
+        `SELECT COUNT(DISTINCT lessons.id) AS lessons_num, COUNT(DISTINCT learn_lessons.lesson_id) AS finished_lessons_num
+        FROM lessons LEFT JOIN learn_lessons 
+          ON lessons.course_id = learn_lessons.course_id
+            AND lessons.id = learn_lessons.lesson_id
+            AND learn_lessons.student_id=? 
+            AND lessons.course_id=? 
+            AND learn_lessons.finished_at IS NOT NULL`,
+        [student_id, id],
+      );
+      let progress = 1;
+      if (res.lessons_num != 0) {
+        progress = res[0].finished_lessons_num / res[0].lessons_num;
+      }
 
-        if (!notDoneExams.length) {
-          const [res, _] = await con.query(
-            `UPDATE learn_courses 
-            SET finished_at=CURRENT_TIMESTAMP
-            WHERE course_id=? AND student_id=?`,
-            [id, student_id],
-          );
-        }
-        [rows, _] = await con.query(
-          `SELECT finished_at FROM learn_courses WHERE student_id=? AND course_id=?`,
-          [student_id, id],
+      if (progress == 1) {
+        const [res, _] = await con.query(
+          `UPDATE learn_courses 
+          SET finished_at=CURRENT_TIMESTAMP
+          WHERE course_id=? AND student_id=?`,
+          [id, student_id],
         );
       }
+
+      const [rows, lessons_field] = await con.query(
+        `SELECT lessons.*, finished_at
+        FROM lessons LEFT JOIN learn_lessons 
+          ON lessons.course_id=learn_lessons.course_id 
+            AND lessons.id=learn_lessons.lesson_id
+            AND lessons.course_id=? 
+            AND learn_lessons.student_id=?`,
+        [id, student_id],
+      );
+
+      console.log("Found course's progress: ", {
+        student_id: student_id,
+        course_id: id,
+        results: { progress: progress, lessons: rows },
+      });
 
       await con.commit();
       sql.releaseConnection(con);
-      if (rows.length) {
-        return rows[0];
-      } else {
-        return null;
-      }
+
+      return { progress: progress, lessons: rows };
     } catch (err) {
       await con.rollback();
       sql.releaseConnection(con);

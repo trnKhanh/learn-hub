@@ -13,6 +13,9 @@ app.use(
     }),
 );
 app.use(cookieParser());
+
+// Config Request Body
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Use users router
@@ -38,7 +41,22 @@ app.use("/supporters", supportersRouter);
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
-const categoriesRouter = require("./routes/Subjects.route");
-app.use("/subjects", categoriesRouter);
+const languageRouter = require("./routes/Language.route");
+app.use("/languages" , languageRouter);
+
+const notificationsRouter = require("./routes/Notifications.route");
+app.use("/notifications" , notificationsRouter);
+
+const subjectsRouter = require("./routes/Subjects.route");
+app.use("/subjects" , subjectsRouter);
+
+const notesRouter = require("./routes/Notes.route");
+app.use("/notes" , notesRouter);
+
+const documentRouter = require("./routes/Documents.route");
+app.use("/courses/:course_id/lessons/:lesson_id/documents", documentRouter);
+
+const examsRouter = require("./routes/Exams.route");
+app.use("/courses/:course_id/lessons/:lesson_id/exams", examsRouter);
 
 module.exports = app;

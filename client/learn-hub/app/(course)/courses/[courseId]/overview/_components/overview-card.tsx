@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +29,8 @@ import Link from "next/link";
 import { addCart } from "@/actions/courses";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { AppContext } from "@/app/auth-provider";
+import { useContext } from "react";
 
 const difficultyMap: { [key: string]: string } = {
   BEGINNER: "Beginner",
@@ -39,6 +39,7 @@ const difficultyMap: { [key: string]: string } = {
 };
 
 export const CourseOverviewCard = ({ course }: { course: Course }) => {
+  const { newCart, setNewCart } = useContext(AppContext);
   const newPrice = course.price - course.price * course.discount;
   const formatDiscount = course.discount * 100;
   const router = useRouter();
@@ -115,6 +116,7 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
           <Button
             onClick={async (e) => {
               const res = await addCart(course.id);
+              setNewCart(!newCart);
               if (res) {
                 if (res.status == 201) {
                   toast.success(res.data.message);

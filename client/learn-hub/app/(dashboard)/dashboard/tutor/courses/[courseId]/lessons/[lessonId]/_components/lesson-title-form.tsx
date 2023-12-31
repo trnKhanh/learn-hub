@@ -1,51 +1,40 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useState, useContext } from "react";
+import { toast } from "react-toastify";
 
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
+import { LessonEditContext } from "../lesson-provider";
+import { updateLesson } from "@/actions/lessons";
 
-interface ChapterAccessFormProps {
-    initialData: any;
-    courseId: string;
-    lessonId: string;
-};
 
 const formSchema = z.object({
-    isFree: z.boolean().default(false),
+    name: z.string().min(1),
 });
 
-export const ChapterAccessForm = ({
-    initialData,
-    courseId,
-    lessonId
-}: ChapterAccessFormProps) => {
+export const LessonTitleForm = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
+    const {lesson, setLesson} = useContext(LessonEditContext);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            isFree: !!initialData.isFree
+            name: lesson?.name
         },
     });
 
@@ -53,10 +42,17 @@ export const ChapterAccessForm = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.patch(`/api/courses/${courseId}/chapters/${lessonId}`, values);
-            toast.success("Chapter updated");
+            console.log("hello edit title lesson");
+            const res = await updateLesson(lesson?.course_id, lesson?.id, values);
+            if (res) {
+                if (res.status === 200) {
+                setLesson(res.data.lesson);
+                toast.success(res.data.message);
+                } else {
+                    toast.error(res.data.message);
+                }
+            }
             toggleEdit();
-            router.refresh();
         } catch {
             toast.error("Something went wrong");
         }
@@ -65,28 +61,21 @@ export const ChapterAccessForm = ({
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
         <div className="font-medium flex items-center justify-between">
-            Chapter access
+            Chapter title
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing ? (
                 <>Cancel</>
             ) : (
                 <>
                 <Pencil className="h-4 w-4 mr-2" />
-                Edit access
+                Edit title
                 </>
             )}
             </Button>
         </div>
         {!isEditing && (
-            <p className={cn(
-            "text-sm mt-2",
-            !initialData.isFree && "text-slate-500 italic"
-            )}>
-            {initialData.isFree ? (
-                <>This chapter is free for preview.</>
-            ) : (
-                <>This chapter is not free.</>
-            )}
+            <p className="text-sm mt-2">
+            {lesson?.name}
             </p>
         )}
         {isEditing && (
@@ -97,20 +86,17 @@ export const ChapterAccessForm = ({
             >
                 <FormField
                 control={form.control}
-                name="isFree"
+                name="name"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormItem>
                     <FormControl>
-                        <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                        <Input
+                        disabled={isSubmitting}
+                        placeholder="e.g. 'Introduction to the course'"
+                        {...field}
                         />
                     </FormControl>
-                    <div className="space-y-1 leading-none">
-                        <FormDescription>
-                        Check this box if you want to make this chapter free for preview
-                        </FormDescription>
-                    </div>
+                    <FormMessage />
                     </FormItem>
                 )}
                 />
