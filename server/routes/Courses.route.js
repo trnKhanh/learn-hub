@@ -50,7 +50,6 @@ router.post(
     validateToken,
     validateCourseCreatePermission,
     createCourseScheme,
-    upload.single("profile_picture"),
   ],
   coursesController.createCourse,
 );
@@ -61,7 +60,6 @@ router.patch(
     validateToken,
     validateCourseAccessPermission,
     updateCourseScheme,
-    //upload.single("profile_picture"),
   ],
   coursesController.updateCourse,
 );

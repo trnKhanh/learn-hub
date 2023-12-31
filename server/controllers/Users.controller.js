@@ -78,24 +78,9 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-const getCourses = async (req, res) => {
-  try {
-    const courses = await Course.getByStudentId(req.user.id);
-    res.status(200).json({
-      message: "Retrieve all courses registered by student successfully",
-      courses: courses,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Errors occur when gettign user's courses",
-    });
-  }
-};
 module.exports = {
   getUser,
   getAllUsers,
   updateUserById,
   deleteUserById,
-  getCourses,
 };
