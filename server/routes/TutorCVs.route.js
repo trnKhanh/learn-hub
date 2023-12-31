@@ -11,9 +11,12 @@ const {
   updateTutorCVScheme,
 } = require("../middlewares/validators/TutorCVs.validator");
 
+const fs = require("fs");
 const multer = require("multer");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    const path = "./uploads/tutors/cvs";
+    fs.mkdirSync(path, { recursive: true });
     cb(null, "./uploads/tutors/cvs");
   },
   filename: function (req, file, cb) {
