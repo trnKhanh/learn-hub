@@ -4,7 +4,6 @@ import * as z from "zod";
 import MuxPlayer from "@mux/mux-player-react";
 import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState, useContext } from "react";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";

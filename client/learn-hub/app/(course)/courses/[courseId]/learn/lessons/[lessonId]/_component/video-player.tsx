@@ -72,16 +72,11 @@ export const VideoPlayer = ({
             </div>
         )}
         {!isLocked && (
-            <MuxPlayer
-                title={title}
-                className={cn(
-                    !isReady && "hidden"
-                )}
-                onCanPlay={() => setIsReady(true)}
-                onEnded={onEnd}
-                autoPlay
-                playbackId={playbackId}
-            />
+            <video>
+                <source
+                    src={`http://localhost:3001/courses/${courseId}/lessons/${lessonId}/video`}
+                    type="video/mp4"/>
+            </video>
         )}
         </div>
     )
