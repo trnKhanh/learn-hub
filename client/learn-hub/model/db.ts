@@ -25,10 +25,7 @@ type Lesson = {
   playbackId: string;
 }
 
-type LearnLesson = {
-  course_id: string;
-  lesson_id: string;
-  student_id: string;
+type LearnLesson = Lesson & {
   finished_at: string;
 }
 

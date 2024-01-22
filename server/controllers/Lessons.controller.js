@@ -18,14 +18,6 @@ class LessonsController {
 
     const data = matchedData(req);
     data.course_id = req.course.id;
-    if (req.file) {
-      data.videoUrl = req.file.path;
-    } else {
-      res.status(400).json({
-        message: "Must provide video of lesson",
-      });
-      return;
-    }
 
     try {
       // create Lesson Object by Class Lesson
@@ -154,7 +146,6 @@ class LessonsController {
     if (req.file) {
       data.videoUrl = req.file.path;
     }
-    
     if (!Object.keys(data).length) {
       res.status(400).json({
         message: "Must provide valid fields",

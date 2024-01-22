@@ -8,9 +8,7 @@ import { CourseContext } from "../../course-provider";
 
 interface CourseSidebarProps {
     course: Course | undefined,
-    lessons: (Lesson & {
-        studentProgress: LearnLesson | null;
-    })[] | undefined,
+    lessons: LearnLesson[] | undefined,
     progressCount: number
 }
 
@@ -42,7 +40,7 @@ export const CourseSidebar = ({
                         key={lesson.id}
                         id={lesson.id}
                         label={lesson.name}
-                        isCompleted={!!lesson.studentProgress?.finished_at}
+                        isCompleted={!!lesson.finished_at}
                         courseId={lesson.course_id}
                         isLocked={!lesson.isFree && !isPurchased}
                     />

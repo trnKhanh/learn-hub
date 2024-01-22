@@ -28,26 +28,26 @@ export const CourseProgressButton = ({
 
     const onClick = async () => {
         try {
-        setIsLoading(true);
+            setIsLoading(true);
 
-        await axios.put(`/api/courses/${courseId}/chapters/${lessonId}/progress`, {
-            isCompleted: !isCompleted
-        });
+            // await axios.put(`/api/courses/${courseId}/chapters/${lessonId}/progress`, {
+            //     isCompleted: !isCompleted
+            // });
 
-        if (!isCompleted && !nextLessonId) {
-            confetti.onOpen();
-        }
+            // if (!isCompleted && !nextLessonId) {
+            //     confetti.onOpen();
+            // }
 
-        if (!isCompleted && nextLessonId) {
-            router.push(`/courses/${courseId}/chapters/${nextLessonId}`);
-        }
+            // if (!isCompleted && nextLessonId) {
+            //     router.push(`/courses/${courseId}/chapters/${nextLessonId}`);
+            // }
 
-        toast.success("Progress updated");
-        router.refresh();
+            // toast.success("Progress updated");
+            router.refresh();
         } catch {
-        toast.error("Something went wrong");
+            toast.error("Something went wrong");
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     }
 

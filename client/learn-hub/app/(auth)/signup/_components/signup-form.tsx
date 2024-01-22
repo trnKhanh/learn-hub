@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { AuthContext } from "@/app/auth-provider";
+import { AppContext } from "@/app/auth-provider";
 import { CustomizedInput } from "@/components/ui/input";
 import { signup } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ const defaultValues: Partial<signUpFormValues> = {
 };
 
 export const SignupForm = () => {
-  const { isAuth, setAuth } = React.useContext(AuthContext);
+  const { isAuth, setAuth } = React.useContext(AppContext);
   const router = useRouter();
 
   const form = useForm<signUpFormValues>({

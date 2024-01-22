@@ -1,6 +1,6 @@
 "use client";
 
-import { getCourse } from "@/actions/courses";
+import { getCourse, getCourseProgress } from "@/actions/courses";
 import { createContext, useEffect, useState } from "react"
 
 interface CourseContextProps {
@@ -32,7 +32,13 @@ export const CourseProvider = ({children, params} : {children : React.ReactNode,
     }, [])
 
     useEffect(() => {
-        // TODO: Check if user has purchased course
+        getCourseProgress(params.courseId).then((res) => {
+            if (res) {
+                if (res.status == 200) {
+                    setPurchased(res.data.progress.isPaid);
+                }
+            }
+        })
     }, [])
 
     return (

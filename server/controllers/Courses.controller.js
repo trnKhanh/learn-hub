@@ -164,14 +164,14 @@ const getCourseProgress = async (req, res) => {
   try {
     const isPaid = await Course.isPaid(req.user.id, req.params.course_id);
     const progress = await Course.getProgess(req.user.id, req.params.course_id);
-    if (!progress) {
+    if (progress === null) {
       res.status(404).json({
         message: "Course has not registered",
       });
     } else {
       res.status(200).json({
         message: "Retrieve course progress successfully",
-        progress: { isPaid: isPaid, ...progress },
+        progress: { isPaid: isPaid, ...progress},
       });
     }
   } catch (err) {
@@ -185,14 +185,14 @@ const registerStudent = async (req, res) => {
   try {
     await Course.register(req.user.id, req.params.course_id);
     res.status(200).json({
-      message: "Course register successfully",
+      message: "Student has been registered for course",
     });
   } catch (err) {
     console.log(err);
 
     if (err.code == "ER_DUP_ENTRY") {
       res.status(409).json({
-        message: "User already registerd",
+        message: "User already registered",
       });
       return;
     }

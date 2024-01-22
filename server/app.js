@@ -41,11 +41,17 @@ app.use("/supporters", supportersRouter);
 const coursesRouter = require("./routes/Courses.route");
 app.use("/courses", coursesRouter);
 
-const lessonsRouter = require("./routes/Lessons.route");
-app.use("/courses/:course_id/lessons", lessonsRouter);
+const languageRouter = require("./routes/Language.route");
+app.use("/languages" , languageRouter);
 
-const categoriesRouter = require("./routes/Subjects.route");
-app.use("/subjects", categoriesRouter);
+const notificationsRouter = require("./routes/Notifications.route");
+app.use("/notifications" , notificationsRouter);
+
+const subjectsRouter = require("./routes/Subjects.route");
+app.use("/subjects" , subjectsRouter);
+
+const notesRouter = require("./routes/Notes.route");
+app.use("/notes" , notesRouter);
 
 const documentRouter = require("./routes/Documents.route");
 app.use("/courses/:course_id/lessons/:lesson_id/documents", documentRouter);

@@ -54,6 +54,22 @@ export const getCourse = async (id: string) => {
   }
 };
 
+export const getCourseProgress = async (id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/courses/${id}/progress`, {
+      credentials: "include",
+    });
+    const data: {
+      message: string;
+      progress: { isPaid: boolean; progress: number; lessons: LearnLesson[] };
+    } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const getTutorList = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/courses/${id}/tutors`);
@@ -73,12 +89,12 @@ export const getAllLessonsByCourseId = async (id: string) => {
     const res = await fetch(`http://localhost:3001/courses/${id}/lessons`);
     const data: { message: string; lessons: Lesson[] } = await res.json();
 
-    return { status : res.status, data : data};
+    return { status: res.status, data: data };
   } catch (err) {
     console.error(err);
     return null;
   }
-}
+};
 
 export const getCategoriesOfCourseId = async (id: string) => {
   try {
@@ -329,6 +345,20 @@ export const removeCart = async (id: string) => {
     });
     const data: { message: string; course_ids: { course_id: string }[] } =
       await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const createPayment = async () => {
+  try {
+    const res = await fetch(`http://localhost:3001/users/payments/`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const data: { message: string } = await res.json();
 
     return { status: res.status, data: data };
   } catch (err) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { redirect } from "next/navigation";
 import { File } from "lucide-react";
 
@@ -10,25 +12,34 @@ import { CourseEnrollButton } from "./_component/course-enroll-button";
 import { CourseProgressButton } from "./_component/course-progress-button";
 import { useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../../course-provider";
-import { LearnContext } from "../../learn-provider";
 import { getAllDocuments } from "@/actions/documents";
+import { getCourse, getCourseProgress } from "@/actions/courses";
+import { LearnLessonContext } from "../../learn-lesson-provider";
+import { CourseNavbar } from "../../_component/course-navbar";
+import { CourseSidebar } from "../../_component/course-sidebar";
 
-const LessonIdPage = async ({
+const LessonIdPage = ({
     params
 }: {
-    params: { courseId: string; lessonId: string }
+  params: { courseId: string; lessonId: string };
 }) => {
-    const { course } = useContext(CourseContext);
-    const { isPurchased } = useContext(CourseContext);
+    const { lessons } = useContext(LearnLessonContext);
+    const { course, isPurchased } = useContext(CourseContext);
 
-    const { lessons } = useContext(LearnContext);
-    const lesson = lessons?.find((lesson) => lesson.id === params.lessonId);
-    const nextLesson = lessons?.find((lesson) => lesson.id === (parseInt(params.lessonId) + 1).toString());
+    const [lesson, setLesson] = useState<LearnLesson>();
+    const [nextLesson, setNextLesson] = useState<LearnLesson>();
+
+    useEffect(() => {
+      if (lessons && course) {
+          setLesson(lessons.find((lesson) => lesson.id === params.lessonId));
+          setNextLesson(lessons.find((lesson) => lesson.id === (parseInt(params.lessonId) + 1).toString()));
+      }
+    }, [lessons, course]);
 
     const [ documents, setDocuments ] = useState<CourseDocument[]>([]);
 
     useEffect(() => {
-        getAllDocuments( params.courseId, params.lessonId).then((res) => {
+        getAllDocuments(params.courseId, params.lessonId).then((res) => {
             if (res) {
                 if (res.status == 200) {
                     setDocuments(res.data.documents);
@@ -38,38 +49,40 @@ const LessonIdPage = async ({
     }, []);
 
     if (!lesson || !course) {
-        return redirect("/")
+        return <div>Loading...</div>;
     }
 
     const isLocked = !lesson.isFree && !isPurchased;
-    const completeOnEnd = !!isPurchased && !lesson.studentProgress?.finished_at;
+    const completeOnEnd = !!isPurchased && !lesson.finished_at;
 
-    return ( 
-        <div>
-            {lesson.studentProgress?.finished_at && (
+    return (
+        <div className="h-full">
+          <div className="md:pl-80 pt-[80px] h-full">
+            <div>
+              {lesson.finished_at && (
                 <Banner
                     variant="success"
                     label="You already completed this lesson."
                 />
-            )}
-            {isLocked && (
+              )}
+              {isLocked && (
                 <Banner
                     variant="warning"
                     label="You need to purchase this course to watch this lesson."
                 />
-            )}
-        <div className="flex flex-col max-w-4xl mx-auto pb-20">
-            <div className="p-4">
-                {/*<VideoPlayer
-                    chapterId={params.lessonId}
-                    title={lesson.name}
-                    courseId={params.courseId}
-                    nextChapterId={nextLesson?.id}
-                    playbackId={videoData?.playbackId}
-                    isLocked={isLocked}
-                    completeOnEnd={completeOnEnd}
-                />*/}
-            </div>
+              )}
+            <div className="flex flex-col max-w-4xl mx-auto pb-20">
+              <div className="p-4">
+                  {/*<VideoPlayer
+                      chapterId={params.lessonId}
+                      title={lesson.name}
+                      courseId={params.courseId}
+                      nextChapterId={nextLesson?.id}
+                      playbackId={videoData?.playbackId}
+                      isLocked={isLocked}
+                      completeOnEnd={completeOnEnd}
+                  />*/}
+              </div>
             <div>
             <div className="p-4 flex flex-col md:flex-row items-center justify-between">
                 <h2 className="text-2xl font-semibold mb-2">
@@ -80,7 +93,7 @@ const LessonIdPage = async ({
                         lessonId={params.lessonId}
                         courseId={params.courseId}
                         nextLessonId={nextLesson?.id}
-                        isCompleted={!!lesson.studentProgress?.finished_at}
+                        isCompleted={!!lesson.finished_at}
                     />
                 ) : (
                     <CourseEnrollButton
@@ -113,10 +126,35 @@ const LessonIdPage = async ({
                 </div>
                 </>
             )}
-            </div>
+          </div>
+          <Separator />
+          <div>
+            <Preview value={lesson.name!} />
+          </div>
+            {!!documents.length && (
+              <>
+                <Separator />
+                <div className="p-4">
+                  {documents.map((document) => (
+                    <a
+                      href={document.file_path}
+                      target="_blank"
+                      key={document.document_id}
+                      className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline"
+                      rel="noreferrer"
+                    >
+                      <File />
+                      <p className="line-clamp-1">{document.name}</p>
+                    </a>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
         </div>
+      </div>
     );
-}
+};
 
 export default LessonIdPage;

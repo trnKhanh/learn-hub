@@ -19,8 +19,11 @@ const {
 
 const path = require("path");
 const multer = require("multer");
+const fs = require("fs");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    const path = `./uploads/courses/${req.params.course_id}/lessons/${req.params.lesson_id}/`;
+    fs.mkdirSync(path, { recursive: true });
     cb(
       null,
       `./uploads/courses/${req.params.course_id}/lessons/${req.params.lesson_id}/`,
@@ -72,7 +75,6 @@ router.post(
     getCourse,
     validateLessonChangePermission,
     createLessonScheme,
-    upload.single("video"),
   ],
   LessonsController.create,
 );

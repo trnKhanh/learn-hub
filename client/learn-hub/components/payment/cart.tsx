@@ -10,7 +10,8 @@ import {
 import { Button } from "../ui/button";
 import { CourseThumbnail } from "./_components/course-thumbnail";
 import { useEffect, useState } from "react";
-import { getCart } from "@/actions/courses";
+import { createPayment, getCart } from "@/actions/courses";
+import { toast } from "react-toastify";
 
 export const CourseCart = () => {
   const [totalMoney, setTotalMoney] = useState<number>(0);
@@ -62,7 +63,21 @@ export const CourseCart = () => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Complete Payment</Button>
+          <Button
+            onClick={async (e) => {
+              const res = await createPayment();
+              if (res) {
+                if (res.status == 201) {
+                  toast.success(res.data.message);
+                } else {
+                  toast.error(res.data.message);
+                }
+              }
+            }}
+            className="w-full"
+          >
+            Complete Payment
+          </Button>
         </CardFooter>
       </Card>
     </div>

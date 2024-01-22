@@ -22,6 +22,7 @@ import { usePathname } from "next/navigation";
 
 import { SidebarItem } from "./sidebar-item";
 import { useEffect, useState } from "react";
+import { getMineAdmin } from "@/actions/admins";
 
 const guestRoutes = [
   // {
@@ -79,35 +80,13 @@ const teacherRoutes = [
   },
 ];
 
-const adminRoutes = [
-  {
-    icon: List,
-    label: "Courses",
-    href: "/dashboard/admin/courses",
-  },
-  {
-    icon: BookUser,
-    label: "Tutors",
-    href: "/dashboard/admin/tutors",
-  },
-  {
-    icon: User,
-    label: "Students",
-    href: "/dashboard/admin/students",
-  },
-  {
-    icon: UserCog,
-    label: "Supporters",
-    href: "/dashboard/admin/supporters",
-  },
-  {
-    icon: Shield,
-    label: "Admins",
-    href: "/dashboard/admin/admins",
-  },
-];
-
-export const SidebarRoutes = ({ role }: { role?: string }) => {
+export const SidebarRoutes = ({
+  role,
+  admin_id,
+}: {
+  role?: string;
+  admin_id?: string;
+}) => {
   const [routes, setRoutes] = useState(guestRoutes);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isTutor, setIsTutor] = useState(false);
@@ -127,7 +106,40 @@ export const SidebarRoutes = ({ role }: { role?: string }) => {
     }
 
     if (role == "admin") {
-      setRoutes(adminRoutes);
+      getMineAdmin().then((res) => {
+        const adminRoutes = [];
+        if (res && res.status == 200) {
+          if (res.data.admin.courses_access) {
+            adminRoutes.push({
+              icon: List,
+              label: "Courses",
+              href: "/dashboard/admin/courses",
+            });
+          }
+          if (res.data.admin.tutors_access) {
+            adminRoutes.push({
+              icon: BookUser,
+              label: "Tutors",
+              href: "/dashboard/admin/tutors",
+            });
+          }
+          if (res.data.admin.students_access) {
+            adminRoutes.push({
+              icon: User,
+              label: "Students",
+              href: "/dashboard/admin/students",
+            });
+          }
+          if (res.data.admin.supporters_access) {
+            adminRoutes.push({
+              icon: UserCog,
+              label: "Supporters",
+              href: "/dashboard/admin/supporters",
+            });
+          }
+          setRoutes(adminRoutes);
+        }
+      });
     }
   }, []);
 
@@ -149,12 +161,14 @@ export const SidebarRoutes = ({ role }: { role?: string }) => {
           href={"/dashboard/admin"}
         />
       )}
-      <SidebarItem
-        key={"/dashboard/tutor"}
-        icon={BookUser}
-        label={"Tutor Verification"}
-        href={"/dashboard/tutor/verification"}
-      />
+      {role == undefined && (
+        <SidebarItem
+          key={"/dashboard/tutor"}
+          icon={BookUser}
+          label={"Tutor Verification"}
+          href={"/dashboard/tutor/verification"}
+        />
+      )}
     </div>
   );
 };

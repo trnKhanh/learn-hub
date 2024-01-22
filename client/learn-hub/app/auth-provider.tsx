@@ -3,28 +3,36 @@
 import { checkAuth } from "@/actions/auth";
 import { createContext, useEffect, useState } from "react";
 
-interface AuthContextProps {
+interface AppContextProps {
   isAuth: boolean;
   setAuth: React.Dispatch<React.SetStateAction<boolean>>;
+  newCart: boolean;
+  setNewCart: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AuthContext = createContext<AuthContextProps>({
+export const AppContext = createContext<AppContextProps>({
   isAuth: false,
   setAuth: () => {},
+  newCart: false,
+  setNewCart: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AppContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isAuth, setAuth] = useState(false);
+  const [newCart, setNewCart] = useState(false);
   useEffect(() => {
-    checkAuth().then((res)=>{
-      if (res && res.status != 401)
-        setAuth(true);
-    })
+    checkAuth().then((res) => {
+      if (res && res.status != 401) setAuth(true);
+    });
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuth, setAuth }}>
+    <AppContext.Provider value={{ isAuth, setAuth, newCart, setNewCart }}>
       {children}
-    </AuthContext.Provider>
+    </AppContext.Provider>
   );
 };

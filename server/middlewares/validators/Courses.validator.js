@@ -38,6 +38,11 @@ const createCourseScheme = [
     .optional()
     .isFloat({ min: 0, max: 1 })
     .withMessage("Course's price must be float in [0,1]"),
+  body("profile_picture")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Course's picture must not be empty"),
 ];
 
 const updateCourseScheme = [
@@ -69,6 +74,11 @@ const updateCourseScheme = [
     .optional()
     .isFloat({ min: 0, max: 1 })
     .withMessage("Course's price must be float in [0,1]"),
+  body("profile_picture")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Course's picture must not be empty"),
 ];
 
 const searchCourseScheme = [
@@ -88,7 +98,6 @@ const searchCourseScheme = [
   query("languages").optional(),
   query("difficulties").optional(),
 ];
-
 
 module.exports = {
   createCourseScheme,

@@ -34,7 +34,7 @@ const createAdmin = async (req, res) => {
 
 const getAdmin = async (req, res) => {
   try {
-    const admin = await Admin.findOne({ id: req.params.id });
+    const admin = await Admin.findOne({ id: req.params.id || req.user.id });
     if (!admin) {
       res.status(404).json({
         message: "Not found admin",

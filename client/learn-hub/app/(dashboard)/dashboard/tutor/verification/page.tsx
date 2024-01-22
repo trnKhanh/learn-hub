@@ -47,9 +47,6 @@ const Verification = () => {
       </div>
     );
 
-  console.log(tutor);
-  console.log(tutorCV);
-
   return (
     <DashboardSection>
       <DashboardSectionHeader icon={Activity}>Verification status</DashboardSectionHeader>

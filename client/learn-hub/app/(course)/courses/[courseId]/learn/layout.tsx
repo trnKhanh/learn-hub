@@ -1,20 +1,17 @@
-"use client";
+import { LearnLessonProvider } from "./learn-lesson-provider";
 
-import { LearnProvider } from "./learn-provider";
-
-const LearnCourseLayout = async ({
+const CourseLayout = async ({
     children,
-    params
-}: {
-    children: React.ReactNode;
-    params: { courseId: string };
+    params,
+} : {
+    children : React.ReactNode;
+    params: {courseId: string};
 }) => {
-    
-    return (
-        <LearnProvider params={params}>
+    return ( 
+        <LearnLessonProvider params={params}>
             {children}
-        </LearnProvider>
-    )
+        </LearnLessonProvider>
+    );
 }
 
-export default LearnCourseLayout
+export default CourseLayout;

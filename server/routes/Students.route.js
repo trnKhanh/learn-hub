@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const { validateToken } = require("../middlewares/Auth.middleware");
 const {
-  validateStudentAccessPermission,
+  validateStudentAccessPermission, validateStudent,
 } = require("../middlewares/Students.middleware");
 const {
   updateStudentScheme,
@@ -11,7 +11,14 @@ const {
 
 router.get("/", studentsController.getAllStudents);
 
+router.get(
+  "/courses",
+  [validateToken, validateStudent],
+  studentsController.getCourses,
+);
+
 router.get("/:id", studentsController.getStudent);
+
 
 router.post("/", [validateToken], studentsController.createStudent);
 

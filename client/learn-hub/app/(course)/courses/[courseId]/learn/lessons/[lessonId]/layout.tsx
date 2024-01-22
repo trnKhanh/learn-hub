@@ -1,15 +1,19 @@
 "use client";
 
 import React, { useContext } from "react";
-import { LearnContext } from "../../learn-provider";
 import { CourseContext } from "../../../course-provider";
 import { CourseNavbar } from "../../_component/course-navbar";
 import { CourseSidebar } from "../../_component/course-sidebar";
+import { LearnLessonContext } from "../../learn-lesson-provider";
 
 const LearnLessonLayout = ({
-    children
-} : { children : React.ReactNode }) => {
-    const { lessons } = useContext(LearnContext);
+    children,
+    params
+} : { 
+    children : React.ReactNode;
+    params: { courseId: string };
+}) => {
+    const { lessons } = useContext(LearnLessonContext);
     const { course } = useContext(CourseContext);
 
     return (
