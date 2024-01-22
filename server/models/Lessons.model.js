@@ -29,6 +29,7 @@ class Lesson {
       `SELECT * FROM lessons WHERE ${filterKeys}`,
       filterValues,
     );
+    console.log(rows);
     return rows;
   }
 

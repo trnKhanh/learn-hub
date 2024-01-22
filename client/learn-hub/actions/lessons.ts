@@ -46,6 +46,24 @@ export const updateLesson = async (course_id: string | undefined, lesson_id: str
     }
 };
 
+export const uploadVideo = async (course_id: string | undefined, lesson_id: string | undefined, video: any) => {
+    try {
+        const body = new FormData();
+        body.append("video", video);
+        const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/`, {
+            credentials: "include",
+            method: "PATCH",
+            body: body,
+        });
+        const data: { message: string; lesson: Lesson } = await res.json();
+    
+        return { status: res.status, data: data };
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
 export const deleteLesson = async (course_id: string | undefined, lesson_id: string | undefined) => {
     try {
         const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons/${lesson_id}`, {

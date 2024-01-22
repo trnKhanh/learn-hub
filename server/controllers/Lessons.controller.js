@@ -146,7 +146,6 @@ class LessonsController {
     if (req.file) {
       data.videoUrl = req.file.path;
     }
-
     if (!Object.keys(data).length) {
       res.status(400).json({
         message: "Must provide valid fields",

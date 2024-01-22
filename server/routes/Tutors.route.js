@@ -38,6 +38,8 @@ router.get("/mine", [validateToken, validateTutor], tutorsController.getTutor);
 
 router.get("/:id", tutorsController.getTutor);
 
+router.get("/:id/courses", tutorsController.getCoursesOfTutor);
+
 router.post(
   "/",
   [validateToken, upload.single("cv")],

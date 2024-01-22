@@ -39,7 +39,7 @@ export const LessonItem = ({
       <AccordionContent>
         <div className="flex flex-col space-y-2">
           {documents.map((doc) => (
-            <div key={doc.id} className="flex flex-row items-center space-x-2">
+            <div key={doc.document_id} className="flex flex-row items-center space-x-2">
               <FileText className="h-5 w-5" />
               <div className="text-sm text-gray-500">{doc.name}</div>
             </div>

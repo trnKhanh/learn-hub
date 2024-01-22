@@ -13,8 +13,12 @@ import { LessonAccessForm } from "./_components/lesson-access-form";
 import { LessonVideoForm } from "./_components/lesson-video-form";
 import { LessonActions } from "./_components/lesson-actions";
 import { LessonEditContext } from "./lesson-provider";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { LessonDocumentForm } from "./_components/lesson-document-form";
+import { Button } from "@mui/material";
+import { CloudUpload } from "@mui/icons-material";
+import { updateLesson, uploadVideo } from "@/actions/lessons";
+import { toast } from "react-toastify";
 
 const ChapterIdPage = ({
     params
@@ -22,6 +26,8 @@ const ChapterIdPage = ({
     params: { courseId: string; chapterId: string }
 }) => {
     const {lesson} = useContext(LessonEditContext);
+    const [isUploading, setIsUploading] = useState(false);
+    const [video, setVideo] = useState<File>();
 
     const requiredFields = [
         lesson?.name,
@@ -106,6 +112,51 @@ const ChapterIdPage = ({
                     </h2>
                     </div>
                     {/* <LessonVideoForm/> */}
+                    <div className="w-1/2 flex space-x-2 items-center">
+                        <form
+                            className="flex flex-col space-x-2 items-center mx-auto"
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (video) {
+                                    setIsUploading(true);
+                                    const res = await uploadVideo(lesson?.course_id, lesson?.id, video);
+                                    if (res) {
+                                        if (res.status === 200) {
+                                            toast.success(res.data.message);
+                                        } else {
+                                            toast.error(res.data.message);
+                                        }
+                                    }
+                                    setIsUploading(false);
+                                }
+                            }}
+                        >
+                            <Button
+                                component="label"
+                                variant="contained"
+                                startIcon={<CloudUpload />}
+                            >
+                            Upload Video Lesson
+                            <input
+                                className="w-0"
+                                type="file"
+                                accept=".mp4"
+                                onChange={(e) => {
+                                if (e.target.files && e.target.files.length)
+                                    setVideo(e.target.files[0]);
+                                }}
+                            />
+                            {video && (
+                                <div className="ml-3 pl-3 border-l-white border-l-2">
+                                {video.name}
+                                </div>
+                            )}
+                            </Button>
+                            <Button className="mt-2">
+                            <input className="text-lg" type="submit" />
+                            </Button>
+                        </form>
+                    </div>
                 </div>
                 </div>
             </div>

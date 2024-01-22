@@ -10,17 +10,17 @@ import { Button } from "@/components/ui/button";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 
 interface CourseProgressButtonProps {
-    chapterId: string;
+    lessonId: string;
     courseId: string;
     isCompleted?: boolean;
-    nextChapterId?: string;
+    nextLessonId?: string;
 }
 
 export const CourseProgressButton = ({
-    chapterId,
+    lessonId,
     courseId,
     isCompleted,
-    nextChapterId
+    nextLessonId
 }: CourseProgressButtonProps) => {
     const router = useRouter();
     const confetti = useConfettiStore();
@@ -28,26 +28,26 @@ export const CourseProgressButton = ({
 
     const onClick = async () => {
         try {
-        setIsLoading(true);
+            setIsLoading(true);
 
-        await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
-            isCompleted: !isCompleted
-        });
+            // await axios.put(`/api/courses/${courseId}/chapters/${lessonId}/progress`, {
+            //     isCompleted: !isCompleted
+            // });
 
-        if (!isCompleted && !nextChapterId) {
-            confetti.onOpen();
-        }
+            // if (!isCompleted && !nextLessonId) {
+            //     confetti.onOpen();
+            // }
 
-        if (!isCompleted && nextChapterId) {
-            router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-        }
+            // if (!isCompleted && nextLessonId) {
+            //     router.push(`/courses/${courseId}/chapters/${nextLessonId}`);
+            // }
 
-        toast.success("Progress updated");
-        router.refresh();
+            // toast.success("Progress updated");
+            router.refresh();
         } catch {
-        toast.error("Something went wrong");
+            toast.error("Something went wrong");
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     }
 

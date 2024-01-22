@@ -48,3 +48,18 @@ export const deleteDocument = async (course_id: string | undefined, lesson_id: s
         return null;
     }
 }
+
+export const getAllDocuments = async (course_id: string | undefined, lesson_id: string | undefined) => {
+    try {
+        const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/documents/`, {
+            credentials: "include",
+            method: "GET",
+        });
+        const data: { message: string; documents: CourseDocument[] } = await res.json();
+    
+        return { status: res.status, data: data };
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}

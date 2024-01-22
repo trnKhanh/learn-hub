@@ -61,7 +61,7 @@ export const getCourseProgress = async (id: string) => {
     });
     const data: {
       message: string;
-      progress: { isPaid: boolean; progress: number; lessons: Lesson[] };
+      progress: { isPaid: boolean; progress: number; lessons: LearnLesson[] };
     } = await res.json();
 
     return { status: res.status, data: data };

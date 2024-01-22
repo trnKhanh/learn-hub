@@ -25,17 +25,9 @@ type Lesson = {
   playbackId: string;
 }
 
-type LearnLesson = {
-  course_id: string;
-  lesson_id: string;
-  student_id: string;
+type LearnLesson = Lesson & {
   finished_at: string;
 }
-
-// type VideoData = {
-//   assetId: string;
-//   playbackId: string;
-// };
 
 type CourseDocument = {
   document_id: string;
@@ -44,6 +36,14 @@ type CourseDocument = {
   name: string;
   file_path: string;
 };
+
+type CourseExam = {
+  course_id: string;
+  lesson_id: string;
+  id: string;
+  name: string;
+  percentage: number;
+}
 
 type User = {
   id: string;

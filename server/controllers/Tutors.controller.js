@@ -136,10 +136,33 @@ const deleteTutorById = async (req, res) => {
     });
   }
 };
+
+const getCoursesOfTutor = async (req, res) => {
+  try {
+    const courses = await Tutor.getCoursesOfTutor(req.params.id);
+    if (!courses) {
+      res.status(404).json({
+        message: "Not found tutor id",
+      });
+    } else {
+      res.status(200).json({
+        message: "Retrieve courses of tutor successfully",
+        courses: courses,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Errors occur when getting courses of tutor",
+    });
+  }
+}
 module.exports = {
   getTutor,
   getAllTutors,
   createTutor,
   updateTutorById,
   deleteTutorById,
+  getCoursesOfTutor,
 };
+

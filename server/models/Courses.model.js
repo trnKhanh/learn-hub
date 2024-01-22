@@ -357,4 +357,5 @@ class Course {
     return rows;
   };
 }
+
 module.exports = Course;

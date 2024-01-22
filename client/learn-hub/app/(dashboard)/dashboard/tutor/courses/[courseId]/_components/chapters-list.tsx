@@ -49,8 +49,8 @@ export const ChaptersList = ({
         setChapters(items);
 
         const bulkUpdateData = updatedLessons.map((lesson) => ({
-            id: lesson.lesson_id,
-            position: items.findIndex((item) => item.lesson_id === lesson.lesson_id)
+            id: lesson.id,
+            position: items.findIndex((item) => item.id === lesson.id)
         }));
 
         onReorder(bulkUpdateData);
@@ -67,8 +67,8 @@ export const ChaptersList = ({
             <div {...provided.droppableProps} ref={provided.innerRef}>
                 {chapters.map((lesson, index) => (
                 <Draggable 
-                    key={lesson.lesson_id} 
-                    draggableId={lesson.lesson_id} 
+                    key={lesson.id} 
+                    draggableId={lesson.id} 
                     index={index}
                 >
                     {(provided) => (
@@ -107,7 +107,7 @@ export const ChaptersList = ({
                             {lesson.isPublished ? "Published" : "Draft"}
                         </Badge>
                         <Pencil
-                            onClick={() => onEdit(lesson.lesson_id)}
+                            onClick={() => onEdit(lesson.id)}
                             className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                         />
                         </div>
