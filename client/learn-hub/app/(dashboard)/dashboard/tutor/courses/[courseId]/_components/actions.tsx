@@ -15,7 +15,7 @@ interface ActionsProps {
     disabled: boolean;
     courseId: string;
     isPublished: boolean;
-};
+}
 
 export const Actions = ({
     course,

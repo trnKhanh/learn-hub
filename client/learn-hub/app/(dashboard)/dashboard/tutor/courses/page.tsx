@@ -1,13 +1,26 @@
+"use client";
+
 import { redirect } from "next/navigation";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { getCourses } from "@/actions/courses";
+import { getCourseOfTutor } from "@/actions/courses";
+import { useEffect, useState } from "react";
 
-const CoursesPage = async () => {
+const CoursesPage = () => {
+    const [courses, setCourses] = useState<Course[]>();
 
-    const courses = await getCourses();
-    console.log(courses);
+    useEffect(() => {
+        getCourseOfTutor().then((res) => {
+            if (res && res.status === 200) {
+                setCourses(res.data.courses);
+            }
+        })
+    }, []);
+
+    if (!courses) {
+        return <div>Loading...</div>;
+    }
 
     return ( 
     <div className="p-6">

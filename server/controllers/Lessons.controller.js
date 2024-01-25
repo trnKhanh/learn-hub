@@ -10,7 +10,9 @@ const CHUNK_SIZE = 1024 * 1024;
 
 class LessonsController {
   static async create(req, res) {
+    console.log(req.body);
     const errors = validationResult(req);
+    
     if (!errors.isEmpty()) {
       res.status(422).send(errors);
       return;

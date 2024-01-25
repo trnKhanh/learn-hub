@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
 import { EditContext } from "../edit-provider";
-import { getAllLessonsOfCourseId } from "@/actions/lessons";
+import { createLesson, getAllLessonsOfCourseId } from "@/actions/lessons";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /*interface ChaptersFormProps {
@@ -31,14 +31,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 }*/
 
 const formSchema = z.object({
-    title: z.string().min(1),
+    name: z.string().min(1),
 });
 
 export const ChaptersForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
+            name: "",
         },
     });
 
@@ -70,7 +70,14 @@ export const ChaptersForm = () => {
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        
+        createLesson(course?.id, values).then((res) => {
+            if (res && res.status === 200) {
+                toast.success(res.data.message);
+                router.refresh();
+            } else {
+                toast.error("Something went wrong");
+            }
+        });
     }
 
     const onReorder = async (updateData: { id: string; position: number }[]) => {
@@ -120,7 +127,7 @@ export const ChaptersForm = () => {
             >
                 <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                     <FormItem>
                     <FormControl>

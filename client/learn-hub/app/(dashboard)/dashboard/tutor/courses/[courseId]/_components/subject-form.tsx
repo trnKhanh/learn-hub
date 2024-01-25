@@ -16,8 +16,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Combobox } from "@/components/ui/combobox";
-import { getCategoriesOfCourseId } from "@/actions/category";
+//import { getCategoriesOfCourseId } from "@/actions/category";
 import { EditContext } from "../edit-provider";
+import { getSubjectByCourseId, updateSubjectOfCourseId } from "@/actions/subjects";
+import { toast } from "react-toastify";
 
 interface CategoryFormProps {
     options: { label: string; value: string; }[]
@@ -41,7 +43,7 @@ export const CategoryForm = ({
     }]);
 
     useEffect(() => {
-        getCategoriesOfCourseId(course?.id).then((res) => {
+        getSubjectByCourseId(course?.id).then((res) => {
             if (res && res.status === 200) {
                 setCategories(res.data.subjects);
             }
@@ -59,6 +61,8 @@ export const CategoryForm = ({
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setCategories([{name: values.categoryId, id: values.categoryId}]);
+        
+        toast.success("Category updated");
     }
 
     const selectedOption = options.find((option) => option.value === categories[0].id);

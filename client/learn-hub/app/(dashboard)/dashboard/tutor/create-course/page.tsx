@@ -4,7 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 
 import {
   Form,
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
-import { ToastAction } from "@/components/ui/toast";
+import { createCourse } from "@/actions/courses";
 
 const courseFormSchema = z.object({
   name: z.string().min(1, {
@@ -39,6 +39,9 @@ const courseFormSchema = z.object({
   duration: z.number().min(0, {
     message: "Duration is required",
   }),
+  // duration: z.string().min(1, {
+  //   message: "Duration is required",
+  // }),
 
   price: z.number().min(0, {
     message: "Price is required",
@@ -56,13 +59,12 @@ const defaultValues: Partial<courseFormValues> = {
   description: "",
   difficulty: "BEGINNER",
   duration: 0,
+  // duration: "",
   price: 0,
   discount: 0,
 };
 
 const CreatePage = () => {
-  const { toast } = useToast();
-
   const router = useRouter();
   const form = useForm<courseFormValues>({
     resolver: zodResolver(courseFormSchema),
@@ -71,10 +73,34 @@ const CreatePage = () => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = () => {
-    toast({
-      title: form.getValues("name"),
-      description: "Your course has been created successfully",
+  const onSubmit = (values : z.infer<typeof courseFormSchema>) => {
+    if (!isValid) {
+      console.log(form.formState.errors.price);
+      console.log(form.formState.errors.duration);
+      console.log(form.formState.errors.discount);
+      return;
+    }
+
+    console.log("hello");
+
+    const newCourse = {
+      name: values.name,
+      description: values.description,
+      difficulty: values.difficulty,
+      duration: values.duration,
+      price: values.price,
+      discount: values.discount,
+    }
+
+    createCourse(newCourse).then((res) => {
+      if (res) {
+        if (res.status == 201) {
+          toast.success(res.data.message);
+          router.push(`/dashboard/tutor/courses/${res.data.course.id}`);
+        } else {
+          toast.error(res.data.message);
+        }
+      }
     });
   };
 
@@ -153,6 +179,7 @@ const CreatePage = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="duration"
@@ -161,14 +188,23 @@ const CreatePage = () => {
                   <FormLabel className="text-lg">Duration</FormLabel>
                   <div className="relative w-max">
                     <FormControl>
-                      <Input placeholder="Duration" {...field} />
+                      <Input type="number" placeholder="Duration" {...field} onChange={(e) => {
+                        // Ensure the input value is parsed to a number
+                        const value = parseInt(e.target.value, 10);
+                        field.onChange(value);
+                      }}/>
                     </FormControl>
                     <p className="absolute right-7 top-1.5 opacity-50">DAYS</p>
                   </div>
                   <FormDescription>
-                    Set the difficulty level of your course.
+                    Set the duration of your course.
                   </FormDescription>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
+                  {form.formState.errors.duration && (
+                    <FormMessage>
+                      {form.formState.errors.duration.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -182,7 +218,11 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Price</FormLabel>
                   <FormControl>
-                    <Input placeholder="Course Price" {...field} />
+                    <Input type="number" placeholder="Course Price" {...field} onChange={(e) => {
+                      // Ensure the input value is parsed to a number
+                      const value = parseInt(e.target.value, 10);
+                      field.onChange(value);
+                    }}/>
                   </FormControl>
                   <FormDescription>
                     How much does your course cost?
@@ -199,7 +239,11 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Discount</FormLabel>
                   <FormControl>
-                    <Input placeholder="Course Discount" {...field} />
+                    <Input type="number" placeholder="Course Discount" {...field} onChange={(e) => {
+                      // Ensure the input value is parsed to a number
+                      const value = parseInt(e.target.value, 10);
+                      field.onChange(value);
+                    }}/>
                   </FormControl>
                   <FormDescription>
                     How much discount does your course have?
@@ -210,7 +254,7 @@ const CreatePage = () => {
             />
           </div>
           <div className="flex justify-center">
-            <Button type="submit" disabled={!isValid || isSubmitting}>
+            <Button type="submit">
               Create Course
             </Button>
           </div>

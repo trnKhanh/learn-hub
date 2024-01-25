@@ -37,12 +37,8 @@ router.get(
 
 router.get("/:course_id", coursesController.getCourse);
 
-//router.get("/:course_id/lessons", lessonsController.getAllLessons);
+router.get("/tutor/:tutor_id", coursesController.getCoursesOfTutor);
 
-/*router.get(
-  "/:course_id/documents",
-  documentsController.getAllDocumentsOfCourse,
-);*/
 
 router.post(
   "/",

@@ -1,3 +1,23 @@
+export const createCourse = async (course: any) => {
+  try {
+    console.log(course);
+    const res = await fetch("http://localhost:3001/courses/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(course),
+      headers: new Headers({
+        "content-type": "application/json",
+      }),
+    });
+    const data: { message: string; course: Course } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.log("huhu");
+    console.error(err);
+  }
+}
+
 export const getAllCourses = async () => {
   try {
     const res = await fetch("http://localhost:3001/courses", {
@@ -10,6 +30,7 @@ export const getAllCourses = async () => {
     console.error(err);
   }
 };
+
 interface Filters {
   subjects: string[] | [];
   languages: string[] | [];
@@ -322,6 +343,7 @@ export const getCart = async () => {
     console.error(err);
   }
 };
+
 export const addCart = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/users/cart/${id}`, {
@@ -365,3 +387,19 @@ export const createPayment = async () => {
     console.error(err);
   }
 };
+
+export const getCourseOfTutor = async () => {
+  try {
+    const res = await fetch(
+      `http://localhost:3001/courses/tutor/`,
+      {
+        credentials: "include",
+      },
+    );
+    const data: { message: string; courses: Course[] } = await res.json();
+
+    return { status: res.status, data: data };
+  } catch (err) {
+    console.error(err);
+  }
+}

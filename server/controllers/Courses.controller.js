@@ -3,11 +3,13 @@ const Tutor = require("../models/Tutors.model");
 const { validationResult, matchedData } = require("express-validator");
 
 const createCourse = async (req, res) => {
+  //console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).send(errors);
     return;
   }
+  
   const data = matchedData(req);
   if (req.file) data.profile_picture = req.file.path;
 
@@ -181,6 +183,7 @@ const getCourseProgress = async (req, res) => {
     });
   }
 };
+
 const registerStudent = async (req, res) => {
   try {
     await Course.register(req.user.id, req.params.course_id);
@@ -226,6 +229,30 @@ const searchCourse = async (req, res) => {
   }
 };
 
+const getCoursesOfTutor = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).send(errors);
+    return;
+  }
+  const data = matchedData(req);
+
+  try {
+    const courses = await Course.findAll(data);
+
+    res.status(200).json({
+      message: "Get courses' information successfully",
+      courses: courses,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Errors occur when getting courses",
+    });
+  }
+}
+
 module.exports = {
   getCourse,
   getAllCourses,
@@ -235,4 +262,5 @@ module.exports = {
   registerStudent,
   getCourseProgress,
   searchCourse,
+  getCoursesOfTutor,
 };

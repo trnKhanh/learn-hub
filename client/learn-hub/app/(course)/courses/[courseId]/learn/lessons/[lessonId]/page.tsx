@@ -31,8 +31,8 @@ const LessonIdPage = ({
 
     useEffect(() => {
       if (lessons && course) {
-          setLesson(lessons.find((lesson) => lesson.id === params.lessonId));
-          setNextLesson(lessons.find((lesson) => lesson.id === (parseInt(params.lessonId) + 1).toString()));
+          setLesson(lessons.find((lesson) => lesson.id == params.lessonId));
+          setNextLesson(lessons.find((lesson) => lesson.id == (parseInt(params.lessonId) + 1).toString()));
       }
     }, [lessons, course]);
 
@@ -56,8 +56,8 @@ const LessonIdPage = ({
     const completeOnEnd = !!isPurchased && !lesson.finished_at;
 
     return (
-        <div className="h-full">
-          <div className="md:pl-80 pt-[80px] h-full">
+        // <div className="h-full">
+        //   <div className="md:pl-80 pt-[80px] h-full">
             <div>
               {lesson.finished_at && (
                 <Banner
@@ -73,15 +73,15 @@ const LessonIdPage = ({
               )}
             <div className="flex flex-col max-w-4xl mx-auto pb-20">
               <div className="p-4">
-                  {/*<VideoPlayer
-                      chapterId={params.lessonId}
+                  <VideoPlayer
+                      lessonId={params.lessonId}
                       title={lesson.name}
                       courseId={params.courseId}
                       nextChapterId={nextLesson?.id}
-                      playbackId={videoData?.playbackId}
+                      playbackId={""}
                       isLocked={isLocked}
                       completeOnEnd={completeOnEnd}
-                  />*/}
+                  />
               </div>
             <div>
             <div className="p-4 flex flex-col md:flex-row items-center justify-between">
@@ -152,8 +152,8 @@ const LessonIdPage = ({
             )}
           </div>
         </div>
-        </div>
-      </div>
+      //   </div>
+      // </div>
     );
 };
 
