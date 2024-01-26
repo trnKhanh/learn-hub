@@ -139,7 +139,8 @@ const deleteTutorById = async (req, res) => {
 
 const getCoursesOfTutor = async (req, res) => {
   try {
-    const courses = await Tutor.getCoursesOfTutor(req.params.id);
+    console.log(req.user.id);
+    const courses = await Tutor.getCoursesOfTutor(req.user.id);
     if (!courses) {
       res.status(404).json({
         message: "Not found tutor id",
@@ -157,6 +158,7 @@ const getCoursesOfTutor = async (req, res) => {
     });
   }
 }
+
 module.exports = {
   getTutor,
   getAllTutors,

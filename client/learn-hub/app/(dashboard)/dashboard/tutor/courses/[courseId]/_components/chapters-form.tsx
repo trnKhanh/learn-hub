@@ -24,12 +24,6 @@ import { EditContext } from "../edit-provider";
 import { createLesson, getAllLessonsOfCourseId } from "@/actions/lessons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/*interface ChaptersFormProps {
-    //initialData: Course & { chapters: Chapter[] };
-    //chapters: Lesson[];
-    //courseId: string;
-}*/
-
 const formSchema = z.object({
     name: z.string().min(1),
 });
@@ -112,14 +106,14 @@ export const ChaptersForm = () => {
             </div>
         )}
         <div className="font-medium flex items-center justify-between">
-            Course chapters
+            Course lessons
             <Button onClick={toggleCreating} variant="ghost">
             {isCreating ? (
                 <>Cancel</>
             ) : (
                 <>
                 <PlusCircle className="h-4 w-4 mr-2" />
-                Add a chapter
+                Add a lesson
                 </>
             )}
             </Button>

@@ -154,10 +154,12 @@ class Tutor {
   };
 
   static getCoursesOfTutor = async (id) => {
+    console.log("get courses of tutor");
+    console.log(id);
     const [rows, fields] = await sql.query(
       `SELECT c.id, c.name, c.description, c.difficulty, c.duration, c.owner_id, c.price, c.profile_picture, c.discount, c.isPublished
         FROM tutors t, courses c
-        WHERE c.owner_id = t.id and c.isPublished = 1 and t.id=?`,
+        WHERE c.owner_id = t.id and t.id=?`,
       [id]
     );
     console.log("Get all tutors: ", { results: rows });

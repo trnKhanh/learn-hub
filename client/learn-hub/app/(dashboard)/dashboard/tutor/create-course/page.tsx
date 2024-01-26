@@ -36,20 +36,17 @@ const courseFormSchema = z.object({
     required_error: "Difficulty level is required",
   }),
 
-  duration: z.number().min(0, {
+  duration: z.coerce.number().min(0, {
     message: "Duration is required",
   }),
-  // duration: z.string().min(1, {
-  //   message: "Duration is required",
-  // }),
 
-  price: z.number().min(0, {
+  price: z.coerce.number().min(0, {
     message: "Price is required",
   }),
 
-  discount: z.number().min(0, {
+  discount: z.coerce.number().min(0, {
     message: "Discount is required",
-  }),
+  }).max(1, { message: "Discount is invalid" }),
 });
 
 type courseFormValues = z.infer<typeof courseFormSchema>;
@@ -59,7 +56,6 @@ const defaultValues: Partial<courseFormValues> = {
   description: "",
   difficulty: "BEGINNER",
   duration: 0,
-  // duration: "",
   price: 0,
   discount: 0,
 };
@@ -74,14 +70,9 @@ const CreatePage = () => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = (values : z.infer<typeof courseFormSchema>) => {
-    if (!isValid) {
-      console.log(form.formState.errors.price);
-      console.log(form.formState.errors.duration);
-      console.log(form.formState.errors.discount);
+    if (!isValid || !isSubmitting) {
       return;
     }
-
-    console.log("hello");
 
     const newCourse = {
       name: values.name,
@@ -188,23 +179,13 @@ const CreatePage = () => {
                   <FormLabel className="text-lg">Duration</FormLabel>
                   <div className="relative w-max">
                     <FormControl>
-                      <Input type="number" placeholder="Duration" {...field} onChange={(e) => {
-                        // Ensure the input value is parsed to a number
-                        const value = parseInt(e.target.value, 10);
-                        field.onChange(value);
-                      }}/>
+                      <Input type="number" step="1" placeholder="Duration" {...field}/>
                     </FormControl>
                     <p className="absolute right-7 top-1.5 opacity-50">DAYS</p>
                   </div>
                   <FormDescription>
                     Set the duration of your course.
                   </FormDescription>
-                  {/* <FormMessage /> */}
-                  {form.formState.errors.duration && (
-                    <FormMessage>
-                      {form.formState.errors.duration.message}
-                    </FormMessage>
-                  )}
                 </FormItem>
               )}
             />
@@ -218,11 +199,7 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Price</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Course Price" {...field} onChange={(e) => {
-                      // Ensure the input value is parsed to a number
-                      const value = parseInt(e.target.value, 10);
-                      field.onChange(value);
-                    }}/>
+                    <Input type="number" step="0.01" placeholder="Course Price" {...field}/>
                   </FormControl>
                   <FormDescription>
                     How much does your course cost?
@@ -239,11 +216,7 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Discount</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Course Discount" {...field} onChange={(e) => {
-                      // Ensure the input value is parsed to a number
-                      const value = parseInt(e.target.value, 10);
-                      field.onChange(value);
-                    }}/>
+                    <Input type="number" step="0.01" placeholder="Course Discount" {...field}/>
                   </FormControl>
                   <FormDescription>
                     How much discount does your course have?

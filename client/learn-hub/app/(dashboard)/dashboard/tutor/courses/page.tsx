@@ -1,25 +1,38 @@
 "use client";
 
-import { redirect } from "next/navigation";
-
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { getCourseOfTutor } from "@/actions/courses";
+
 import { useEffect, useState } from "react";
+import { getCoursesOfTutor } from "@/actions/tutors";
+import { Skeleton } from "@mui/material";
 
 const CoursesPage = () => {
     const [courses, setCourses] = useState<Course[]>();
 
     useEffect(() => {
-        getCourseOfTutor().then((res) => {
-            if (res && res.status === 200) {
+        getCoursesOfTutor().then((res) => {
+            console.log(res);
+            if (res && res.status == 200) {
                 setCourses(res.data.courses);
             }
         })
     }, []);
 
     if (!courses) {
-        return <div>Loading...</div>;
+        return <>
+            <div className="flex flex-col items-center py-10 justify-center space-y-6">
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+                <Skeleton className="w-1/2 h-6" />
+            </div>
+        </>
     }
 
     return ( 

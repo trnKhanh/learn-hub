@@ -1,6 +1,5 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { CircleDollarSign, File, LayoutDashboard, ListChecks } from "lucide-react";
 
 import { IconBadge } from "@/components/icon-badge";
@@ -26,8 +25,16 @@ const CourseIdPage =  ({
   const {course} = useContext(EditContext);
 
   if (!course) return (
-    <div className="items-center">
-      <Skeleton className="w-[100px] h-[20px] rounded-full" />
+    <div className="flex flex-col items-center py-10 justify-center space-y-6">
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
+      <Skeleton className="w-1/2 h-6" />
     </div>
   )
 
@@ -98,7 +105,7 @@ const CourseIdPage =  ({
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
                 <h2 className="text-xl">
-                  Course chapters
+                  Course lessons
                 </h2>
               </div>
               <ChaptersForm />
@@ -115,14 +122,14 @@ const CourseIdPage =  ({
                 courseId={course.id.toString()}
               />
             </div>
-            <div>
+            {/* <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={File} />
                 <h2 className="text-xl">
                   Resources & Attachments
                 </h2>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

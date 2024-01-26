@@ -37,7 +37,7 @@ router.get(
 
 router.get("/:course_id", coursesController.getCourse);
 
-router.get("/tutor/:tutor_id", coursesController.getCoursesOfTutor);
+//router.get("/tutor/:tutor_id", coursesController.getCoursesOfTutor);
 
 
 router.post(

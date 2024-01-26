@@ -12,27 +12,37 @@ import { LessonEditContext } from "../lesson-provider";
 import { createDocument, deleteDocument } from "@/actions/documents";
 
 const formSchema = z.object({
-    url: z.string().min(1),
+    file_path: z.string().min(1, {
+        message: "File path is required",
+    }),
+    name: z.string().min(1, {
+        message: "Name is required",
+    }),
 });
 
-export const LessonDocumentForm = () => {
+export const LessonDocumentForm = ({
+    courseId,
+    lessonId
+} : {courseId: string, lessonId: string}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
     const {documents, setDocuments} = useContext(LessonEditContext)
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        console.log(values);
         try {
-            if (documents !== undefined) {
-                const res = await createDocument(documents[0].course_id, documents[0].lesson_id, values);
-                if (res && res.status == 200) {
-                    const newDocuments = documents;
+            const res = await createDocument(courseId, lessonId, values);
+            if (res) {
+                if (res.status == 200) {
+                    const newDocuments = documents ? [...documents] : [];
                     newDocuments.push(res.data.document);
                     setDocuments(newDocuments);
                     toast.success(res.data.message);
+                } else {
+                    toast.error(res.data.message);
                 }
             }
         } catch {
@@ -61,7 +71,7 @@ export const LessonDocumentForm = () => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
         <div className="font-medium flex items-center justify-between">
-            Course attachments
+            Lesson attachments
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing && (
                 <>Cancel</>
@@ -117,7 +127,7 @@ export const LessonDocumentForm = () => {
                     endpoint="courseAttachment"
                     onChange={(url) => {
                         if (url) {
-                            onSubmit({ url: url });
+                            onSubmit({ file_path: url, name: "Note Lesson " + lessonId});
                         }
                     }}
                 />
