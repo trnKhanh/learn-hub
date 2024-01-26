@@ -3,8 +3,7 @@
 import * as z from "zod";
 import { Pencil, PlusCircle, ImageIcon, File, Loader2, X } from "lucide-react";
 import { useState, useContext } from "react";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
@@ -29,18 +28,21 @@ export const LessonDocumentForm = ({
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const {documents, setDocuments} = useContext(LessonEditContext)
+    const {documents, setDocuments} = useContext(LessonEditContext);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
         try {
             const res = await createDocument(courseId, lessonId, values);
             if (res) {
-                if (res.status == 200) {
+                if (res.status == 201) {
+                    toast.success(res.data.message);
+                    console.log("hello");
                     const newDocuments = documents ? [...documents] : [];
                     newDocuments.push(res.data.document);
+                    console.log(newDocuments);
                     setDocuments(newDocuments);
-                    toast.success(res.data.message);
+                    toggleEdit();
                 } else {
                     toast.error(res.data.message);
                 }
@@ -54,9 +56,9 @@ export const LessonDocumentForm = ({
         try {
             setDeletingId(id);
             if (documents !== undefined) {
-                const res = await deleteDocument(documents[+id].course_id, documents[+id].lesson_id, documents[+id].document_id);
+                const res = await deleteDocument(documents[+id].course_id, documents[+id].lesson_id, documents[+id].id);
                 if (res && res.status == 200) {
-                    const newDocuments = documents.filter((document) => document.document_id !== id);
+                    const newDocuments = documents.filter((document) => document.id !== id);
                     setDocuments(newDocuments);
                     toast.success("updated documents!");
                 }
@@ -95,21 +97,21 @@ export const LessonDocumentForm = ({
                 <div className="space-y-2">
                 {documents.map((document) => (
                     <div
-                    key={document.document_id}
+                    key={document.id}
                     className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
                     >
                     <File className="h-4 w-4 mr-2 flex-shrink-0" />
                     <p className="text-xs line-clamp-1">
                         {document.name}
                     </p>
-                    {deletingId === document.document_id && (
+                    {deletingId === document.id && (
                         <div>
                         <Loader2 className="h-4 w-4 animate-spin" />
                         </div>
                     )}
-                    {deletingId !== document.document_id && (
+                    {deletingId !== document.id && (
                         <Button
-                        onClick={() => onDelete(document.document_id)}
+                        onClick={() => onDelete(document.id)}
                         className="ml-auto hover:opacity-75 transition"
                         >
                         <X className="h-4 w-4" />

@@ -10,7 +10,7 @@ const CourseReviewSection = ({tutor_id} : {tutor_id: string}) => {
     const [courses, setCourses] = useState<Course[]>();
 
     useEffect(() => {
-        getCoursesOfTutor(tutor_id).then((res) => {
+        getCoursesOfTutor().then((res) => {
             if (res) {
                 console.log("retrieve courses");
                 if (res.status === 200) {
