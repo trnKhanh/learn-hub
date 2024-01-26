@@ -7,7 +7,7 @@ import { CourseProgress } from "./course-progress";
 import { formatPrice } from "@/lib/format";
 import { useEffect, useState } from "react";
 import { getCourse, getCourseProgress, getLessons } from "@/actions/courses";
-import { getSubjectByCourseId, getSubjects } from "@/actions/category";
+import { getSubjectByCourseId, getSubjects } from "@/actions/subjects";
 import { toast } from "react-toastify";
 
 interface CourseCardProps {
@@ -49,7 +49,7 @@ export const CourseCardHorizontal = ({ id }: { id: string }) => {
   }
 
   return (
-    <Link href={`/courses/${id}`}>
+    <Link href={`/courses/${id}/learn`}>
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 w-full">
         <div className="flex flex-col pt-2">
           <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">

@@ -297,8 +297,9 @@ class Course {
           ON lessons.course_id=learn_lessons.course_id 
             AND lessons.id=learn_lessons.lesson_id
             AND lessons.course_id=? 
-            AND learn_lessons.student_id=?`,
-        [id, student_id],
+            AND learn_lessons.student_id=?
+        WHERE lessons.course_id=?`,
+        [id, student_id, id],
       );
 
       console.log("Found course's progress: ", {
