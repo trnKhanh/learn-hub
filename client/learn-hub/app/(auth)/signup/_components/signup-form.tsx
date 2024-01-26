@@ -2,7 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
-import { Form, FormDescription, FormField, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormDescription,
+  FormField,
+  FormMessage,
+} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
 import * as z from "zod";
@@ -17,7 +22,7 @@ const signUpFormSchema = z
   .object({
     username: z
       .string()
-      .min(2, {
+      .min(4, {
         message: "Username must be at least 2 characters.",
       })
       .max(255, {
@@ -28,8 +33,14 @@ const signUpFormSchema = z
     }),
     password: z
       .string()
-      .regex(new RegExp(".*[A-Z].*"), "Must contains at least 1 uppercase character")
-      .regex(new RegExp(".*[a-z].*"), "Must contains at least 1 lowercase character")
+      .regex(
+        new RegExp(".*[A-Z].*"),
+        "Must contains at least 1 uppercase character",
+      )
+      .regex(
+        new RegExp(".*[a-z].*"),
+        "Must contains at least 1 lowercase character",
+      )
       .regex(new RegExp(".*\\d.*"), "Must contains at least 1 number")
       .regex(
         new RegExp(".*[`~<>?,./!@#$%^&*()\\-_+=\"'|{}\\[\\];:\\\\].*"),
@@ -177,7 +188,10 @@ export const SignupForm = () => {
                       </div>
                     </div>
                     <div className="bg-neutral-400 flex w-[430px] shrink-0 h-0.5 flex-col max-md:mt-0 mt-2.5 max-md:max-w-full" />
-                    <FormDescription>Password must contain at least 1 lowercase character, 1 uppercase character, 1 number and 1 special character</FormDescription>
+                    <FormDescription>
+                      Password must contain at least 1 lowercase character, 1
+                      uppercase character, 1 number and 1 special character
+                    </FormDescription>
                     <FormMessage />
                   </div>
                 )}
