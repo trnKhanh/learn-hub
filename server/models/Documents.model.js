@@ -57,7 +57,7 @@ class Documents {
       console.log(document.id)
       console.log(document.course_id)
       console.log(document.lesson_id)
-      const [rows, fields] = await sql.query(
+      const [rows, fields] = await con.query(
         `SELECT * FROM documents WHERE id=? AND course_id=? AND lesson_id=?`,
         [document.id, document.course_id, document.lesson_id]
       );

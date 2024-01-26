@@ -7,7 +7,7 @@ const CourseIdPage = ({
 }: {
     params: { courseId: string; }
 }) => {
-    return redirect(`/courses/${params.courseId}/lessons/${1}`);
+    return redirect(`/courses/${params.courseId}/learn/lessons/${1}`);
 }
 
 export default CourseIdPage;

@@ -1,10 +1,9 @@
 "use client";
 
-import axios from "axios";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
@@ -29,6 +28,8 @@ export const CourseProgressButton = ({
     const onClick = async () => {
         try {
             setIsLoading(true);
+
+            toast.success("Progress updated");
 
             // await axios.put(`/api/courses/${courseId}/chapters/${lessonId}/progress`, {
             //     isCompleted: !isCompleted

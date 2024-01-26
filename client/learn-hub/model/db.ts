@@ -30,7 +30,7 @@ type LearnLesson = Lesson & {
 }
 
 type CourseDocument = {
-  document_id: string;
+  id: string;
   course_id: string;
   lesson_id: string;
   name: string;

@@ -9,7 +9,6 @@ import { formatPrice } from "@/lib/format";
 import { CourseProgress } from "@/components/course-progress";
 import { useEffect, useState } from "react";
 import { getCourse, getCourseProgress, getLessons } from "@/actions/courses";
-import { getSubjectByCourseId } from "@/actions/category";
 
 interface CourseCardProps {
   id: string;
@@ -35,7 +34,7 @@ export const CourseCard = ({ id }: { id: string }) => {
 
     getCourseProgress(id).then((res) => {
       if (res && res.status == 200) {
-        setProgress(res.data.progress.finished_percent);
+        setProgress(res.data.progress.progress);
       }
     });
 

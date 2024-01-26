@@ -26,7 +26,7 @@ export const TutorItem = ({ tutor_id }: { tutor_id: string }) => {
   }
 
   return (
-    <Link href={`/tutors/${tutor_id}`}>
+    <Link href={`/profile/${tutor_id}`}>
       <div className="flex flex-row">
         <div className="flex items-center space-x-4">
           <Avatar>

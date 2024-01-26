@@ -56,8 +56,7 @@ const LessonIdPage = ({
     const completeOnEnd = !!isPurchased && !lesson.finished_at;
 
     return (
-        // <div className="h-full">
-        //   <div className="md:pl-80 pt-[80px] h-full">
+        <div>
             <div>
               {lesson.finished_at && (
                 <Banner
@@ -114,7 +113,7 @@ const LessonIdPage = ({
                     <a 
                         href={document.file_path}
                         target="_blank"
-                        key={document.document_id}
+                        key={document.id}
                         className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline" rel="noreferrer"
                     >
                         <File />
@@ -127,33 +126,9 @@ const LessonIdPage = ({
                 </>
             )}
           </div>
-          <Separator />
-          <div>
-            <Preview value={lesson.name!} />
-          </div>
-            {!!documents.length && (
-              <>
-                <Separator />
-                <div className="p-4">
-                  {documents.map((document) => (
-                    <a
-                      href={document.file_path}
-                      target="_blank"
-                      key={document.document_id}
-                      className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline"
-                      rel="noreferrer"
-                    >
-                      <File />
-                      <p className="line-clamp-1">{document.name}</p>
-                    </a>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
         </div>
-      //   </div>
-      // </div>
+      </div>
+      </div>
     );
 };
 

@@ -13,7 +13,7 @@ const LearnLessonLayout = ({
     children : React.ReactNode;
     params: { courseId: string };
 }) => {
-    const { lessons } = useContext(LearnLessonContext);
+    const { lessons, progress } = useContext(LearnLessonContext);
     const { course } = useContext(CourseContext);
 
     return (
@@ -22,14 +22,14 @@ const LearnLessonLayout = ({
                 <CourseNavbar
                     course={course}
                     lessons={lessons}
-                    progressCount={10}
+                    progressCount={progress}
                 />
             </div>
             <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50">
                 <CourseSidebar
                     course={course}
                     lessons={lessons}
-                    progressCount={10}
+                    progressCount={progress}
                 />
             </div>
             <main className="md:pl-80 pt-[80px] h-full">
