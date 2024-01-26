@@ -37,7 +37,7 @@ const createCourseScheme = [
   body("discount")
     .optional()
     .isFloat({ min: 0, max: 1 })
-    .withMessage("Course's price must be float in [0,1]"),
+    .withMessage("Course's discount must be float in [0,1]"),
   body("profile_picture")
     .optional()
     .trim()

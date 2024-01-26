@@ -8,7 +8,7 @@ import Services from "@/components/homepage/services";
 
 export default function Home() {
   return (
-    <>
+    <div>
       <Container className="pt-[6.4rem] pb-[10rem]">
         <HomepageHero />
       </Container>
@@ -17,6 +17,6 @@ export default function Home() {
       <Categories />
       <About />
       <NewsLetter />
-    </>
+    </div>
   );
 }

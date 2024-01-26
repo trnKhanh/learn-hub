@@ -1,7 +1,7 @@
 "use client";
 
 import { getCourseProgress } from "@/actions/courses";
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface LearnLessonContextProps {
     lessons: LearnLesson[] | undefined,

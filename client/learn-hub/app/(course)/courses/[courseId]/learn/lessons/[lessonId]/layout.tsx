@@ -7,11 +7,11 @@ import { CourseSidebar } from "../../_component/course-sidebar";
 import { LearnLessonContext } from "../../learn-lesson-provider";
 
 const LearnLessonLayout = ({
-    children,
-    params
-} : { 
-    children : React.ReactNode;
-    params: { courseId: string };
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { courseId: string };
 }) => {
     const { lessons, progress } = useContext(LearnLessonContext);
     const { course } = useContext(CourseContext);
