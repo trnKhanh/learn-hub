@@ -298,7 +298,7 @@ class Course {
             AND lessons.id=learn_lessons.lesson_id
             AND lessons.course_id=? 
             AND learn_lessons.student_id=?
-        WHERE lessons.course_id=?`,
+        WHERE lessons.course_id=? AND isPublished=1`,
         [id, student_id, id],
       );
 

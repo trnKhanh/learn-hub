@@ -25,7 +25,7 @@ export default function FinancialAids({
   params,
 }: {
   params: {
-    course_id: string;
+    courseId: string;
   };
 }) {
   const [financialAids, setFinancialAids] = useState<FinancialAid[]>();
@@ -34,7 +34,7 @@ export default function FinancialAids({
   const router = useRouter();
 
   useEffect(() => {
-    getAllFinancialAidsForTutor(params.course_id).then((res) => {
+    getAllFinancialAidsForTutor(params.courseId).then((res) => {
       if (res) {
         if (res.status == 200) {
           setFinancialAids((state) => res.data.financialAids);

@@ -72,9 +72,12 @@ export const CourseCart = () => {
               if (res) {
                 if (res.status == 201) {
                   toast.success(res.data.message);
-                  router.push(`/dashboard/my-courses/`)
+                  router.push(`/dashboard/my-courses/`);
                 } else {
                   toast.error(res.data.message);
+                  if (res.status == 401) {
+                    router.push(`/signup`);
+                  }
                 }
               }
             }}

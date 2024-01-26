@@ -45,7 +45,7 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
   const formatDiscount = course.discount * 100;
   const router = useRouter();
 
-  const {isPurchased} = useContext(CourseContext);
+  const { isPurchased } = useContext(CourseContext);
 
   return (
     <Card className="w-[350px] shadow-lg">
@@ -118,56 +118,69 @@ export const CourseOverviewCard = ({ course }: { course: Course }) => {
 
         <div className="flex flex-col space-y-2 mt-10">
           {isPurchased ? (
-            <Button onClick={() => router.push(`/courses/${course.id}/learn/lessons/1`)} className="w-full">
+            <Button
+              onClick={() =>
+                router.push(`/courses/${course.id}/learn/lessons/1`)
+              }
+              className="w-full"
+            >
               Continue Learning
             </Button>
           ) : (
             <>
               <Button
-              onClick={async (e) => {
-                const res = await addCart(course.id);
-                setNewCart(!newCart);
-                if (res) {
-                  if (res.status == 201) {
-                    toast.success(res.data.message);
-                  } else {
-                    toast.error(res.data.message);
+                onClick={async (e) => {
+                  const res = await addCart(course.id);
+                  setNewCart(!newCart);
+                  if (res) {
+                    if (res.status == 201) {
+                      toast.success(res.data.message);
+                    } else {
+                      if (res.status == 401) {
+                        router.push("/signup");
+                      }
+                    }
                   }
-                }
-              }}
-              className="w-full"
-            >
-              Add to cart
-            </Button>
-            <Button
-              onClick={async (e) => {
-                const res = await addCart(course.id);
-                if (res) {
-                  if (res.status == 201) {
-                    toast.success(res.data.message);
-                  }
-                  router.push("/courses/payment");
-                }
-              }}
-              variant="attract"
-              className="w-full"
-            >
-              Buy now
-            </Button>
-            <div className="flex flex-row space-x-2">
-              <Button variant="outline" className="w-full">
-                Wishlist
+                }}
+                className="w-full"
+              >
+                Add to cart
               </Button>
-
-              <Link href="financial-aid">
+              <Button
+                onClick={async (e) => {
+                  const res = await addCart(course.id);
+                  if (res) {
+                    if (res.status == 201) {
+                      toast.success(res.data.message);
+                      router.push("/courses/payment");
+                    } else {
+                      if (res.status == 401) {
+                        router.push("/signup");
+                      } else {
+                        router.push("/courses/payment");
+                      }
+                    }
+                  }
+                }}
+                variant="attract"
+                className="w-full"
+              >
+                Buy now
+              </Button>
+              <div className="flex flex-row space-x-2">
                 <Button variant="outline" className="w-full">
-                  Financial Aid
+                  Wishlist
                 </Button>
-              </Link>
-            </div>
-            <div className="text-xs text-gray-500">
-              All courses have 30-days money-back guarantee
-            </div>
+
+                <Link href="financial-aid">
+                  <Button variant="outline" className="w-full">
+                    Financial Aid
+                  </Button>
+                </Link>
+              </div>
+              <div className="text-xs text-gray-500">
+                All courses have 30-days money-back guarantee
+              </div>
             </>
           )}
         </div>
