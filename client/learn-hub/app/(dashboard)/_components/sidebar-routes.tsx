@@ -23,6 +23,7 @@ import { usePathname } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
 import { useEffect, useState } from "react";
 import { getMineAdmin } from "@/actions/admins";
+import { getMineTutor } from "@/actions/tutors";
 
 const guestRoutes = [
   {
@@ -72,17 +73,29 @@ export const SidebarRoutes = ({
   const [isTutor, setIsTutor] = useState(false);
 
   useEffect(() => {
-    console.log(role);
     if (role === undefined) {
-      const isAdmin = localStorage.getItem("is_admin");
-      if (isAdmin == "1") {
-        setIsAdmin(true);
-      }
-      const isTutor = localStorage.getItem("is_tutor");
-      if (isTutor == "1") {
-        setIsTutor(true);
-      }
+      getMineAdmin().then(res => {
+        if (res && res.status == 200) {
+          setIsAdmin(true);
+        }
+      })  
+      getMineTutor().then(res => {
+        if (res && res.status == 200 && res.data.tutor.verified) {
+          setIsTutor(true);
+        }
+      }) 
     }
+    // console.log(role);
+    // if (role === undefined) {
+    //   const isAdmin = localStorage.getItem("is_admin");
+    //   if (isAdmin == "1") {
+    //     setIsAdmin(true);
+    //   }
+    //   const isTutor = localStorage.getItem("is_tutor");
+    //   if (isTutor == "1") {
+    //     setIsTutor(true);
+    //   }
+    // }
 
     if (role == "admin") {
       getMineAdmin().then((res) => {
@@ -116,11 +129,13 @@ export const SidebarRoutes = ({
               href: "/dashboard/admin/supporters",
             });
           }
+          console.log(adminRoutes)
           setRoutes(adminRoutes);
         }
       });
     }
   }, []);
+  console.log(routes)
 
   return (
     <div className="flex flex-col w-full">
@@ -132,15 +147,15 @@ export const SidebarRoutes = ({
           href={route.href}
         />
       ))}
-      {isTutor && (
+      {isTutor &&
         teacherRoutes.map((route) => (
           <SidebarItem
             key={route.href}
             icon={route.icon}
             label={route.label}
             href={route.href}
-          />))
-      )}
+          />
+        ))}
       {isAdmin && (
         <SidebarItem
           key={"/dashboard/admin"}
