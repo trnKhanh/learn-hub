@@ -345,6 +345,8 @@ class Course {
       conditions.push(`language_id IN (?)`);
       values.push(filters.languages);
     }
+    conditions.push(`isPublished=?`);
+    values.push(true);
     const sqlCondition = conditions.join(" AND ");
     const [rows, fields] = await sql.query(
       `SELECT DISTINCT ${Course.queryFields} 

@@ -12,10 +12,13 @@ import { CourseThumbnail } from "./_components/course-thumbnail";
 import { useEffect, useState } from "react";
 import { createPayment, getCart } from "@/actions/courses";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export const CourseCart = () => {
   const [totalMoney, setTotalMoney] = useState<number>(0);
   const [courseIds, setCourseIds] = useState<{ course_id: string }[]>([]);
+  const router = useRouter();
+
   useEffect(() => {
     getCart().then((res) => {
       if (res) {
@@ -69,6 +72,7 @@ export const CourseCart = () => {
               if (res) {
                 if (res.status == 201) {
                   toast.success(res.data.message);
+                  router.push("/dashboard/my-courses");
                 } else {
                   toast.error(res.data.message);
                 }

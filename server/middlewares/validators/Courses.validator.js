@@ -79,6 +79,11 @@ const updateCourseScheme = [
     .trim()
     .notEmpty()
     .withMessage("Course's picture must not be empty"),
+  body("isPublished")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Course's publish status must not be empty"),
 ];
 
 const searchCourseScheme = [
