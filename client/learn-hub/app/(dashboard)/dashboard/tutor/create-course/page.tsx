@@ -70,7 +70,7 @@ const CreatePage = () => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = (values : z.infer<typeof courseFormSchema>) => {
-    if (!isValid || !isSubmitting) {
+    if (!isValid || isSubmitting) {
       return;
     }
 
