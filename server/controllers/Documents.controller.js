@@ -61,6 +61,7 @@ class DocumentController {
   }
 
   static async create(req, res) {
+    console.log(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(422).send(errors);
@@ -68,18 +69,22 @@ class DocumentController {
     }
 
     const data = matchedData(req);
+
     data.course_id = req.course.id;
     // console.log(`lesson = `, req.lesson);
-    data.lesson_id = req.lesson.lesson_id;
+    data.lesson_id = req.lesson.id;
+    data.file_path = req.body.file_path;
+    data.name = req.body.name;
 
     if (req.file) {
       data.file_path = req.file.path;
-    } else {
-      res.status(400).json({
-        message: "Must provide file",
-      });
-      return;
     }
+    // } else {
+    //   res.status(400).json({
+    //     message: "Must provide file",
+    //   });
+    //   return;
+    // }
 
     try {
       const newDocument = await new Documents(data).create();

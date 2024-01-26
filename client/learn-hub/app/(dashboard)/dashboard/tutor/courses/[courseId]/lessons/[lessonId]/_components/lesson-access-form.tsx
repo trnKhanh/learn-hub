@@ -47,7 +47,8 @@ export const LessonAccessForm = () => {
         const res = await updateLesson(lesson?.course_id, lesson?.id, values);
         if (res && res.status === 200) {
             toast.success(res.data.message);
-            setLesson(res.data.lesson)
+            setLesson(res.data.lesson);
+            toggleEdit();
         } else {
             toast.error("Something went wrong");
         }
@@ -56,7 +57,7 @@ export const LessonAccessForm = () => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
         <div className="font-medium flex items-center justify-between">
-            Chapter access
+            Lesson access
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing ? (
                 <>Cancel</>
@@ -74,9 +75,9 @@ export const LessonAccessForm = () => {
             !lesson?.isFree && "text-slate-500 italic"
             )}>
             {lesson?.isFree ? (
-                <>This chapter is free for preview.</>
+                <>This lesson is free for preview.</>
             ) : (
-                <>This chapter is not free.</>
+                <>This lesson is not free.</>
             )}
             </p>
         )}
@@ -99,7 +100,7 @@ export const LessonAccessForm = () => {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                         <FormDescription>
-                        Check this box if you want to make this chapter free for preview
+                        Check this box if you want to make this lesson free for preview
                         </FormDescription>
                     </div>
                     </FormItem>

@@ -42,7 +42,7 @@ export const getAllTutors = async () => {
 export const getTutor = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3001/tutors/${id}`, {
-      //credentials: "include",
+      credentials: "include",
     });
     const data: { message: string; tutor: Tutor } = await res.json();
 
@@ -52,9 +52,11 @@ export const getTutor = async (id: string) => {
   }
 };
 
-export const getCoursesOfTutor = async (id: string | undefined) => {
+export const getCoursesOfTutor = async () => {
   try {
-    const res = await fetch(`http://localhost:3001/tutors/${id}/courses`);
+    const res = await fetch(`http://localhost:3001/tutors/mycourses`, {
+      credentials: "include",
+    });
     const data : { message: string; courses: Course[] } = await res.json();
     return { status: res.status, data: data};
   } catch (err) {

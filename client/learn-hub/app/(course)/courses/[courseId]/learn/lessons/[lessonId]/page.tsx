@@ -29,16 +29,12 @@ const LessonIdPage = ({
   const [lesson, setLesson] = useState<LearnLesson>();
   const [nextLesson, setNextLesson] = useState<LearnLesson>();
 
-  useEffect(() => {
-    if (lessons && course) {
-      setLesson(lessons.find((lesson) => lesson.id == params.lessonId));
-      setNextLesson(
-        lessons.find(
-          (lesson) => lesson.id == (parseInt(params.lessonId) + 1).toString(),
-        ),
-      );
-    }
-  }, [lessons, course]);
+    useEffect(() => {
+      if (lessons && course) {
+          setLesson(lessons.find((lesson) => lesson.id == params.lessonId));
+          setNextLesson(lessons.find((lesson) => lesson.id == (parseInt(params.lessonId) + 1).toString()));
+      }
+    }, [lessons, course]);
 
   const [documents, setDocuments] = useState<CourseDocument[]>([]);
 
@@ -59,34 +55,34 @@ const LessonIdPage = ({
   const isLocked = !lesson.isFree && !isPurchased;
   const completeOnEnd = !!isPurchased && !lesson.finished_at;
 
-  return (
-    <div className="h-full">
-      <div className="md:pl-80 pt-[80px] h-full">
-        <div>
-          {lesson.finished_at && (
-            <Banner
-              variant="success"
-              label="You already completed this lesson."
-            />
-          )}
-          {isLocked && (
-            <Banner
-              variant="warning"
-              label="You need to purchase this course to watch this lesson."
-            />
-          )}
-          <div className="flex flex-col max-w-4xl mx-auto pb-20">
-            <div className="p-4">
-              {/*<VideoPlayer
-                      chapterId={params.lessonId}
+    return (
+        // <div className="h-full">
+        //   <div className="md:pl-80 pt-[80px] h-full">
+            <div>
+              {lesson.finished_at && (
+                <Banner
+                    variant="success"
+                    label="You already completed this lesson."
+                />
+              )}
+              {isLocked && (
+                <Banner
+                    variant="warning"
+                    label="You need to purchase this course to watch this lesson."
+                />
+              )}
+            <div className="flex flex-col max-w-4xl mx-auto pb-20">
+              <div className="p-4">
+                  <VideoPlayer
+                      lessonId={params.lessonId}
                       title={lesson.name}
                       courseId={params.courseId}
                       nextChapterId={nextLesson?.id}
-                      playbackId={videoData?.playbackId}
+                      playbackId={""}
                       isLocked={isLocked}
                       completeOnEnd={completeOnEnd}
-                  />*/}
-            </div>
+                  />
+              </div>
             <div>
               <div className="p-4 flex flex-col md:flex-row items-center justify-between">
                 <h2 className="text-2xl font-semibold mb-2">{lesson.name}</h2>
@@ -153,9 +149,9 @@ const LessonIdPage = ({
             )}
           </div>
         </div>
-      </div>
-    </div>
-  );
+      //   </div>
+      // </div>
+    );
 };
 
 export default LessonIdPage;

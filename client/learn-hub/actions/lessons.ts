@@ -78,3 +78,22 @@ export const deleteLesson = async (course_id: string | undefined, lesson_id: str
         return null;
     }
 };
+
+export const createLesson = async (course_id: string | undefined, attribute: any) => {
+    try {
+        const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons`, {
+            credentials: "include",
+            method: "POST",
+            body: JSON.stringify(attribute),
+            headers: new Headers({
+            "content-type": "application/json",
+            }),
+        });
+        const data: { message: string; lesson: Lesson } = await res.json();
+    
+        return { status: res.status, data: data };
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}

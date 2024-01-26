@@ -41,6 +41,7 @@ import {
   DashboardSectionContent,
   DashboardSectionHeader,
 } from "../_components/dashboard-section";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const profileFormSchema = z.object({
   full_name: z.string().optional(),
@@ -101,7 +102,19 @@ const Profile = () => {
   }, []);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <>
+      <div className="center p-6 space-y-4">
+        <Skeleton className="w-1/2 h-6" />
+        <Skeleton className="w-1/3 h-6" />
+        <Skeleton className="w-1/4 h-6" />
+        <Skeleton className="w-1/2 h-6" />
+        <Skeleton className="w-1/3 h-6" />
+        <Skeleton className="w-1/4 h-6" />
+        <Skeleton className="w-1/2 h-6" />
+        <Skeleton className="w-1/3 h-6" />
+        <Skeleton className="w-1/4 h-6" />
+      </div>
+    </>
   }
 
   const onSubmit = async (data: ProfileFormValues) => {

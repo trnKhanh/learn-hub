@@ -5,6 +5,7 @@ import { EditContextProvider } from "./edit-provider";
 import { useEffect, useState } from "react";
 import { getCourse } from "@/actions/courses";
 import { List } from "lucide-react";
+import { Skeleton } from "@mui/material";
 
 const CourseIdLayout = ({
   children,
@@ -32,8 +33,13 @@ const CourseIdLayout = ({
     <EditContextProvider params={params}>
       <DashboardSection>
         <DashboardSectionHeader icon={List}>
-          <span className="font-bold text-slate-400">Course:</span>{" "}
-          {course ? course.name : "Loading..."}
+          {course ? (
+            <span className="font-bold text-slate-400 mt-20 text-3xl">
+              {course.name}
+            </span>
+          ) : (
+            <Skeleton className="w-[200px] h-6" />
+          )}
         </DashboardSectionHeader>
         {children}
       </DashboardSection>

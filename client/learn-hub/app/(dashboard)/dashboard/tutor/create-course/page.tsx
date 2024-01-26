@@ -4,7 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";
 
 import {
   Form,
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { ChevronDownIcon } from "lucide-react";
-import { ToastAction } from "@/components/ui/toast";
+import { createCourse } from "@/actions/courses";
 
 const courseFormSchema = z.object({
   name: z.string().min(1, {
@@ -36,17 +36,17 @@ const courseFormSchema = z.object({
     required_error: "Difficulty level is required",
   }),
 
-  duration: z.number().min(0, {
+  duration: z.coerce.number().min(0, {
     message: "Duration is required",
   }),
 
-  price: z.number().min(0, {
+  price: z.coerce.number().min(0, {
     message: "Price is required",
   }),
 
-  discount: z.number().min(0, {
+  discount: z.coerce.number().min(0, {
     message: "Discount is required",
-  }),
+  }).max(1, { message: "Discount is invalid" }),
 });
 
 type courseFormValues = z.infer<typeof courseFormSchema>;
@@ -61,8 +61,6 @@ const defaultValues: Partial<courseFormValues> = {
 };
 
 const CreatePage = () => {
-  const { toast } = useToast();
-
   const router = useRouter();
   const form = useForm<courseFormValues>({
     resolver: zodResolver(courseFormSchema),
@@ -71,10 +69,29 @@ const CreatePage = () => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = () => {
-    toast({
-      title: form.getValues("name"),
-      description: "Your course has been created successfully",
+  const onSubmit = (values : z.infer<typeof courseFormSchema>) => {
+    if (!isValid || !isSubmitting) {
+      return;
+    }
+
+    const newCourse = {
+      name: values.name,
+      description: values.description,
+      difficulty: values.difficulty,
+      duration: values.duration,
+      price: values.price,
+      discount: values.discount,
+    }
+
+    createCourse(newCourse).then((res) => {
+      if (res) {
+        if (res.status == 201) {
+          toast.success(res.data.message);
+          router.push(`/dashboard/tutor/courses/${res.data.course.id}`);
+        } else {
+          toast.error(res.data.message);
+        }
+      }
     });
   };
 
@@ -153,6 +170,7 @@ const CreatePage = () => {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="duration"
@@ -161,14 +179,13 @@ const CreatePage = () => {
                   <FormLabel className="text-lg">Duration</FormLabel>
                   <div className="relative w-max">
                     <FormControl>
-                      <Input placeholder="Duration" {...field} />
+                      <Input type="number" step="1" placeholder="Duration" {...field}/>
                     </FormControl>
                     <p className="absolute right-7 top-1.5 opacity-50">DAYS</p>
                   </div>
                   <FormDescription>
-                    Set the difficulty level of your course.
+                    Set the duration of your course.
                   </FormDescription>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -182,7 +199,7 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Price</FormLabel>
                   <FormControl>
-                    <Input placeholder="Course Price" {...field} />
+                    <Input type="number" step="0.01" placeholder="Course Price" {...field}/>
                   </FormControl>
                   <FormDescription>
                     How much does your course cost?
@@ -199,7 +216,7 @@ const CreatePage = () => {
                 <FormItem>
                   <FormLabel className="text-lg">Discount</FormLabel>
                   <FormControl>
-                    <Input placeholder="Course Discount" {...field} />
+                    <Input type="number" step="0.01" placeholder="Course Discount" {...field}/>
                   </FormControl>
                   <FormDescription>
                     How much discount does your course have?
@@ -210,7 +227,7 @@ const CreatePage = () => {
             />
           </div>
           <div className="flex justify-center">
-            <Button type="submit" disabled={!isValid || isSubmitting}>
+            <Button type="submit">
               Create Course
             </Button>
           </div>

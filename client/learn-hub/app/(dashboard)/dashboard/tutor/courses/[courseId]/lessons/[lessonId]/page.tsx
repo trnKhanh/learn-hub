@@ -1,6 +1,5 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 
@@ -23,7 +22,7 @@ import { toast } from "react-toastify";
 const ChapterIdPage = ({
     params
 }: {
-    params: { courseId: string; chapterId: string }
+    params: { courseId: string; lessonId: string }
 }) => {
     const {lesson} = useContext(LessonEditContext);
     const [isUploading, setIsUploading] = useState(false);
@@ -53,7 +52,7 @@ const ChapterIdPage = ({
                 <div className="flex items-center justify-between">
                 <div className="w-full">
                     <Link
-                    href={`/teacher/courses/${params.courseId}`}
+                    href={`/dashboard/tutor/courses/${params.courseId}`}
                     className="flex items-center text-sm hover:opacity-75 transition mb-6"
                     >
                     <ArrowLeft className="h-4 w-4 mr-2" />
@@ -62,7 +61,7 @@ const ChapterIdPage = ({
                     <div className="flex items-center justify-between w-full">
                         <div className="flex flex-col gap-y-2">
                             <h1 className="text-2xl font-medium">
-                            Chapter Creation
+                            Lesson Creation
                             </h1>
                             <span className="text-sm text-slate-700">
                             Complete all fields {completionText}
@@ -80,7 +79,7 @@ const ChapterIdPage = ({
                         <div className="flex items-center gap-x-2">
                             <IconBadge icon={LayoutDashboard} />
                             <h2 className="text-xl">
-                            Customize your chapter
+                                Customize your lesson
                             </h2>
                         </div>
                         <LessonTitleForm />
@@ -89,7 +88,7 @@ const ChapterIdPage = ({
                         <div className="flex items-center gap-x-2">
                             <IconBadge icon={Eye} />
                             <h2 className="text-xl">
-                            Access Settings
+                                Access Settings
                             </h2>
                         </div>
                         <LessonAccessForm/>
@@ -98,10 +97,10 @@ const ChapterIdPage = ({
                         <div className="flex items-center gap-x-2">
                             <IconBadge icon={Eye} />
                             <h2 className="text-xl">
-                            Resources & Documents
+                                Resources & Documents
                             </h2>
                         </div>
-                        <LessonDocumentForm/>
+                        <LessonDocumentForm courseId={params.courseId} lessonId={params.lessonId}/>
                     </div>
                 </div>
                 <div>
@@ -112,7 +111,8 @@ const ChapterIdPage = ({
                     </h2>
                     </div>
                     {/* <LessonVideoForm/> */}
-                    <div className="w-1/2 flex space-x-2 items-center">
+                    {/* <div className="w-1/2 flex space-x-2 items-center"> */}
+                    <div className="mt-6 border bg-slate-100 rounded-md p-4">
                         <form
                             className="flex flex-col space-x-2 items-center mx-auto"
                             onSubmit={async (e) => {

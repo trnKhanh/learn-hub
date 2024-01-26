@@ -47,9 +47,8 @@ export const LessonDescriptionForm = () => {
             const res = await updateLesson(lesson?.course_id, lesson?.id, values);
             if (res && res.status === 200) {
                 setLesson(res.data.lesson);
-                toast.success("Chapter updated");
+                toast.success("Lessons updated");
             }
-            toast.success("Chapter updated");
             toggleEdit();
         } catch {
             toast.error("Something went wrong");
@@ -59,7 +58,7 @@ export const LessonDescriptionForm = () => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
         <div className="font-medium flex items-center justify-between">
-            Chapter description
+            Lesson description
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing ? (
                 <>Cancel</>

@@ -12,7 +12,7 @@ import { useConfettiStore } from "@/hooks/use-confetti-store";
 interface VideoPlayerProps {
     playbackId: string;
     courseId: string;
-    chapterId: string;
+    lessonId: string;
     nextChapterId?: string;
     isLocked: boolean;
     completeOnEnd: boolean;
@@ -20,9 +20,8 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({
-    playbackId,
     courseId,
-    chapterId,
+    lessonId,
     nextChapterId,
     isLocked,
     completeOnEnd,
@@ -71,7 +70,7 @@ export const VideoPlayer = ({
                 </div>
             )}
             {!isLocked && (
-                <video>
+                <video controls>
                     <source
                         src={`http://localhost:3001/courses/${courseId}/lessons/${lessonId}/video`}
                         type="video/mp4"/>

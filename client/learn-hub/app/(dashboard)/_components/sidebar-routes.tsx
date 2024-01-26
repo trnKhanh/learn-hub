@@ -25,30 +25,15 @@ import { useEffect, useState } from "react";
 import { getMineAdmin } from "@/actions/admins";
 
 const guestRoutes = [
-  // {
-  //   icon: Layout,
-  //   label: "Dashboard",
-  //   href: "/dashboard",
-  // },
   {
     icon: FolderOpenDot,
-    label: "My Courses",
+    label: "Registered Courses",
     href: "/dashboard/my-courses",
-  },
-  {
-    icon: Heart,
-    label: "Favorites",
-    href: "/dashboard/favorites",
   },
   {
     icon: ShoppingCart,
     label: "Cart",
     href: "/dashboard/shopping-cart",
-  },
-  {
-    icon: CalendarCheck,
-    label: "Schedule",
-    href: "/dashboard/schedule",
   },
   {
     icon: UserRoundCog,
@@ -64,19 +49,14 @@ const guestRoutes = [
 
 const teacherRoutes = [
   {
-    icon: Layout,
-    label: "Dashboard",
-    href: "/dashboard",
-  },
-  {
     icon: FolderPlus,
     label: "Create new course",
-    href: "/dashboard/teacher/create-course",
+    href: "/dashboard/tutor/create-course",
   },
   {
     icon: FolderOpenDot,
     label: "My Courses",
-    href: "/dashboard/teacher/my-courses",
+    href: "/dashboard/tutor/courses",
   },
 ];
 
@@ -90,7 +70,6 @@ export const SidebarRoutes = ({
   const [routes, setRoutes] = useState(guestRoutes);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isTutor, setIsTutor] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     console.log(role);
@@ -153,6 +132,15 @@ export const SidebarRoutes = ({
           href={route.href}
         />
       ))}
+      {isTutor && (
+        teacherRoutes.map((route) => (
+          <SidebarItem
+            key={route.href}
+            icon={route.icon}
+            label={route.label}
+            href={route.href}
+          />))
+      )}
       {isAdmin && (
         <SidebarItem
           key={"/dashboard/admin"}

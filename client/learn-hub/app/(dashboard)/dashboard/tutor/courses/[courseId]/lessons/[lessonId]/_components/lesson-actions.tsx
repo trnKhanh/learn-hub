@@ -2,16 +2,20 @@
 
 import { Trash } from "lucide-react";
 import { useState, useContext } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { deleteLesson, updateLesson } from "@/actions/lessons";
 import { LessonEditContext } from "../lesson-provider";
+import { useConfettiStore } from "@/hooks/use-confetti-store";
 
 export const LessonActions = ({disabled}: {disabled : boolean}) => {
     const router = useRouter();
+
+    const confetti = useConfettiStore();
+    
     const [isLoading, setIsLoading] = useState(false);
 
     const {lesson, setLesson} = useContext(LessonEditContext);
@@ -43,6 +47,7 @@ export const LessonActions = ({disabled}: {disabled : boolean}) => {
                         setLesson(newLesson);
                     }
                     toast.success("Chapter published");
+                    confetti.onOpen();
                 } else {
                     toast.error("Something went wrong");
                 }

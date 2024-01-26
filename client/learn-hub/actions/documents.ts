@@ -18,6 +18,8 @@ export const updateDocument = async (course_id: string | undefined, lesson_id: s
 }
 
 export const createDocument = async (course_id: string | undefined, lesson_id: string | undefined, attribute: any) => {
+    console.log(`createDocument: ${course_id}, ${lesson_id}`);
+    console.log(attribute)
     try {
         const res = await fetch(`http://localhost:3001/courses/${course_id}/lessons/${lesson_id}/documents/`, {
             credentials: "include",

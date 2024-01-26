@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import {
@@ -21,29 +21,25 @@ import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
 import { EditContext } from "../edit-provider";
-import { getAllLessonsOfCourseId } from "@/actions/lessons";
+import { createLesson, getAllLessonsOfCourseId } from "@/actions/lessons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/*interface ChaptersFormProps {
-    //initialData: Course & { chapters: Chapter[] };
-    //chapters: Lesson[];
-    //courseId: string;
-}*/
-
 const formSchema = z.object({
-    title: z.string().min(1),
+    name: z.string().min(1),
 });
 
 export const ChaptersForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
+            name: "",
         },
     });
 
     const [isCreating, setIsCreating] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+
+    const [created, setCreated] = useState(false);
 
     const toggleCreating = () => {
         setIsCreating((current) => !current);
@@ -59,7 +55,7 @@ export const ChaptersForm = () => {
                 console.log(res.data.lessons);
                 setLessons(res.data.lessons);
             }
-    })}, [])
+    })}, [created])
 
     if (!lessons) return (
         <div className="flex flex-row items-center justify-between">
@@ -70,7 +66,17 @@ export const ChaptersForm = () => {
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        
+        createLesson(course?.id, values).then((res) => {
+            console.log(res);
+            if (res && res.status == 200) {
+                toast.success(res.data.message);
+                toggleCreating();
+                //router.refresh();
+                setCreated(true);
+            } else {
+                toast.error("Something went wrong");
+            }
+        });
     }
 
     const onReorder = async (updateData: { id: string; position: number }[]) => {
@@ -100,14 +106,14 @@ export const ChaptersForm = () => {
             </div>
         )}
         <div className="font-medium flex items-center justify-between">
-            Course chapters
+            Course lessons
             <Button onClick={toggleCreating} variant="ghost">
             {isCreating ? (
                 <>Cancel</>
             ) : (
                 <>
                 <PlusCircle className="h-4 w-4 mr-2" />
-                Add a chapter
+                Add a lesson
                 </>
             )}
             </Button>
@@ -120,7 +126,7 @@ export const ChaptersForm = () => {
             >
                 <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                     <FormItem>
                     <FormControl>

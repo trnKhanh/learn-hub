@@ -1,12 +1,10 @@
 "use client";
 
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 
 import {
     Form,
@@ -19,12 +17,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format";
+import { updateCourse } from "@/actions/courses";
+import { EditContext } from "../edit-provider";
+import { toast } from "react-toastify";
 
 interface PriceFormProps {
-    //initialData: Course;
     price: number;
     courseId: string;
-};
+}
 
 const formSchema = z.object({
     price: z.coerce.number(),
@@ -39,7 +39,7 @@ export const PriceForm = ({
 
     const toggleEdit = () => setIsEditing((current) => !current);
 
-    const router = useRouter();
+    const { setCourse } = useContext(EditContext);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -51,12 +51,15 @@ export const PriceForm = ({
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try {
-            //await axios.patch(`/api/courses/${courseId}`, values);
-            toggleEdit();
-            router.refresh();
-        } catch {
+        console.log(values);
+        const res = await updateCourse(courseId.toString(), values);
+        if (res && res.status === 200) {
+            setCourse(res.data.courses[0]);
+            toast.success(res.data.message);
+        } else {
+            toast.error("Something went wrong");
         }
+        toggleEdit();
     }
 
     return (
