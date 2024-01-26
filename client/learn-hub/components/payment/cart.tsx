@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 export const CourseCart = () => {
   const [totalMoney, setTotalMoney] = useState<number>(0);
   const [courseIds, setCourseIds] = useState<{ course_id: string }[]>([]);
-
   const router = useRouter();
 
   useEffect(() => {

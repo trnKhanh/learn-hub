@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { CourseProgress } from "@/components/course-progress";
 import { useEffect, useState } from "react";
 import { getCourse, getCourseProgress, getLessons } from "@/actions/courses";
+import { getSubjectByCourseId } from "@/actions/subjects";
 
 interface CourseCardProps {
   id: string;
@@ -49,7 +50,7 @@ export const CourseCard = ({ id }: { id: string }) => {
     return <div>Loading...</div>;
   }
   return (
-    <Link href={`/courses/${id}`}>
+    <Link href={`/courses/${id}/learn`}>
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
         <div className="relative w-full aspect-video rounded-md overflow-hidden">
           <Image

@@ -29,12 +29,16 @@ const LessonIdPage = ({
   const [lesson, setLesson] = useState<LearnLesson>();
   const [nextLesson, setNextLesson] = useState<LearnLesson>();
 
-    useEffect(() => {
-      if (lessons && course) {
-          setLesson(lessons.find((lesson) => lesson.id == params.lessonId));
-          setNextLesson(lessons.find((lesson) => lesson.id == (parseInt(params.lessonId) + 1).toString()));
-      }
-    }, [lessons, course]);
+  useEffect(() => {
+    if (lessons && course) {
+      setLesson(lessons.find((lesson) => lesson.id == params.lessonId));
+      setNextLesson(
+        lessons.find(
+          (lesson) => lesson.id == (parseInt(params.lessonId) + 1).toString(),
+        ),
+      );
+    }
+  }, [lessons, course]);
 
   const [documents, setDocuments] = useState<CourseDocument[]>([]);
 
@@ -100,8 +104,19 @@ const LessonIdPage = ({
                 )}
               </div>
               <Separator />
-              <div>
-                <Preview value={lesson.name!} />
+              <div className="p-4">
+                {documents.map((document) => (
+                  <a
+                    href={document.file_path}
+                    target="_blank"
+                    key={document.document_id}
+                    className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline"
+                    rel="noreferrer"
+                  >
+                    <File />
+                    <p className="line-clamp-1">{document.name}</p>
+                  </a>
+                ))}
               </div>
               {!!documents.length && (
                 <>

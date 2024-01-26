@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import UserNavbar from "./user-navbar";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/app/auth-provider";
+
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 
 const Navbar = () => {
@@ -24,7 +25,9 @@ const Navbar = () => {
           <SearchInput />
         </div>
         <div className="flex-row ml-8 gap-7 hidden lg:flex">
-          <NavbarItem label="Program" />
+          <Link href="/search">
+            <NavbarItem label="Courses" />
+          </Link>
           <NavbarItem label="Instructor" />
           <NavbarItem label="Universities" />
         </div>
